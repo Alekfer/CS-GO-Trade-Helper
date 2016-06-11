@@ -1,0 +1,50 @@
+{
+  "manifest_version": 2,
+  "name": "CS:GO Trade Helper",
+  "version": "0.1",
+  "description": "Implements a variety of features to improve both the Steam Community and trading for CS:GO.",
+  "browser_action": {
+     "default_title": "CS:GO Trade Helper"
+  },
+  "background": {
+    "scripts": ["lib/jquery.min.js", "lib/uint64.min.js", "scripts/background.js"]
+  },
+  "permissions": ["tabs", "storage", "notifications", "webRequest", "webRequestBlocking",
+                  "*://api.steampowered.com/*", "*://steamrep.com/*", "*://steamcdn-a.akamaihd.net/*", "*://steam.expert/api/items/all/*"],
+  "content_scripts": [
+    {
+      "matches": ["*://steamcommunity.com/*"],
+      "js": ["lib/jquery.min.js", "scripts/patterns.js", "scripts/tools.js"],
+      "css": ["lib/main.css"]
+    },
+    {
+      "matches": ["*://steamcommunity.com/id/*/inventory/", "*://steamcommunity.com/profiles/*/inventory/",
+                  "*://steamcommunity.com/id/*/inventory",  "*://steamcommunity.com/profiles/*/inventory"],
+      "js": ["scripts/inventory.js"]
+    },
+    {
+      "matches": ["*://steamcommunity.com/tradeoffer/*"],
+      "js": ["scripts/trades.js"]
+    },
+    {
+      "matches": ["*://steamcommunity.com/id/*/tradeoffers/", "*://steamcommunity.com/profiles/*/tradeoffers/",
+                  "*://steamcommunity.com/id/*/tradeoffers",  "*://steamcommunity.com/profiles/*/tradeoffers"],
+      "js": ["scripts/tradeoffers.js"]
+    },
+    {
+      "matches": ["*://steamcommunity.com/id/*/home/invites/", "*://steamcommunity.com/profiles/*/home/invites/",
+                  "*://steamcommunity.com/id/*/home/invites", "*://steamcommunity.com/profiles/*/home/invites"],
+      "js": ["scripts/invites.js"]
+    },
+    {
+      "matches": ["*://steamcommunity.com/id/*/friends/", "*://steamcommunity.com/profiles/*/friends/",
+                  "*://steamcommunity.com/id/*/friends", "*://steamcommunity.com/profiles/*/friends"],
+      "js": ["scripts/friends.js"]
+    },
+    {
+      "matches": ["*://steamcommunity.com/market/listings/730/*"],
+      "js": ["scripts/market.js"]
+    }
+  ],
+  "options_page": "settings/index.html"
+}

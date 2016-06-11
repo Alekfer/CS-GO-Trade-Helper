@@ -1,0 +1,215 @@
+.st-item-price {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  padding: 0px 0px 2px 5px;
+  color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(117, 117, 117, 0.3);
+  font-family: monospace;
+}
+
+.st-item-float {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  padding: 2px 5px 0px 0px;
+  color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(117, 117, 117, 0.3);
+  font-family: monospace;
+  font-size: 12px;
+  text-align: right;
+}
+
+.st-item-wear {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 0px 5px 2px 0px;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: monospace;
+}
+
+.st-item-sticker {
+  z-index: 1;
+  position: absolute;
+  width: 25% !important;
+  bottom: 20px;
+  left: 0;
+}
+
+.st-item-not-tradable {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(41, 41, 41, 0.7);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.st-item-no-price {
+  width: 100%;
+  height: 100%;
+  box-shadow: 0px 0px 3px 1px red;
+  background-color: rgba(255,0,0,0.1);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.st-trade-offer-prices {
+  background-color: #262627;
+  padding: 5px;
+  margin-bottom: 10px;
+  font-family: Monospace;
+  color: #ABB1B1;
+  box-shadow: inset 0px 0px 7px -1px black;
+  overflow: auto;
+}
+
+.st-display-right {
+  display: inline;
+  float: right;
+}
+
+.st-trade-offer-button {
+  display: inline;
+}
+
+.st-trade-offer-items-warning {
+  color: red;
+  padding: 5px;
+  background-color: rgba(255, 0, 0, 0.2);
+}
+
+.st-trade-offer-items-awesome {
+  color: lime;
+  padding: 5px;
+  background-color: rgba(0, 255, 0, 0.2);
+}
+
+.st-trade-offer-items-glitched {
+  color: yellow;
+  padding: 5px;
+  background-color: rgba(255, 255, 0, 0.2);
+}
+
+.st-trade-offer-divider {
+  border-color: rgb(82, 82, 85);
+}
+
+.st-loading-details {
+  font-family: Monospace;
+  text-align: right;
+}
+
+.st-log-box {
+  padding: 5px 0px 0px 8px
+}
+
+.st-log-msg {
+  font-family: monospace;
+  margin-left: 10px;
+  vertical-align: bottom;
+  display: inline;
+}
+
+.st-trade-offer-totals {
+  margin: 10px 0px;
+  font-size: 25px;
+  padding: 5px;
+  color: #CACACA;
+  font-family: monospace;
+  /*background-color: #333333;
+  box-shadow: inset 0px 0px 8px -2px black;*/
+  background-color: #1F1F1F;
+  border: 1px solid #2C2C2D;
+  box-shadow: inset 0px 0px 8px 1px black;
+}
+
+.st-trade-offer-input {
+  float: inherit;
+  display: inline;
+  margin-left: 10px;
+}
+
+.st-trade-offer-box {
+  background-color: #1D1D1D;
+  padding: 10px;
+  border: 1px solid #494949;
+  margin-bottom: 5px;
+  border-radius: 3px
+}
+
+.st-banned {
+  float: right;
+  line-height: 40px;
+  margin-right: 20px;
+  font-size: 15px;
+  font-family: Monospace;
+}
+
+.st-scammer {
+  background-color: rgba(255, 0, 0, 0.3)
+}
+
+.st-invite-block {
+  font-family: 'Motiva Sans';
+  margin-bottom: 5px;
+  font-size: 16px
+}
+
+.st-search-profile {
+  box-shadow: 0px 0px 10px -4px black;
+  background-color: rgba(84,133,183,0.15);
+  margin-bottom: 10px;
+  padding: 5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.st-search-item-list {
+  display: inline-block;
+  margin-left: 10px;
+  vertical-align: top
+}
+
+.st-containerOne {
+  float: left;
+  width: 100%;
+  position: relative;
+  right: 50%;
+}
+
+.st-containerTwo {
+  clear: left;
+  float: left;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.st-columnOne {
+  float: left;
+  width: 50%;
+  position: relative;
+  left: 50%;
+  overflow: hidden;
+}
+
+.st-columnTwo {
+  float: left;
+  width: 50%;
+  position: relative;
+  left: 50%;
+  overflow: hidden;
+}
+
+/* override the stupid icon in the corner, we could do this via js
+   but I don't want to introduce any sort of lag */
+.slot_applogo {
+  opacity: 0 !important;
+  display: none !important;
+}
