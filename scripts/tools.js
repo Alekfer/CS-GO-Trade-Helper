@@ -16,6 +16,12 @@ function requestPrices(){
   });
 }
 
+function getAPIKey(callback){
+  chrome.runtime.sendMessage({action: 'getAPIKey'}, function(response){
+    callback(response.data)
+  })
+}
+
 function buildItemSummary(types, tradeoffer){
   /* tradeoffer = is in trade offer page */
   if(Object.keys(types).length == 0) return '';
@@ -131,11 +137,6 @@ function getInventory(url, steamID, successCallback, errorCallback, attempt){
   });
 }
 
-function getCookie(name) {
-  var parts = ('; ' + document.cookie).split('; ' + name + '=');
-  if (parts.length == 2) return parts.pop().split(';').shift();
-}
-
 /* formats the percentage/pattern for the overlay */
 function formatPattern(name, seed){
   name = name.replace('StatTrak\u2122 ', '');
@@ -149,47 +150,6 @@ function formatPattern(name, seed){
   var weirdSchema = name.indexOf('AK-47') == -1 && name.indexOf('Five-SeveN') == -1;
 
   return (weirdSchema ? '<br>' : ' ') + patterns[name][seed];
-}
-
-function getAPIKey(callback){
-  /* if no API key is stored locally, create one */
-  chrome.storage.sync.get('apikey', function(items){
-    if(Object.keys(items).length == 0){
-      console.log('Getting Steam API Key.');
-      getNewAPIKey();
-    } else {
-      if(typeof(callback) === 'function') callback(items['apikey']);
-    }
-  });
-}
-
-/* we run this to quickly ensure that the user has a key */
-getAPIKey();
-
-/* get API key */
-function getNewAPIKey(){
-  $.ajax({
-    method: 'POST',
-    url: '/dev/registerkey',
-    data: {
-      domain: 'localhost',
-      agreeToTerms: 'agreed',
-      sessionid: getCookie('sessionid'),
-      submit: 'Register'
-    },
-    success: function(response) {
-      if ($(response).find('#mainContents h2').text() === 'Access Denied') {
-        console.log('Unable to get Steam API Key.');
-      }
-
-      if($(response).find('#bodyContents_ex h2').text() === 'Your Steam Web API Key'){
-        var key = $(msg).find('#bodyContents_ex p').eq(0).text().split(' ')[1];
-        console.log('Retrieved Steam API Key: ' + key);
-
-        chrome.storage.sync.set({'apikey': key});
-      }
-    }
-  })
 }
 
 function isOfferGlitched(offerID, callback){

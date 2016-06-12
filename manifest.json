@@ -9,8 +9,8 @@
   "background": {
     "scripts": ["lib/jquery.min.js", "lib/uint64.min.js", "scripts/background.js"]
   },
-  "permissions": ["tabs", "storage", "notifications", "webRequest", "webRequestBlocking",
-                  "*://api.steampowered.com/*", "*://steamrep.com/*", "*://steamcdn-a.akamaihd.net/*", "*://steam.expert/api/items/all/*"],
+  "permissions": ["cookies", "tabs", "storage", "notifications", "webRequest", "webRequestBlocking",
+                  "*://steamcommunity.com/*", "*://api.steampowered.com/*", "*://steamrep.com/*", "*://steamcdn-a.akamaihd.net/*", "*://steam.expert/api/items/all/*"],
   "content_scripts": [
     {
       "matches": ["*://steamcommunity.com/*"],

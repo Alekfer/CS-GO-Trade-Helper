@@ -14,10 +14,39 @@ function getAPIKey(callback){
   chrome.storage.sync.get('apikey', function(items){
     if(Object.keys(items).length == 0){
       console.log('Getting Steam API Key.');
-      getNewAPIKey();
+      getNewAPIKey(callback);
     } else {
       if(typeof(callback) === 'function') callback(items['apikey']);
     }
+  });
+}
+
+/* get API key */
+function getNewAPIKey(callback){
+  chrome.cookies.get({url: 'https://steamcommunity.com', name: 'sessionid'}, function(cookie) {
+    $.ajax({
+      method: 'POST',
+      url: 'https://steamcommunity.com/dev/registerkey',
+      data: {
+        domain: 'localhost',
+        agreeToTerms: 'agreed',
+        sessionid: cookie.value,
+        submit: 'Register'
+      },
+      success: function(response) {
+        if ($(response).find('#mainContents h2').text() === 'Access Denied') {
+          console.log('Unable to get Steam API Key.');
+        }
+
+        if($(response).find('#bodyContents_ex h2').text() === 'Your Steam Web API Key'){
+          var key = $(response).find('#bodyContents_ex p').eq(0).text().split(' ')[1];
+          console.log('Retrieved Steam API Key: ' + key);
+
+          if(typeof(callback) === 'function') callback(key)
+          chrome.storage.sync.set({'apikey': key});
+        }
+      }
+    })
   });
 }
 
@@ -76,8 +105,6 @@ function getOffers(){
         }
       }
     })
-
-    console.log(itemsInTrade)
 
     /* players will be empty if we have no new offers */
     if(players.length == 0) return setTimeout(getOffers, 1000 * 30);
@@ -181,8 +208,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         url: 'https://steam.expert/api/items/all/730',
         success: function(response){
           var temp = {};
-          response = response.data;
-          response.forEach(function(item){
+          response.data.forEach(function(item){
             temp[item.market_hash_name] = item.median_month;
           })
 
@@ -196,7 +222,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       /* if we do already have them, send the cached version */
       sendResponse({err: false, data: prices});
     }
+  } else if(request.action === 'getAPIKey'){
+    getAPIKey(function(key){
+      sendResponse({data: key})
+    })
   }
+
+  /* this is necessary or the function becomes invalidated */
+  return true;
 });
 
 function toSteam64(accountid){
