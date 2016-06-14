@@ -15,7 +15,7 @@ var theirInventory = {
 };
 
 getSteamID(true, function(steamID){
-  getInventory(window.location.pathname.split('/tradeoffers')[0], steamID, function(infoPairs, idPairs){
+  getInventory(steamID, function(infoPairs, idPairs){
     $('#st-load-my-inv').text('Loaded inventory!').hide().fadeIn();
     myInventory.infoPairs = infoPairs;
     setupOffers();
@@ -122,7 +122,7 @@ function loadPricesForOffer(index){
   }, 0);
 
   var url = offer.parent().find('.tradeoffer_partner a').attr('href');
-  getInventory(url.split('steamcommunity.com')[1], steamID, function(infoPairs, idPairs){
+  getInventory(steamID, function(infoPairs, idPairs){
     theirInventory.infoPairs = infoPairs;
 
     var summary = {

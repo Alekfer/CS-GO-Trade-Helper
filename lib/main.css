@@ -188,7 +188,9 @@
   float: left;
   width: 100%;
   overflow: hidden;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .st-columnOne {

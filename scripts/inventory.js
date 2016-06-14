@@ -10,7 +10,7 @@ $('#active_inventory_page').before(
 );
 
 getSteamID(false, function(steamID){
-  getInventory(window.location.pathname, steamID, setupItems, getInventory);
+  getInventory(steamID, setupItems, getInventory);
 
   getInventoryDetails(steamID, function(details, attempt){
     if(!details){

@@ -1,6 +1,7 @@
 /* http://steamcommunity.com/id/i7xx/inventory/ becomes ['', 'id', 'i7xx', 'inventory', ''] */
 var path = window.location.pathname.split('/')
-if(['inventory', 'tradeoffers', 'home', 'friends', 'edit', 'chat', 'groups', 'commentnotifications', 'badges', 'screenshots', 'allcomments'].indexOf(path[3]) > -1 || ['chat'].indexOf(path[2]) > -1){
+if((['inventory', 'tradeoffers', 'home', 'friends', 'edit', 'chat', 'groups', 'commentnotifications', 'badges', 'screenshots', 'allcomments',
+    'inventoryhistory'].indexOf(path[3]) > -1 || ['chat'].indexOf(path[2]) > -1) && path.join('/').indexOf('/json/') == -1){
   /* add a nicer background and make the profile element transparent */
   $('body').css('background', 'url("http://store.akamai.steamstatic.com/public/images/v6/colored_body_top.png?v=2") center top no-repeat #1b2838')
   $('.profile_small_header_texture').css({'background-image': 'inherit', 'background-color': 'rgba(26,41,58,0.75)', 'box-shadow': '0px 0px 15px -2px black'})
@@ -46,11 +47,11 @@ function buildItemSummary(types, tradeoffer){
 /* class id to item info */
 var idPairs = {};
 
-function getInventory(url, steamID, successCallback, errorCallback, attempt){
+function getInventory(steamID, successCallback, errorCallback, attempt){
   /* if the attempt argument was not provided, set it to 0 */
-  if(arguments.length < 5) attempt = 0
+  if(arguments.length < 4) attempt = 0
 
-  console.log('Loading inventory JSON for ' + url + ', attempt #' + (attempt + 1));
+  console.log('Loading inventory JSON for ' + steamID + ', attempt #' + (attempt + 1));
 
   /* if the total tries is above the threshold, stop retrying */
   if(++attempt > 3){
@@ -60,7 +61,7 @@ function getInventory(url, steamID, successCallback, errorCallback, attempt){
 
   /* load the inventory and parse it upon success */
   $.ajax({
-    url: url + (url.indexOf('inventory') > -1 ? '' : '/inventory') + (url.indexOf('json') > -1 ? '' : '/json/730/2'),
+    url: 'https://steamcommunity.com/profiles/' + steamID + '/inventory/json/730/2',
     success: function(response){
       parseResponse();
       function parseResponse(){
@@ -73,7 +74,7 @@ function getInventory(url, steamID, successCallback, errorCallback, attempt){
         for(var id in response.rgDescriptions){
           var item = response.rgDescriptions[id];
           /* replace special characters to ensure compatibility with price list */
-          if(!item.market_hash_name) console.log(item, id)
+          if(!item.market_hash_name) console.log(item, id, steamID)
           //item.market_hash_name = item.market_hash_name.replace('\u2122 ', '™').replace('\u2605 ', '★');
 
           /* search the tags for the wear */
