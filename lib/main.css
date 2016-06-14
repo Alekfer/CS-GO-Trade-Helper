@@ -6,7 +6,7 @@
   padding: 0px 0px 2px 5px;
   color: rgba(255, 255, 255, 0.5);
   background-color: rgba(117, 117, 117, 0.3);
-  font-family: monospace;
+  font-family: Motiva Sans Light;
 }
 
 .st-item-float {
@@ -17,7 +17,7 @@
   padding: 2px 5px 0px 0px;
   color: rgba(255, 255, 255, 0.5);
   background-color: rgba(117, 117, 117, 0.3);
-  font-family: monospace;
+  font-family: Motiva Sans Light;
   font-size: 12px;
   text-align: right;
 }
@@ -28,7 +28,7 @@
   right: 0;
   padding: 0px 5px 2px 0px;
   color: rgba(255, 255, 255, 0.6);
-  font-family: monospace;
+  font-family: Motiva Sans Light;
 }
 
 .st-item-sticker {
@@ -64,7 +64,7 @@
   background-color: #262627;
   padding: 5px;
   margin-bottom: 10px;
-  font-family: Monospace;
+  font-family: Motiva Sans Light;
   color: #ABB1B1;
   box-shadow: inset 0px 0px 7px -1px black;
   overflow: auto;
@@ -102,7 +102,7 @@
 }
 
 .st-loading-details {
-  font-family: Monospace;
+  font-family: Motiva Sans Light;
   text-align: right;
 }
 
@@ -111,7 +111,7 @@
 }
 
 .st-log-msg {
-  font-family: monospace;
+  font-family: Motiva Sans Light;
   margin-left: 10px;
   vertical-align: bottom;
   display: inline;
@@ -122,7 +122,7 @@
   font-size: 25px;
   padding: 5px;
   color: #CACACA;
-  font-family: monospace;
+  font-family: Motiva Sans Light;
   /*background-color: #333333;
   box-shadow: inset 0px 0px 8px -2px black;*/
   background-color: #1F1F1F;
@@ -149,7 +149,7 @@
   line-height: 40px;
   margin-right: 20px;
   font-size: 15px;
-  font-family: Monospace;
+  font-family: Motiva Sans Light;
 }
 
 .st-scammer {

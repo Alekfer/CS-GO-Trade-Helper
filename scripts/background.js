@@ -50,6 +50,33 @@ function getNewAPIKey(callback){
   });
 }
 
+var notifications = { 4: 0, 5: 0, 6: 0, 7: 0 }, nMapping = { 4: 'comment', 5: 'item', 6: 'friend invite', 7: 'gift' };
+getNotifications()
+function getNotifications(){
+  $.ajax({
+    url: 'http://steamcommunity.com/actions/GetNotificationCounts',
+    success: function(response){
+      if(!response || !response.hasOwnProperty('notifications')) return setTimeout(getNotifications, 30 * 1000);
+      for(var n in response.notifications){
+        if(response.notifications[n] > notifications[n]){
+          var count = response.notifications[n];
+
+          chrome.notifications.create({
+            type: 'basic',
+            title: 'CS:GO Trade Helper',
+            message: 'You have ' + count + ' new ' + nMapping[n] + (count == 1 ? '' : 's'),
+            iconUrl: 'notification.png'
+          });
+        }
+      }
+      notifications = response.notifications;
+    },
+    error: function(){
+      setTimeout(getNotifications, 30 * 1000);
+    }
+  })
+}
+
 var knownOffers = [], itemsInTrade = {};
 var newOfferSound = new Audio('../lib/offer.mp3');
 getOffers();
@@ -64,8 +91,12 @@ function getOffers(){
     if(data.err) return;
     data = data.data;
 
-    var offers = {}, players = [], itemsInTrade = {};
+    var offers = {}, players = [];
     data.response.trade_offers_received.forEach(function(offer){
+      /* we only want active trade offers, even though we imply this with
+         'active_only' in the request we sometimes get cancelled offers */
+      if(offer.trade_offer_state != 2) return;
+
       /* convert steam id 3 to 64 bit */
       var steamid = toSteam64(offer.accountid_other);
 
@@ -105,7 +136,7 @@ function getOffers(){
         }
       }
     })
-
+    
     /* players will be empty if we have no new offers */
     if(players.length == 0) return setTimeout(getOffers, 1000 * 30);
 
@@ -125,7 +156,7 @@ function getOffers(){
 
           chrome.notifications.create(offer.id, {
             type: 'basic',
-            title: 'Steam Trader',
+            title: 'CS:GO Trade Helper',
             message: player.personaname + ' has sent you a trade offer!' + (offer.message.length > 0 ? '\n"' + offer.message + '"' : ''),
             iconUrl: data.err ? '' : data.data
           });

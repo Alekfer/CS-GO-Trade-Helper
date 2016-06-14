@@ -1,5 +1,3 @@
-modernise()
-
 $('.maincontent').prepend(
   '<div class="gray_bevel for_text_input" style="width:500px"><input id="st-search-name" style="width:500px" placeholder="What items are you looking for?"></div>' +
   //'<div class="gray_bevel for_text_input" style="margin-left:10px; width:100px"><input id="st-appid" onkeypress="return event.charCode >= 48 && event.charCode <= 57" style="width:100px" placeholder="Appid" value="730"></div>' +
@@ -38,14 +36,15 @@ $('#st-search-load').click(function(){
 })
 
 $('#st-search-start').click(function(){
-  var searchItem = $('#st-search-name').val().replace(/[|() -]/g, '').toLowerCase()
+  /* /[|() -]/g */
+  var searchItem = $('#st-search-name').val().replace(/[|() -$-\/:-?{-~!"^_`\[\]\\'.£%^@&*+,|0-9]/g, '').toLowerCase()
   var withItems = {}
 
   for(var inv in inventories){
     for(var item in inventories[inv]){
       var item = inventories[inv][item]
       /* if this item we're currently on isn't a match, skip */
-      if(item.name.replace(/[|() -]/g, '').toLowerCase().indexOf(searchItem) == -1) continue;
+      if(item.name.replace(/[|() -$-\/:-?{-~!"^_`\[\]\\'.£%^@&*+,|0-9]/g, '').toLowerCase().indexOf(searchItem) == -1) continue;
 
       if(!withItems.hasOwnProperty(inv)) withItems[inv] = [item]
       else withItems[inv].push(item)

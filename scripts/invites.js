@@ -1,6 +1,3 @@
-modernise()
-$('#BG_bottom').css({'background-image': 'inherit', 'background-color': 'rgba(26,41,58,0.75)'})
-
 $('.invite_row').sort(function(a, b){
   var personOne = $(a).find('.friendPlayerLevelNum').text();
   var personTwo = $(b).find('.friendPlayerLevelNum').text();

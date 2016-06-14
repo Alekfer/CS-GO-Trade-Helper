@@ -1,10 +1,17 @@
-function modernise(){
+/* http://steamcommunity.com/id/i7xx/inventory/ becomes ['', 'id', 'i7xx', 'inventory', ''] */
+var path = window.location.pathname.split('/')
+if(['inventory', 'tradeoffers', 'home', 'friends', 'edit', 'chat', 'groups', 'commentnotifications', 'badges', 'screenshots', 'allcomments'].indexOf(path[3]) > -1 || ['chat'].indexOf(path[2]) > -1){
+  /* add a nicer background and make the profile element transparent */
   $('body').css('background', 'url("http://store.akamai.steamstatic.com/public/images/v6/colored_body_top.png?v=2") center top no-repeat #1b2838')
   $('.profile_small_header_texture').css({'background-image': 'inherit', 'background-color': 'rgba(26,41,58,0.75)', 'box-shadow': '0px 0px 15px -2px black'})
   $('.profile_small_header_bg').css('background-image', 'inherit')
 }
 
-if(window.location.pathname.indexOf('/chat/') > -1) modernise()
+/* the 'groups' and 'home/invites' page have a background we want to make transparent,
+   we also need to check for 'chat' in path[2] because the chat url is '//chat/' */
+if(['allcomments', 'groups', 'home'].indexOf(path[3]) > -1){
+  $('#BG_bottom').css({'background-image': 'inherit', 'background-color': 'rgba(26,41,58,0.75)'})
+}
 
 var prices = {};
 requestPrices();
@@ -67,7 +74,7 @@ function getInventory(url, steamID, successCallback, errorCallback, attempt){
           var item = response.rgDescriptions[id];
           /* replace special characters to ensure compatibility with price list */
           if(!item.market_hash_name) console.log(item, id)
-          item.market_hash_name = item.market_hash_name.replace('\u2122', '™').replace('\u2605', '★');
+          //item.market_hash_name = item.market_hash_name.replace('\u2122 ', '™').replace('\u2605 ', '★');
 
           /* search the tags for the wear */
           var wear = 'V', type = 'Unknown';
@@ -91,7 +98,7 @@ function getInventory(url, steamID, successCallback, errorCallback, attempt){
 
           idPairs[item.classid + '_' + item.instanceid] = {
             /* clear out the stattrak part so we can match it to the name in patterns.js */
-            name: item.name.replace('StatTrak\u2122', ''),
+            name: item.name.replace('StatTrak\u2122 ', ''),
             price: prices[item.market_hash_name],
             wear: wear,
             color: item.name_color,
@@ -139,7 +146,7 @@ function getInventory(url, steamID, successCallback, errorCallback, attempt){
 
 /* formats the percentage/pattern for the overlay */
 function formatPattern(name, seed){
-  name = name.replace('StatTrak\u2122 ', '');
+  name = name.replace('StatTrak\u2122 ', '').replace('StatTrak™ ', '');
   if(!patterns[name] || !patterns[name][seed]) return '';
 
   if(name.indexOf('Case Hardened') == -1){
@@ -148,7 +155,6 @@ function formatPattern(name, seed){
   }
 
   var weirdSchema = name.indexOf('AK-47') == -1 && name.indexOf('Five-SeveN') == -1;
-
   return (weirdSchema ? '<br>' : ' ') + patterns[name][seed];
 }
 
@@ -172,64 +178,45 @@ function isOfferGlitched(offerID, callback){
   })
 }
 
-var paintIndexes = {
-  415: 'Rby',
-  416: 'Sph',
-  417: 'BP',
-  418: 'P1',
-  419: 'P2',
-  420: 'P3',
-  421: 'P4'
+var phases = {
+  'Sapphire': 'Sphr',
+  'Ruby': 'Ruby',
+  'Phase 1': 'P1',
+  'Phase 2': 'P2',
+  'Phase 3': 'P3',
+  'Phase 4': 'P4'
 }
 
 function getInventoryDetails(steamID, callback, attempt){
-  makeAPICall('https://api.steampowered.com/IEconItems_730/GetPlayerItems/v0001/', {
-    SteamID: steamID
-  }, function(response){
-    if(response.err){
-      callback(false, attempt + 1);
-      return setTimeout(function(){
-        getInventoryDetails(steamID, callback, attempt + 1);
-      }, 400);
-    }
-
-    response = response.data;
-
-    if(!response || !response.result || !response.result.status == 1){
-      callback(false, attempt + 1);
-      return setTimeout(function(){
-        getInventoryDetails(steamID, callback, attempt + 1);
-      }, 400);
-    }
-
-    var items = {};
-    response.result.items.forEach(function(item){
-      if(!item.attributes) return;
-
-      var float = phase = seed = -1;
-      for(var i = 0; i < item.attributes.length; i++){
-        if(item.attributes[i].defindex == 8){
-          float = item.attributes[i].float_value;
-        }
-
-        if(item.attributes[i].defindex == 7){
-          seed = Math.floor(item.attributes[i].float_value);
-        }
-
-        if(item.attributes[i].defindex == 6){
-          phase = item.attributes[i].float_value;
-        }
+  $.ajax({
+    url: '//csgo.exchange/inventoryapi/1/' + steamID,
+    success: function(response){
+      if(!response || response.error || !response.steamid || !response.inventory){
+        callback(null, attempt + 1);
+        return setTimeout(function(){
+          getInventoryDetails(steamID, callback, attempt + 1);
+        }, 400);
       }
 
-      /* if we don't have the float, don't bother overlaying the info on items */
-      if(float == -1) return;
+      var items = {};
+      for(var item in response.inventory){
+        var item = response.inventory[item];
 
-      items[item.id] = {
-        float: float, seed: seed, phase: {name: paintIndexes[phase], phase: phase}
-      };
-    });
+        /* if we don't have the float, don't bother overlaying the info on items */
+        if(!item.float) continue;
+        var float = typeof(item.float) == 'string' ? item.float.substr(0, 9) : item.float.toFixed(6)
+        items[item.id] = { float: float, seed: item.texture || -1 }
+        if(item.doppler && item.doppler.name) items[item.id].phase = phases[item.doppler.name]
+      }
 
-    callback(items, attempt);
+      callback(items, attempt);
+    },
+    error: function(){
+      callback(null, attempt + 1)
+      setTimeout(function(){
+        getInventoryDetails(steamID, callback, attempt + 1);
+      }, 2000);
+    }
   });
 }
 
@@ -290,7 +277,7 @@ function makeAPICall(url, data, callback){
   getAPIKey(continueCall);
 
   function continueCall(key){
-    data['key'] = key;
+    data.key = key;
     $.ajax({
       url: url,
       data: data,
@@ -300,40 +287,36 @@ function makeAPICall(url, data, callback){
         callback({err: true}
       )}
     })
-
-    /* random id to stop event confusion */
-    /*var id = String(Math.random () * 1000).substr(0, 3);
-
-    /* set up event listener for steam id */
-    /*window.addEventListener('apiCall' + id, function (e) {
-      callback(e.detail);
-    });
-
-    var script = document.createElement('script');
-    script.textContent = '(' + function () {
-      $J.ajax({
-          url: 'http://cors.io/?u=%%url%%',
-          data: '%%data%%',
-          success: function (data) {
-            var evt = document.createEvent('CustomEvent');
-            evt.initCustomEvent('apiCall%%id%%', true, true, {err: false, data: data});
-            window.dispatchEvent(evt);
-          },
-          error: function () {
-            var evt = document.createEvent('CustomEvent');
-            evt.initCustomEvent('apiCall%%id%%', true, true, {err: true});
-            window.dispatchEvent(evt);
-          }
-      });
-    } + ')();';
-
-    data['key'] = key;
-    script.textContent = script.textContent.replace('\'%%data%%\'', JSON.stringify(data))
-    script.textContent = script.textContent.replace('%%url%%', url);
-    script.textContent = script.textContent.replace('%%id%%', id).replace('%%id%%', id);
-
-    document.body.appendChild(script);
-    script.parentNode.removeChild(script);*/
-
   }
+}
+
+/* inTradeOffer, boolean, true when in trade offer page */
+function displayExchangeShowcase(inTradeOffer){
+  var script = document.createElement('script');
+  script.textContent = '(' + function () {
+    $J('.itemHolder:not(.trade_slot)').each(function(){
+      /* length will only be one if there is no item there */
+      if($J(this).children().length == 1) return;
+
+      if($J(this)[0].rgItem && $J(this)[0].rgItem.actions){
+        var id = $J(this).find('.item.app730').attr('id').split('_')[2]
+        $J(this)[0].rgItem.actions.push({link: 'https://csgo.exchange/item/' + id, name: 'View on Exchange...'});
+      }
+    })
+
+    $J('.slot_inner .item.app730').each(function(){
+      if($J(this)[0].rgItem && $J(this)[0].rgItem.actions){
+        var id = $J(this).attr('id').split('_')[2]
+        $J(this)[0].rgItem.actions.push({link: 'https://csgo.exchange/item/' + id, name: 'View on Exchange...'});
+      }
+    })
+  } + ')();';
+
+  document.body.appendChild(script);
+  script.parentNode.removeChild(script);
+}
+
+function getCookie(name) {
+  var parts = ('; ' + document.cookie).split('; ' + name + '=');
+  if (parts.length == 2) return parts.pop().split(';').shift();
 }

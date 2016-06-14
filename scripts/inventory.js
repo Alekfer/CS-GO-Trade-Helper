@@ -1,5 +1,3 @@
-modernise()
-
 var inventory = {
   infoPairs: {},
   sortAsc: false,
@@ -11,7 +9,7 @@ $('#active_inventory_page').before(
   '<span id="st-load-floats" class="st-log-msg">Loading Floats: attempt #0</span></h4>'
 );
 
-getSteamID(true, function(steamID){
+getSteamID(false, function(steamID){
   getInventory(window.location.pathname, steamID, setupItems, getInventory);
 
   getInventoryDetails(steamID, function(details, attempt){
@@ -20,11 +18,12 @@ getSteamID(true, function(steamID){
     }
 
     $('#st-load-floats').text('Loaded Floats Successfully').hide().fadeIn();
-
     populateDetails();
     /* we want to populate our items with details but only when we get infoPairs information */
     function populateDetails(){
-      if(Object.keys(inventory.infoPairs).length == 0) return setTimeout(populateDetails, 500);
+      if(Object.keys(inventory.infoPairs).length == 0 || $('#pending_inventory_page').css('display') != 'none') {
+        return setTimeout(populateDetails, 500);
+      }
 
       $('.itemHolder:not(.disabled)').each(function(){
         if(!$(this).find('.item.app730.context2').attr('id')) return;
@@ -33,15 +32,14 @@ getSteamID(true, function(steamID){
         /* if we have no details for this item, set the float to max (will not be displayed)*/
         if(!details[id]) return $(this).children().eq(0).data('st-float', -1);
 
-        /* round the float to 5 decimal places */
-        var text = details[id].float.toFixed(6);
+        var text = details[id].float;
 
         /* add the float to the metadata for this element */
-        $(this).children().eq(0).data('st-float', Number(text));
+        $(this).children().eq(0).data('st-float', text);
 
         /* add pattern information (e.g. fade percentage) */
-        if(details[id].phase.name){
-          text += ' ' + details[id].phase.name;
+        if(details[id].phase){
+          text += ' ' + details[id].phase;
         }
 
         if(details[id].seed){

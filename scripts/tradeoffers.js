@@ -1,5 +1,3 @@
-modernise()
-
 $('.profile_leftcol').prepend(
   '<h4 class="st-loading-details"><span id="st-load-my-inv">Loading inventory...</span> | <span id="st-load-my-floats">Loading Floats: attempt #0</span></h4><hr class="st-trade-offer-divider">'
 ).hide().fadeIn();
@@ -32,12 +30,11 @@ function populateDetails(loadingMyItems, e){
   /* if we don't have any information no this item, skip the overlay */
   if(!inventory.details[id]) return;
 
-  /* round the float to 5 decimal places */
-  var text = inventory.details[id].float.toFixed(6);
+  var text = inventory.details[id].float;
 
   /* add pattern information (e.g. fade percentage) */
-  if(inventory.details[id].phase.name){
-    text += ' ' + inventory.details[id].phase.name;
+  if(inventory.details[id].phase){
+    text += ' ' + inventory.details[id].phase;
   }
 
   if(inventory.details[id].seed){
@@ -82,8 +79,8 @@ getSteamID(true, function(steamID){
 
 function setupOffers(){
   $('.tradeoffer_items_ctn.active').each(function(index){
-    $(this).parent().find('.tradeoffer_footer_actions > a:nth-child(2)').after(
-      '<div class="st-trade-offer-button"> | <a id="st-check-offer-' + index + '" class="whiteLink">Show Prices</a></div>'
+    $(this).parent().find('.tradeoffer_footer_actions').prepend(
+      '<div class="st-trade-offer-button"><a id="st-check-offer-' + index + '" class="whiteLink">Show Prices</a> | </div>'
     );
 
     $(this).data('st-loaded-prices', false);

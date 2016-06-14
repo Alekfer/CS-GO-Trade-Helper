@@ -138,14 +138,14 @@ function populateDetails(steamID, isMyItems){
     if(!inventories.details[steamID][id]) return $(this).data('st-float', -1);
 
     /* round the float to 5 decimal places */
-    var text = inventories.details[steamID][id].float.toFixed(6);
+    var text = inventories.details[steamID][id].float;
 
     /* add the float to the metadata for this element */
-    $(this).data('st-float', Number(text));
+    $(this).data('st-float', text);
 
     /* add pattern information (e.g. fade percentage) */
-    if(inventories.details[steamID][id].phase.name){
-      text += ' ' + inventories.details[steamID][id].phase.name;
+    if(inventories.details[steamID][id].phase){
+      text += ' ' + inventories.details[steamID][id].phase;
     }
 
     if(inventories.details[steamID][id].seed){
@@ -270,6 +270,8 @@ function loadPricesFor(steamID, isMyItems){
     /* inventory has loaded, let's put in the prices */
     $('#inventory_' + steamID + '_730_2 .item.app730.context2').each(addItemDetails)
 
+    displayExchangeShowcase(true);
+
     /* make everything fade in */
     $('.st-trade-offer-prices, .st-item-price, .st-item-no-price, .st-item-float').hide().fadeIn();
   } else {
@@ -279,7 +281,9 @@ function loadPricesFor(steamID, isMyItems){
 
   function addItemDetails(){
     /* remove the cs-go icon that takes up space */
-    $(this).parent().parent().find('.slot_applogo').remove();
+    //$(this).parent().parent().find('.slot_applogo').remove()
+    /* ^ for some reason, you can't remove items from a trade offer because
+       it relies on the app logo */
 
     var id = $(this).attr('id').split('item730_2_')[1];
 

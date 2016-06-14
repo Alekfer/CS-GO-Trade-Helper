@@ -61,9 +61,7 @@ function getItem(listingID, callback){
 var id = String(Math.random () * 1000).substr(0, 3);
 
 /* set up event listener for steam id */
-window.addEventListener('newResults' + id, function (e) {
-  populateWithLinks();
-});
+window.addEventListener('newResults' + id, populateWithLinks);
 
 /* create script that will emit the steam id */
 var script = document.createElement('script');
