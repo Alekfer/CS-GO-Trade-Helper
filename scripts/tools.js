@@ -321,3 +321,7 @@ function getCookie(name) {
   var parts = ('; ' + document.cookie).split('; ' + name + '=');
   if (parts.length == 2) return parts.pop().split(';').shift();
 }
+
+function toSteam64(accountid){
+  return new UINT64(accountid, (1 << 24) | (1 << 20) | (1)).toString()
+}

@@ -50,29 +50,41 @@ function getNewAPIKey(callback){
   });
 }
 
-var notifications = { 4: 0, 5: 0, 6: 0, 7: 0 }, nMapping = { 4: 'comment', 5: 'item', 6: 'friend invite', 7: 'gift' };
+var mappings = {
+  notifications: { 4: 0, 5: 0, 6: 0, 7: 0 },
+  names: { 4: 'comment', 5: 'item', 6: 'friend invite', 7: 'gift' },
+  urls: { 4: 'commentnotifications', 5: 'inventory', 6: 'home/invites', 7: 'inventory/#pending_gifts' }
+}
+
 getNotifications()
 function getNotifications(){
   $.ajax({
     url: 'http://steamcommunity.com/actions/GetNotificationCounts',
     success: function(response){
-      if(!response || !response.hasOwnProperty('notifications')) return setTimeout(getNotifications, 30 * 1000);
-      for(var n in response.notifications){
-        if(response.notifications[n] > notifications[n]){
-          var count = response.notifications[n];
+      if(!response || !response.hasOwnProperty('notifications')) return setTimeout(getNotifications, 15 * 1000);
 
-          chrome.notifications.create({
+      var notifs = response.notifications
+      for(var n in notifs){
+        /* x > undefined is alse, which means this can only be true for the
+           notifications defined in mappings.notifications */
+        if(notifs[n] > mappings.notifications[n]){
+          var count = notifs[n];
+
+          chrome.notifications.create(n, {
             type: 'basic',
             title: 'CS:GO Trade Helper',
-            message: 'You have ' + count + ' new ' + nMapping[n] + (count == 1 ? '' : 's'),
+            message: 'You have ' + count + ' new ' + mappings.names[n] + (count == 1 ? '' : 's'),
             iconUrl: 'notification.png'
           });
         }
       }
-      notifications = response.notifications;
+
+      /* only keep track of the notifications we want */
+      mappings.notifications = { 4: notifs[4], 5: notifs[5], 6: notifs[6], 7: notifs[7] }
+      setTimeout(getNotifications, 15 * 1000)
     },
     error: function(){
-      setTimeout(getNotifications, 30 * 1000);
+      setTimeout(getNotifications, 15 * 1000);
     }
   })
 }
@@ -136,9 +148,9 @@ function getOffers(){
         }
       }
     })
-    
+
     /* players will be empty if we have no new offers */
-    if(players.length == 0) return setTimeout(getOffers, 1000 * 30);
+    if(players.length == 0) return setTimeout(getOffers, 1000 * 15);
 
     /* get all the player informations */
     makeAPICall('https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2', {
@@ -208,8 +220,12 @@ function makeAPICall(url, data, callback){
   })
 }
 
-chrome.notifications.onClicked.addListener(function(offerID){
-  window.open('https://steamcommunity.com/tradeoffer/' + offerID);
+chrome.notifications.onClicked.addListener(function(id){
+  if(mappings.urls[id]){
+    window.open('https://steamcommunity.com/id/me/' + mappings.urls[id]);
+  } else {
+    window.open('https://steamcommunity.com/tradeoffer/' + id);
+  }
 });
 
 function getBlob(url, callback) {

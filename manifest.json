@@ -27,9 +27,9 @@
       "js": ["scripts/trades.js"]
     },
     {
-      "matches": ["*://steamcommunity.com/id/*/tradeoffers/", "*://steamcommunity.com/profiles/*/tradeoffers/",
-                  "*://steamcommunity.com/id/*/tradeoffers",  "*://steamcommunity.com/profiles/*/tradeoffers"],
-      "js": ["scripts/tradeoffers.js"]
+      "matches": ["*://steamcommunity.com/id/*/tradeoffers/*", "*://steamcommunity.com/profiles/*/tradeoffers/*",
+                  "*://steamcommunity.com/id/*/tradeoffers*",  "*://steamcommunity.com/profiles/*/tradeoffers*"],
+      "js": ["lib/uint64.min.js", "scripts/tradeoffers.js"]
     },
     {
       "matches": ["*://steamcommunity.com/id/*/home/invites/", "*://steamcommunity.com/profiles/*/home/invites/",

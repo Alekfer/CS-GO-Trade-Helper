@@ -11,6 +11,7 @@ $('.invite_row').each(function(){
   queue.push({steamID: steamID, element: this})
 })
 
+/* we call processQueue twice so we retrieve data twice as fast */
 processQueue()
 processQueue()
 function processQueue(){

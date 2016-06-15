@@ -70,7 +70,7 @@ var inventories = {
 
 /* get my inventory */
 getSteamID(true, function(steamID){
-  getInventory('/profiles/' + steamID, steamID, function(infoPairs, idPairs){
+  getInventory(steamID, function(infoPairs, idPairs){
     inventories.infoPairs[steamID] = infoPairs;
     loadPricesFor(steamID, true);
   });
@@ -88,7 +88,7 @@ getSteamID(true, function(steamID){
 
 /* get their inventory */
 getSteamID(false, function(steamID){
-  getInventory('/profiles/' + steamID, steamID, function(infoPairs, idPairs){
+  getInventory(steamID, function(infoPairs, idPairs){
     inventories.infoPairs[steamID] = infoPairs;
     loadPricesFor(steamID, false);
   });

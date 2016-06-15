@@ -4,6 +4,14 @@ $('.profile_leftcol').prepend(
 
 $('.maincontent').css('background-color', 'rgba(38, 38, 39, 0.8)')
 
+/* sentScreen is true when on sent offers page */
+var sentScreen = window.location.pathname.split('/')[4].indexOf('sent') > -1
+/* we have to set the primary/secondary items like this because on the
+   incoming offers page, our partner has the primary items, but on the sent
+   offers page it's the opposite */
+var myOfferClass = sentScreen ? 'primary' : 'secondary';
+var theirOfferClass = sentScreen ? 'secondary' : 'primary';
+
 var myInventory = {
   infoPairs: {},
   details: {}
@@ -62,10 +70,10 @@ getSteamID(true, function(steamID){
     function showFloats(){
       if(Object.keys(myInventory.infoPairs).length == 0) return setTimeout(showFloats, 500);
 
-      $('.tradeoffer_items_ctn.active').each(function(index){
+      $('.tradeoffer_items_ctn').each(function(index){
         if(!$(this).data('st-loaded-prices')) return;
 
-        $(this).find('.tradeoffer_items.secondary .tradeoffer_item_list .trade_item').each(function(){
+        $(this).find('.tradeoffer_items.' + myOfferClass + ' .tradeoffer_item_list .trade_item').each(function(){
           populateDetails(true, this);
         });
 
@@ -78,7 +86,7 @@ getSteamID(true, function(steamID){
 }, true)
 
 function setupOffers(){
-  $('.tradeoffer_items_ctn.active').each(function(index){
+  $('.tradeoffer_items_ctn').each(function(index){
     $(this).parent().find('.tradeoffer_footer_actions').prepend(
       '<div class="st-trade-offer-button"><a id="st-check-offer-' + index + '" class="whiteLink">Show Prices</a> | </div>'
     );
@@ -87,10 +95,10 @@ function setupOffers(){
 
     $('#st-check-offer-' + index).click(function(){
       /* if we've already loaded info for this offer, skip */
-      if($('.tradeoffer_items_ctn.active').eq(index).data('st-loaded-prices')) return;
+      if($('.tradeoffer_items_ctn').eq(index).data('st-loaded-prices')) return;
 
       loadPricesForOffer(index);
-      $('.tradeoffer_items_ctn.active').eq(index).data('st-loaded-prices', true);
+      $('.tradeoffer_items_ctn').eq(index).data('st-loaded-prices', true);
     })
   })
 
@@ -98,13 +106,25 @@ function setupOffers(){
 }
 
 function loadPricesForOffer(index){
-  var offer = $('.tradeoffer_items_ctn.active:eq(' + index + ')');
+  var offer = $('.tradeoffer_items_ctn:eq(' + index + ')');
+
+  /* if we're on the sent screen, change the colour of the background
+     of the offers to make everything easier to see and read */
+  if(sentScreen){
+    offer.css({
+      '-webkit-transition': 'background 1s',
+      '-moz-transition': 'background 1s',
+      '-o-transition': 'background 1s',
+      'transition': 'background 1s',
+      'background-color': 'rgba(255, 255, 255, 0.1)'
+    })
+  }
 
   /* set the base 'attempt 0' for loading the floats */
   $('#st-check-offer-' + index).html('Loading Floats: attempt #<span id="st-load-floats-' + index + '">0</span>').hide().fadeIn();
 
   /* get the steamid and call the function that loads the floats */
-  var steamID = offer.parent().find('.btn_report').attr('href').split("'")[1];
+  var steamID = toSteam64(offer.find('.tradeoffer_items.' + theirOfferClass + ' .tradeoffer_avatar').data('miniprofile'))
   getInventoryDetails(steamID, function(details, attempt){
     /* if we haven't got the details, update the attempt count */
     if(!details){
@@ -116,7 +136,7 @@ function loadPricesForOffer(index){
     theirInventory.details = details;
 
     /* add all the floats to the items */
-    $('.tradeoffer_items_ctn.active:eq(' + index + ') .tradeoffer_items.primary .tradeoffer_item_list .trade_item').each(function(){
+    $('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items.' + theirOfferClass + ' .tradeoffer_item_list .trade_item').each(function(){
       populateDetails(false, this);
     })
   }, 0);
@@ -130,7 +150,7 @@ function loadPricesForOffer(index){
       partner:  { items: 0, total: 0, types: {} }
     }, possiblyGlitched = false;
 
-    $('.tradeoffer_items_ctn.active:eq(' + index + ') .tradeoffer_items .tradeoffer_item_list .trade_item').each(function(){
+    $('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items .tradeoffer_item_list .trade_item').each(function(){
       /* add an aesthetically pleasing box shadow */
       $(this).css('box-shadow', 'inset 0px 0px 10px -1px black');
 
@@ -171,14 +191,6 @@ function loadPricesForOffer(index){
           summary.mine.types[item.type] += 1;
         }
 
-        /* change the height/width of our items in the offer to match the
-           size of our partner's items, also makes the text easier to read */
-        $(this).css('height', '96px');
-        $(this).css('width', '96px');
-        $(this).find('img').remove();
-        /* and now replace the image with a more suitably sized image */
-        $(this).prepend('<img src="https://steamcommunity-a.akamaihd.net/economy/image/' + item.img + '/96fx96f"/>').hide().fadeIn();
-
       } else {
         summary.partner.items += 1;
         summary.partner.total += item.price ? item.price : 0;
@@ -188,6 +200,16 @@ function loadPricesForOffer(index){
         } else {
           summary.partner.types[item.type] += 1;
         }
+      }
+
+      if($(this).parent().parent().hasClass('secondary')){
+        /* change the height/width of the secondary items in the offer to match the
+           size of the primary items, also makes the text easier to read */
+        $(this).css('height', '96px');
+        $(this).css('width', '96px');
+        $(this).find('img').remove();
+        /* and now replace the image with a more suitably sized image */
+        $(this).prepend('<img src="https://steamcommunity-a.akamaihd.net/economy/image/' + item.img + '/96fx96f"/>').hide().fadeIn();
       }
 
       $(this).data('st-price', item.price || 0);
@@ -210,17 +232,17 @@ function loadPricesForOffer(index){
     })
 
     /* sort their items by price*/
-    $('.tradeoffer_items_ctn.active:eq(' + index + ') .tradeoffer_items.primary .tradeoffer_item_list .trade_item').sort(function(a, b) {
+    $('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items.' + theirOfferClass + ' .tradeoffer_item_list .trade_item').sort(function(a, b) {
       return $(b).data('st-price') - $(a).data('st-price');
-    }).prependTo('.tradeoffer_items_ctn.active:eq(' + index + ') .tradeoffer_items.primary .tradeoffer_item_list');
+    }).prependTo('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items.' + theirOfferClass + ' .tradeoffer_item_list');
 
     /* sort my items by price */
-    $('.tradeoffer_items_ctn.active:eq(' + index + ') .tradeoffer_items.secondary .tradeoffer_item_list .trade_item').sort(function(a, b) {
+    $('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items.' + myOfferClass + ' .tradeoffer_item_list .trade_item').sort(function(a, b) {
       return $(b).data('st-price') - $(a).data('st-price');
-    }).prependTo('.tradeoffer_items_ctn.active:eq(' + index + ') .tradeoffer_items.secondary .tradeoffer_item_list');
+    }).prependTo('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items.' + myOfferClass + ' .tradeoffer_item_list');
 
     /* add the summary of their items to the bottom of the offer */
-    $('.tradeoffer_items_ctn.active:eq(' + index + ') .tradeoffer_items.primary .tradeoffer_item_list').after(
+    $('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items.' + theirOfferClass + ' .tradeoffer_item_list').after(
       '<div class="st-trade-offer-prices">$' + summary.partner.total.toFixed(2) +
         '<div class="st-display-right">' + summary.partner.items + ' ' +
           (summary.partner.items == 1 ? 'item' : 'items') + '</div>' + buildItemSummary(summary.partner.types) + '</div>'
@@ -228,7 +250,7 @@ function loadPricesForOffer(index){
 
 
     /* add a summary of our items to the bottom of the offer */
-    $('.tradeoffer_items_ctn.active:eq(' + index + ') .tradeoffer_items.secondary .tradeoffer_item_list').after(
+    $('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items.' + myOfferClass + ' .tradeoffer_item_list').after(
       '<div class="st-trade-offer-prices">$' + summary.mine.total.toFixed(2) +
         '<div class="st-display-right">' + summary.mine.items + ' ' +
           (summary.mine.items == 1 ? 'item' : 'items') + '</div>' + buildItemSummary(summary.mine.types) + '</div>'
@@ -238,21 +260,21 @@ function loadPricesForOffer(index){
     if(possiblyGlitched || (summary.partner.items == 0 && summary.mine.items == 0)){
       isOfferGlitched(offer.parent().attr('id').split('_')[1], function(glitched){
         if(!glitched) return;
-        $('.tradeoffer_items_ctn.active:eq(' + index + ') .tradeoffer_items.secondary .st-trade-offer-prices').append(
+        $('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items.' + myOfferClass + ' .st-trade-offer-prices').append(
           '<hr class="st-trade-offer-divider"><div class="st-trade-offer-items-glitched">Note: this appears to be a glitched offer</div>'
         );
       })
     } else {
       /* if they have no items in the offer, set up a warning */
       if(summary.partner.items == 0){
-        $('.tradeoffer_items_ctn.active:eq(' + index + ') .tradeoffer_items.primary .st-trade-offer-prices').append(
+        $('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items.' + theirOfferClass + ' .st-trade-offer-prices').append(
           '<hr class="st-trade-offer-divider"><div class="st-trade-offer-items-warning">Warning! You will not receive any items in this trade.</div>'
         );
       }
 
       /* if we have no items in the offer, that's awesome! */
       if(summary.mine.items == 0){
-        $('.tradeoffer_items_ctn.active:eq(' + index + ') .tradeoffer_items.secondary .st-trade-offer-prices').append(
+        $('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items.' + myOfferClass + ' .st-trade-offer-prices').append(
           '<hr class="st-trade-offer-divider"><div class="st-trade-offer-items-awesome">Awesome! You\'re getting free items!</div>'
         );
       }
@@ -260,12 +282,12 @@ function loadPricesForOffer(index){
 
     if(Object.keys(myInventory.details).length > 0){
       /* add all the floats to the items */
-      $('.tradeoffer_items_ctn.active:eq(' + index + ') .tradeoffer_items.secondary .tradeoffer_item_list .trade_item').each(function(){
+      $('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items.' + myOfferClass + ' .tradeoffer_item_list .trade_item').each(function(){
         populateDetails(true, this);
       });
     }
 
     /* make everything fade in */
-    $('.tradeoffer_items_ctn.active:eq(' + index + ')').find('.st-trade-offer-prices, .st-item-price, .st-item-no-price, .st-item-float').hide().fadeIn();
+    $('.tradeoffer_items_ctn:eq(' + index + ')').find('.st-trade-offer-prices, .st-item-price, .st-item-no-price, .st-item-float').hide().fadeIn();
   }, console.log);
 }
