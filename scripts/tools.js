@@ -1,9 +1,9 @@
 /* http://steamcommunity.com/id/i7xx/inventory/ becomes ['', 'id', 'i7xx', 'inventory', ''] */
 var path = window.location.pathname.split('/')
 if((['inventory', 'tradeoffers', 'home', 'friends', 'edit', 'chat', 'groups', 'commentnotifications', 'badges', 'screenshots', 'allcomments',
-    'inventoryhistory'].indexOf(path[3]) > -1 || ['chat'].indexOf(path[2]) > -1) && path.join('/').indexOf('/json/') == -1){
+    'inventoryhistory'].indexOf(path[3]) > -1 || ['chat'].indexOf(path[2]) > -1) || ['tradingcards'].indexOf(path[1]) > -1 && path.join('/').indexOf('/json/') == -1){
   /* add a nicer background and make the profile element transparent */
-  $('body').css('background', 'url("http://store.akamai.steamstatic.com/public/images/v6/colored_body_top.png?v=2") center top no-repeat #1b2838')
+  $('body, .profile_header_bg_texture').css('background', 'url("http://store.akamai.steamstatic.com/public/images/v6/colored_body_top.png?v=2") center top no-repeat #1b2838')
   $('.profile_small_header_texture').css({'background-image': 'inherit', 'background-color': 'rgba(26,41,58,0.75)', 'box-shadow': '0px 0px 15px -2px black'})
   $('.profile_small_header_bg').css('background-image', 'inherit')
 }
@@ -14,6 +14,12 @@ if(['allcomments', 'groups', 'home'].indexOf(path[3]) > -1){
   $('#BG_bottom').css({'background-image': 'inherit', 'background-color': 'rgba(26,41,58,0.75)'})
 }
 
+/* replaces background (if they don't have one) and the texture with a nice gradient */
+$('.profile_header_bg_texture, .no_header.profile_page:not(.has_profile_background)').css('background', 'url("http://store.akamai.steamstatic.com/public/images/v6/colored_body_top.png?v=2") center top no-repeat #1b2838')
+
+/* set a box shadow around their profile picture */
+$('.playerAvatar.profile_header_size').css('box-shadow', '0px 0px 15px -3px black')
+
 var prices = {};
 requestPrices();
 
@@ -23,6 +29,11 @@ function requestPrices(){
     prices = response.data;
   });
 }
+
+var settings = {};
+chrome.runtime.sendMessage({action: 'getSettings'}, function(response){
+  settings = response;
+})
 
 function getAPIKey(callback){
   chrome.runtime.sendMessage({action: 'getAPIKey'}, function(response){
@@ -74,8 +85,11 @@ function getInventory(steamID, successCallback, errorCallback, attempt){
         for(var id in response.rgDescriptions){
           var item = response.rgDescriptions[id];
           /* replace special characters to ensure compatibility with price list */
-          if(!item.market_hash_name) console.log(item, id, steamID)
           //item.market_hash_name = item.market_hash_name.replace('\u2122 ', '™').replace('\u2605 ', '★');
+
+          /* sometimes Steam goes weird and we don't have the right attributes,
+             we could retry, but it'd be easier for now to just skip the item */
+          if(!item || !item.market_hash_name) continue;
 
           /* search the tags for the wear */
           var wear = 'V', type = 'Unknown';
@@ -205,7 +219,7 @@ function getInventoryDetails(steamID, callback, attempt){
 
         /* if we don't have the float, don't bother overlaying the info on items */
         if(!item.float) continue;
-        var float = typeof(item.float) == 'string' ? item.float.substr(0, 9) : item.float.toFixed(6)
+        var float = typeof(item.float) == 'string' ? item.float.substr(0, settings.fvdecimals + 2) : item.float.toFixed(settings.fvdecimals)
         items[item.id] = { float: float, seed: item.texture || -1 }
         if(item.doppler && item.doppler.name) items[item.id].phase = phases[item.doppler.name]
       }
@@ -292,26 +306,41 @@ function makeAPICall(url, data, callback){
 }
 
 /* inTradeOffer, boolean, true when in trade offer page */
-function displayExchangeShowcase(inTradeOffer){
+function editActionMenu(inTradeOffer, steamID){
   var script = document.createElement('script');
   script.textContent = '(' + function () {
+    /* bit of a hacky solution, but we need to do two seperate selections
+       and iterations due to the html structure of items within the inventory
+       and the actual trade offer items */
+
     $J('.itemHolder:not(.trade_slot)').each(function(){
       /* length will only be one if there is no item there */
       if($J(this).children().length == 1) return;
 
-      if($J(this)[0].rgItem && $J(this)[0].rgItem.actions){
-        var id = $J(this).find('.item.app730').attr('id').split('_')[2]
-        $J(this)[0].rgItem.actions.push({link: 'https://csgo.exchange/item/' + id, name: 'View on Exchange...'});
+      var item = $J(this)[0].rgItem;
+      if(item && item.actions){
+        if(item.actions.some(function(item){ return item.name === 'View on Exchange...' || item.name === 'View on Metjm...'})) return;
+        $J(this)[0].rgItem.actions.push({link: 'https://csgo.exchange/item/' + item.id, name: 'View on Exchange...'});
+
+        var inspect = item.actions[0].link.replace('%owner_steamid%', '%%steamID%%').replace('%assetid%', item.id)
+        $J(this)[0].rgItem.actions.push({link: 'https://metjm.net/extensionLink.php?inspectlink=' + inspect, name: 'View on Metjm...'})
       }
     })
 
     $J('.slot_inner .item.app730').each(function(){
-      if($J(this)[0].rgItem && $J(this)[0].rgItem.actions){
-        var id = $J(this).attr('id').split('_')[2]
-        $J(this)[0].rgItem.actions.push({link: 'https://csgo.exchange/item/' + id, name: 'View on Exchange...'});
+      var item = $J(this)[0].rgItem;
+      if(item && item.actions){
+        if(item.actions.some(function(item){ return item.name === 'View on Exchange...' || item.name === 'View on Metjm...'})) return;
+        $J(this)[0].rgItem.actions.push({link: 'https://csgo.exchange/item/' + item.id, name: 'View on Exchange...'});
+
+        var inspect = item.actions[0].link.replace('%owner_steamid%', '%%steamID%%').replace('%assetid%', item.id)
+        $J(this)[0].rgItem.actions.push({link: 'https://metjm.net/extensionLink.php?inspectlink=' + inspect, name: 'View on Metjm...'})
       }
     })
   } + ')();';
+
+  /* replace the two instances with our steam id */
+  script.textContent = script.textContent.replace(/'%%steamID%%'/g, steamID)
 
   document.body.appendChild(script);
   script.parentNode.removeChild(script);

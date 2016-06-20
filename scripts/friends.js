@@ -1,7 +1,5 @@
 $('.maincontent').prepend(
-  '<div class="gray_bevel for_text_input" style="width:500px"><input id="st-search-name" style="width:500px" placeholder="What items are you looking for?"></div>' +
-  //'<div class="gray_bevel for_text_input" style="margin-left:10px; width:100px"><input id="st-appid" onkeypress="return event.charCode >= 48 && event.charCode <= 57" style="width:100px" placeholder="Appid" value="730"></div>' +
-  //'<div class="gray_bevel for_text_input" style="margin-left:10px; width:100px"><input id="st-context" onkeypress="return event.charCode >= 48 && event.charCode <= 57" style="width:100px" placeholder="Context" value="2"></div>' +
+  '<div class="gray_bevel for_text_input" style="width:500px"><input id="st-search-name" style="width:500px" placeholder="Which item are you looking for?"></div>' +
   '<a id="st-search-start" class="btn_darkblue_white_innerfade btn_medium btn_disabled" style="margin-left:10px"><span>Search</span></a>' +
   '<a id="st-search-load" class="btn_green_white_innerfade btn_medium" style="margin-left:10px"><span id="st-loaded">Load Inventories</span></a>' +
   '<div id="st-display"></div>'
@@ -19,7 +17,7 @@ $('#st-search-load').click(function(){
 
   $('.friendBlock').each(function(){
     /* it's not always a string, so for unity we ensure it's a string */
-    var steamid = String($(this).find('.friendCheckbox').data('steamid'))
+    var steamid = toSteam64($(this).data('miniprofile'))
     steamids.push(steamid)
     profiles[steamid] = $(this).find('.playerAvatar').css('display', 'inline-block')[0].outerHTML;
   })

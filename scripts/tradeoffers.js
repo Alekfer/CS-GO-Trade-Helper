@@ -2,7 +2,7 @@ $('.profile_leftcol').prepend(
   '<h4 class="st-loading-details"><span id="st-load-my-inv">Loading inventory...</span> | <span id="st-load-my-floats">Loading Floats: attempt #0</span></h4><hr class="st-trade-offer-divider">'
 ).hide().fadeIn();
 
-$('.maincontent').css('background-color', 'rgba(38, 38, 39, 0.8)')
+$('.maincontent').css('background-color', 'rgba(38, 38, 39, 0.65)')
 
 /* sentScreen is true when on sent offers page */
 var sentScreen = window.location.pathname.split('/')[4].indexOf('sent') > -1
@@ -45,7 +45,7 @@ function populateDetails(loadingMyItems, e){
     text += ' ' + inventory.details[id].phase;
   }
 
-  if(inventory.details[id].seed){
+  if(inventory.details[id].seed && inventory.infoPairs[id]){
     text += formatPattern(inventory.infoPairs[id].name, inventory.details[id].seed);
   }
 

@@ -1,70 +1,86 @@
 var inventory = {
   infoPairs: {},
   sortAsc: false,
-  total: 0
+  total: 0,
+  loaded: false
 };
 
-$('#active_inventory_page').before(
-  '<h4 class="st-log-box"><span id="st-load-prices" class="st-log-msg">Loading prices...</span>' +
-  '<span id="st-load-floats" class="st-log-msg">Loading Floats: attempt #0</span></h4>'
-);
+/* keep checking so we know whether to remove traces or not */
+setInterval(isInventoryActive.bind(null, 730, function(active){
+  /* if the inventory is active, load prices etc else remove all traces (inventory has changed) */
+  if(active){
+    if(!inventory.loaded) inventoryProcess();
+  } else {
+    $('.st-log-box, #st-sort-inventory-float, #st-sort-inventory-price, #st-expand-inventory').remove()
+  }
+}), 1000)
 
-getSteamID(false, function(steamID){
-  getInventory(steamID, setupItems, getInventory);
+function inventoryProcess(){
+  /* to stop this function from repeatedely being called */
+  inventory.loaded = true;
 
-  getInventoryDetails(steamID, function(details, attempt){
-    if(!details){
-      return $('#st-load-floats').text('Loading Floats: attempt #' + attempt);
-    }
+  $('#active_inventory_page').before(
+    '<h4 class="st-log-box"><span id="st-load-prices" class="st-log-msg">Loading prices...</span>' +
+    '<span id="st-load-floats" class="st-log-msg">Loading Floats: attempt #0</span></h4>'
+  );
 
-    $('#st-load-floats').text('Loaded Floats Successfully').hide().fadeIn();
-    populateDetails();
-    /* we want to populate our items with details but only when we get infoPairs information */
-    function populateDetails(){
-      if(Object.keys(inventory.infoPairs).length == 0 || $('#pending_inventory_page').css('display') != 'none') {
-        return setTimeout(populateDetails, 500);
+  getSteamID(false, function(steamID){
+    getInventory(steamID, setupItems, getInventory);
+
+    getInventoryDetails(steamID, function(details, attempt){
+      if(!details){
+        return $('#st-load-floats').text('Loading Floats: attempt #' + attempt);
       }
 
-      $('.itemHolder:not(.disabled)').each(function(){
-        if(!$(this).find('.item.app730.context2').attr('id')) return;
-        var id = $(this).find('.item.app730.context2').attr('id').split('item730_2_')[1];
-
-        /* if we have no details for this item, set the float to max (will not be displayed)*/
-        if(!details[id]) return $(this).children().eq(0).data('st-float', -1);
-
-        var text = details[id].float;
-
-        /* add the float to the metadata for this element */
-        $(this).children().eq(0).data('st-float', text);
-
-        /* add pattern information (e.g. fade percentage) */
-        if(details[id].phase){
-          text += ' ' + details[id].phase;
+      $('#st-load-floats').text('Loaded Floats Successfully').hide().fadeIn();
+      populateDetails();
+      /* we want to populate our items with details but only when we get infoPairs information */
+      function populateDetails(){
+        if(Object.keys(inventory.infoPairs).length == 0 || $('#pending_inventory_page').css('display') != 'none') {
+          return setTimeout(populateDetails, 500);
         }
 
-        if(details[id].seed){
-          text += formatPattern(inventory.infoPairs[id].name, details[id].seed);
-        }
+        $('.itemHolder:not(.disabled)').each(function(){
+          if(!$(this).find('.item.app730.context2').attr('id')) return;
+          var id = $(this).find('.item.app730.context2').attr('id').split('item730_2_')[1];
 
-        /* pull the fraud warning icon down a bit to make space for our overlay */
-        $(this).find('.slot_app_fraudwarning').css('margin-top', '15px');
+          /* if we have no details for this item, set the float to max (will not be displayed)*/
+          if(!details[id]) return $(this).children().eq(0).data('st-float', -1);
 
-        $(this).append('<span class="st-item-float">' + text + '</span>');
-      });
+          var text = details[id].float;
 
-      $('.st-item-float').hide().fadeIn();
+          /* add the float to the metadata for this element */
+          $(this).children().eq(0).data('st-float', text);
 
-      $('#st-sort-inventory-price').after(
-        '<a id="st-sort-inventory-float" class="btn_darkblue_white_innerfade btn_medium new_trade_offer_btn"' +
-        'style="margin-left: 5px">' +
-        '<span>Sort by float</span>' +
-        '</a>'
-      );
+          /* add pattern information (e.g. fade percentage) */
+          if(details[id].phase){
+            text += ' ' + details[id].phase;
+          }
 
-      $('#st-sort-inventory-float').click(function(){sortInventory(false)});
-    }
-  }, 0)
-})
+          if(details[id].seed){
+            text += formatPattern(inventory.infoPairs[id].name, details[id].seed);
+          }
+
+          /* pull the fraud warning icon down a bit to make space for our overlay */
+          $(this).find('.slot_app_fraudwarning').css('margin-top', '15px');
+
+          $(this).append('<span class="st-item-float">' + text + '</span>');
+        });
+
+        $('.st-item-float').hide().fadeIn();
+
+        $('#st-sort-inventory-price').after(
+          '<a id="st-sort-inventory-float" class="btn_darkblue_white_innerfade btn_medium new_trade_offer_btn"' +
+          'style="margin-left: 5px">' +
+          '<span>Sort by float</span>' +
+          '</a>'
+        );
+
+        $('#st-sort-inventory-float').click(sortInventory.bind(null, false));
+      }
+    }, 0)
+  })
+}
 
 function sortInventory(byPrice){
   if(window.location.hash.substr(1).length > 0 &&
@@ -72,7 +88,7 @@ function sortInventory(byPrice){
 
   expandInventory();
 
-  $('.itemHolder').sort(function(a, b) {
+  $('.itemHolder').has('.item.app730.context2').sort(function(a, b) {
     var attrOne = $(a).children().eq(0).data(byPrice ? 'st-price' : 'st-float');
     var attrTwo = $(b).children().eq(0).data(byPrice ? 'st-price' : 'st-float');
 
@@ -188,4 +204,27 @@ function setupItems(infoPairs){
 
   /* make everything fade in */
   $('.st-trade-offer-prices, .st-item-price, .st-item-float').hide().fadeIn();
+}
+
+/* checks which inventory is active */
+function isInventoryActive(appid, callback){
+  /* random id to stop event confusion */
+  var id = String(Math.random () * 1000).substr(0, 3);
+
+  /* set up event listener for the event */
+  window.addEventListener('activeInventory' + id, function (e) {
+    callback(e.detail === appid);
+  });
+
+  /* create script that will emit the active inventory app id */
+  var script = document.createElement('script');
+  script.textContent = '(' + function () {
+    var evt = document.createEvent('CustomEvent');
+    evt.initCustomEvent('activeInventory%%id%%', true, true, g_ActiveInventory.appid);
+    window.dispatchEvent(evt); } + ')();';
+
+  script.textContent = script.textContent.replace('%%id%%', id);
+
+  document.body.appendChild(script);
+  script.parentNode.removeChild(script);
 }

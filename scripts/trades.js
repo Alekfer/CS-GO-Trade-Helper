@@ -40,7 +40,7 @@ setInterval(function(){
 
   $('#st-my-types').html(buildItemSummary(total.mine.types, true));
   $('#st-my-price').text('$' + total.mine.price.toFixed(2));
-  $('#st-my-items').text(total.mine.items + (total.items == 1 ? ' item' : ' items'));
+  $('#st-my-items').text(total.mine.items + (total.mine.items == 1 ? ' item' : ' items'));
 
   /* */
 
@@ -65,11 +65,16 @@ setInterval(function(){
 
 var inventories = {
   infoPairs: {},
-  details: {}
+  details: {},
+  itemsInTrade: {}
 };
 
 /* get my inventory */
 getSteamID(true, function(steamID){
+  chrome.runtime.sendMessage({action: 'getTradeItems', steamID: 'me'}, function(response){
+    inventories.itemsInTrade['me'] = response.items;
+  });
+
   getInventory(steamID, function(infoPairs, idPairs){
     inventories.infoPairs[steamID] = infoPairs;
     loadPricesFor(steamID, true);
@@ -88,6 +93,10 @@ getSteamID(true, function(steamID){
 
 /* get their inventory */
 getSteamID(false, function(steamID){
+  chrome.runtime.sendMessage({action: 'getTradeItems', steamID: steamID}, function(response){
+    inventories.itemsInTrade[steamID] = response.items;
+  });
+
   getInventory(steamID, function(infoPairs, idPairs){
     inventories.infoPairs[steamID] = infoPairs;
     loadPricesFor(steamID, false);
@@ -270,7 +279,7 @@ function loadPricesFor(steamID, isMyItems){
     /* inventory has loaded, let's put in the prices */
     $('#inventory_' + steamID + '_730_2 .item.app730.context2').each(addItemDetails)
 
-    displayExchangeShowcase(true);
+    editActionMenu(true, steamID);
 
     /* make everything fade in */
     $('.st-trade-offer-prices, .st-item-price, .st-item-no-price, .st-item-float').hide().fadeIn();
@@ -286,6 +295,9 @@ function loadPricesFor(steamID, isMyItems){
        it relies on the app logo */
 
     var id = $(this).attr('id').split('item730_2_')[1];
+
+    /* only indicate the item is in a trade for items that aren't in the trade offer */
+    if(!$(this).parent().hasClass('slot_inner') && inventories.itemsInTrade[isMyItems ? 'me' : steamID].indexOf(id) > -1) $(this).css('background-color', 'rgba(35, 68, 73, 0.75)')
 
     var item = inventories.infoPairs[steamID][id];
 

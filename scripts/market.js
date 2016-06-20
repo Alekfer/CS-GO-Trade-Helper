@@ -2,11 +2,12 @@ populateWithLinks();
 
 function populateWithLinks(){
   $('.market_recent_listing_row').each(function(){
-    if($(this).data('st-loaded-info')) return;
-    $(this).data('st-loaded-info', true);
-    var id = $(this).attr('id').split('_')[1];
+    var id = $(this).attr('id').split('_')[1], e = this;
 
     getItem(id, function(item){
+      if($(e).data('st-loaded-info')) return;
+      $(e).data('st-loaded-info', true);
+
       var stickers = [];
       item.descriptions.forEach(function(desc){
         if(desc.type != 'html' || desc.value.indexOf('Sticker Details') == -1) return;

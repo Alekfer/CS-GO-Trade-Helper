@@ -3,11 +3,30 @@ chrome.webRequest.onHeadersReceived.addListener(function(details){
     return { responseHeaders: details.responseHeaders };
 }, {urls: ['*://csgoapi.xyz/*', '*://api.steampowered.com/*', '*://steamrep.com/*']}, ['blocking', 'responseHeaders']);
 
+chrome.webRequest.onBeforeSendHeaders.addListener(function(details){
+  return { requestHeaders: [
+    { name: 'Content-Type', value: 'application/x-www-form-urlencoded; charset=UTF-8' },
+    { name: 'Accept', value: '*/*' },
+    { name: 'Referer', value: details.url.replace('accept/st-accept', '') },
+    { name: 'Accept-Language', value: 'en-US,en;q=0.8' },
+    { name: 'Accept-Encoding', value: 'gzip, deflate, br' },
+    { name: 'User-Agent', value: 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.84 Safari/537.36' },
+    { name: 'Cookie', value: headerCookies }
+  ] }
+}, {urls: ['*://steamcommunity.com/tradeoffer/*/accept/st-accept']}, ['blocking', 'requestHeaders']);
+
 chrome.browserAction.onClicked.addListener(function(tab) {
   chrome.tabs.create({'url': chrome.extension.getURL('settings/index.html')}, function(tab) {
 
   });
 });
+
+var headerCookies = []
+chrome.cookies.getAll({url: 'https://steamcommunity.com'}, function(cookies) {
+  headerCookies = cookies.map(function(cookie){
+    return cookie.name + '=' + cookie.value;
+  }).join(';')
+})
 
 function getAPIKey(callback){
   /* if no API key is stored locally, create one */
@@ -65,16 +84,16 @@ function getNotifications(){
 
       var notifs = response.notifications
       for(var n in notifs){
-        /* x > undefined is alse, which means this can only be true for the
+        /* x > undefined is false, which means this can only be true for the
            notifications defined in mappings.notifications */
         if(notifs[n] > mappings.notifications[n]){
-          var count = notifs[n];
+          var count = notifs[n] - mappings.notifications[n];
 
           chrome.notifications.create(n, {
             type: 'basic',
             title: 'CS:GO Trade Helper',
             message: 'You have ' + count + ' new ' + mappings.names[n] + (count == 1 ? '' : 's'),
-            iconUrl: 'notification.png'
+            iconUrl: '/assets/notification.png'
           });
         }
       }
@@ -103,7 +122,7 @@ function getOffers(){
     if(data.err) return;
     data = data.data;
 
-    var offers = {}, players = [];
+    var offers = {}, players = [], tempItemsInTrade = {};
     data.response.trade_offers_received.forEach(function(offer){
       /* we only want active trade offers, even though we imply this with
          'active_only' in the request we sometimes get cancelled offers */
@@ -113,22 +132,28 @@ function getOffers(){
       var steamid = toSteam64(offer.accountid_other);
 
       if(offer.items_to_receive){
-        var theirItemsInTrade =  offer.items_to_receive.map(function(item){ return item.assetid })
-        if(!itemsInTrade.hasOwnProperty(steamid)){
-          itemsInTrade[steamid] = theirItemsInTrade
+        var theirItemsInTrade = offer.items_to_receive.map(function(item){ return item.assetid })
+        if(!tempItemsInTrade.hasOwnProperty(steamid)){
+          tempItemsInTrade[steamid] = theirItemsInTrade
         } else {
-          itemsInTrade[steamid] = itemsInTrade[steamid].concat(theirItemsInTrade)
+          tempItemsInTrade[steamid] = tempItemsInTrade[steamid].concat(theirItemsInTrade)
         }
       }
 
       if(offer.items_to_give){
-        var myItemsInTrade =  offer.items_to_give.map(function(item){ return item.assetid })
-        if(!itemsInTrade.hasOwnProperty('me')){
-          itemsInTrade['me'] = myItemsInTrade
+        var myItemsInTrade = offer.items_to_give.map(function(item){ return item.assetid })
+        if(!tempItemsInTrade.hasOwnProperty('me')){
+          tempItemsInTrade['me'] = myItemsInTrade
         } else {
-          itemsInTrade['me'] = itemsInTrade[steamid].concat(myItemsInTrade)
+          tempItemsInTrade['me'] = tempItemsInTrade['me'].concat(myItemsInTrade)
         }
+        /* if we're getting free items, automatically accept */
       }
+
+      /* accept offers giving us free items */
+      chrome.storage.sync.get('autoaccept', function(accept){
+        if(accept && !offer.items_to_give || offer.items_to_give.length == 0) acceptOffer(offer.tradeofferid, steamid)
+      })
 
       /* only get incoming trade offers */
       if(!offer.is_our_offer){
@@ -148,6 +173,10 @@ function getOffers(){
         }
       }
     })
+
+    /* we make a temp store of the items
+       so on every poll we keep the list updated */
+    itemsInTrade = tempItemsInTrade;
 
     /* players will be empty if we have no new offers */
     if(players.length == 0) return setTimeout(getOffers, 1000 * 15);
@@ -200,6 +229,26 @@ function getOffers(){
 
       });*/
 
+    })
+  })
+}
+
+function acceptOffer(id, partner){
+  chrome.cookies.get({url: 'https://steamcommunity.com', name: 'sessionid'}, function(cookie) {
+    /* we post with 'st-accept' so we can identify this call on 'onBeforeSendHeaders'
+       so we only modify headers for this call */
+    $.ajax({
+      type: 'POST',
+      url: 'https://steamcommunity.com/tradeoffer/' + id + '/accept/st-accept',
+      data: {
+        sessionid: cookie.value,
+        serverid: 1,
+        tradeofferid: id,
+        partner: partner,
+        captcha: ''
+      },
+      crossDomain: true,
+			xhrFields: { withCredentials: true }
     })
   })
 }
@@ -272,6 +321,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   } else if(request.action === 'getAPIKey'){
     getAPIKey(function(key){
       sendResponse({data: key})
+    })
+  } else if(request.action === 'getTradeItems'){
+    var items = itemsInTrade.hasOwnProperty(request.steamID) ? itemsInTrade[request.steamID] : []
+    sendResponse({items: items})
+  } else if(request.action === 'getSettings'){
+    chrome.storage.sync.get(function(settings){
+      sendResponse({
+        fvdecimals: settings.hasOwnProperty('fvdecimals') ? settings.fvdecimals : 6
+      })
     })
   }
 
