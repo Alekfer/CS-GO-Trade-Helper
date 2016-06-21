@@ -125,6 +125,16 @@ function loadPricesForOffer(index){
 
   /* get the steamid and call the function that loads the floats */
   var steamID = toSteam64(offer.find('.tradeoffer_items.' + theirOfferClass + ' .tradeoffer_avatar').data('miniprofile'))
+
+  /* check if this profile has verification */
+  checkVerification(steamID, function(response){
+    if(response.success && response.verified){
+      $(offer).parent().find('.tradeoffer_partner').before(
+        '<div class="btn_grey_grey btn_medium st-verified-trade-outer"><span class="st-verified-trade-inner">' + response.name + '</span></div>'
+      )
+    }
+  })
+
   getInventoryDetails(steamID, function(details, attempt){
     /* if we haven't got the details, update the attempt count */
     if(!details){

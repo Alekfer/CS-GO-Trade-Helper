@@ -297,9 +297,17 @@ function loadPricesFor(steamID, isMyItems){
     var id = $(this).attr('id').split('item730_2_')[1];
 
     /* only indicate the item is in a trade for items that aren't in the trade offer */
-    if(!$(this).parent().hasClass('slot_inner') && inventories.itemsInTrade[isMyItems ? 'me' : steamID].indexOf(id) > -1) $(this).css('background-color', 'rgba(35, 68, 73, 0.75)')
+    var itemAlreadyInTrade = inventories.itemsInTrade[isMyItems ? 'me' : steamID].indexOf(id) > -1
+    if(!$(this).parent().hasClass('slot_inner') && itemAlreadyInTrade) $(this).css('background-color', 'hsla(' + settings.intradebg + ', 35%, 21%, 0.74902)')
 
     var item = inventories.infoPairs[steamID][id];
+
+    /* sometimes, for some reason, we won't be able to match the item asset id
+       to an item in the inventory we've loaded. this may be because the inventory
+       didn't load as expected, but I'm not sure yet. so in the case this happens
+       and we can't match the id to an item in the inventory, just log and skip the
+       item (we have no class id to match as a back up either...) */
+    if(!item) return console.log('item glitched', steamID, item);
 
     $(this).data('st-price', Number(item.price) || 0);
     $(this).data('st-type', item.type);

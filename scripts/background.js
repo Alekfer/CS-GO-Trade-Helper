@@ -328,7 +328,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   } else if(request.action === 'getSettings'){
     chrome.storage.sync.get(function(settings){
       sendResponse({
-        fvdecimals: settings.hasOwnProperty('fvdecimals') ? settings.fvdecimals : 6
+        fvdecimals: settings.hasOwnProperty('fvdecimals') ? settings.fvdecimals : 6,
+        intradebg: settings.hasOwnProperty('intradebg') ? settings.intradebg : 188
       })
     })
   }

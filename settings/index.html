@@ -36,10 +36,10 @@
     .card-content p { font-size: 15px }
     .card-content { height: 110px }
     .card-title { font-size: 18px; font-family: Roboto }
-    .example-float {
+    .example-item {
       position: absolute; display: block; top: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.5); background-color: rgba(117, 117, 117, 0.2);  font-size: 12px; text-align: right; padding: 2px 5px 0px 0px;
     }
-    .example-float-holder { position: relative; height:98px; width: 98px; background-color: #292929 }
+    .example-item-holder { position: relative; height:98px; width: 98px; background-color: #292929; margin: auto }
     .save-btn { width: 20%; float: right }
     .indent { margin-left: 15px }
     </style>
@@ -51,8 +51,8 @@
         <ul class="section table-of-contents" id="toc">
           <li><a href="#settings">Settings</a></li>
           <li><a href="#features">Features</a></li>
-          <li><a href="#changelog">Change log</a></li>
           <li><a href="#contributions">Contributions</a></li>
+          <li><a href="#changelog">Change log</a></li>
         </ul>
       </div>
       <div class="col m6 l8">
@@ -71,15 +71,39 @@
 
                 <div class="row">
                   <div class="col s6">
-                    <div class="z-depth-1 example-float-holder">
-                      <span id="example-float1" class="example-float">0.225622</span>
+                    <div class="z-depth-1 example-item-holder">
+                      <span id="example-float1" class="example-item"></span>
                       <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
                     </div>
                   </div>
                   <div class="col s6">
-                    <div class="z-depth-1 example-float-holder">
-                      <span id="example-float2" class="example-float">0.225622 100%</span>
+                    <div class="z-depth-1 example-item-holder">
+                      <span id="example-float2" class="example-item"></span>
                       <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col s4 m3">
+              <div class="card-panel hoverable lighten-5 z-depth-1">
+                <span class="card-title">Items in Trade</span>
+                <p>Appearance for items already in a trade.</p>
+                <p class="range-field">
+                  <input type="range" id="itemsBackground" min="0" max="360" />
+                </p>
+
+                <div class="row">
+                  <div class="col s6">
+                    <div id="example-trade1" class="z-depth-1 example-item-holder">
+                      <span class="example-item"></span>
+                      <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpou-6kejhjxszFJTwT09S5g4yCmfDLP7LWnn8f65Mli7DH9tXziQTgqUY4YmmnINSUJwQ-YVnT_wS7yOzngMW07ZrOmmwj5HeObpQQtA/96fx96f">
+                    </div>
+                  </div>
+                  <div class="col s6">
+                    <div id="example-trade2" class="z-depth-1 example-item-holder">
+                      <span class="example-item"></span>
+                      <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17P7NdTRH-t26q4SZlvD7PYTQgXtu5Mx2gv2P9o6migzl_Us5ZmCmLYDDJgU9NA6B81S5yezvg8e-7cycnXJgvHZx5WGdwUJqz1Tl4g/96fx96f">
                     </div>
                   </div>
                 </div>
@@ -134,7 +158,7 @@
                   <div class="card hoverable">
                     <div class="card-image"><img src="https://i.imgur.com/zzwfA9K.png" style="width:385px"></div>
                     <div class="card-content">
-                      <p>Items that are already in a trade appear with a pale blue background.</p>
+                      <p>Items that are already in a trade appear with a different colour background.</p>
                     </div>
                   </div>
                 </div>
@@ -201,6 +225,22 @@
                   </div>
                 </div>
               </div>
+              <div class="col s6 m6">
+                <div class="card hoverable">
+                  <div class="card-image"><img src="http://i.imgur.com/jkPFbD5.png"></div>
+                  <div class="card-content">
+                    <p>Important profiles (such as high tier traders and bots) will have verification above the profile picture.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col s6 m6">
+                <div class="card hoverable">
+                  <div class="card-image"><img src="http://i.imgur.com/lMKF5DL.png"></div>
+                  <div class="card-content">
+                    <p>Verification for important profiles also appears on the trade offers page after clicking 'show prices'.</p>
+                  </div>
+                </div>
+              </div>
               <div class="col s12 m12">
                 <div class="card hoverable">
                   <div class="card-image"><img src="https://i.imgur.com/oDWkGCY.png"></div>
@@ -235,36 +275,6 @@
               </div>
             </div>
           </div>
-        </div>
-
-        <div class="section scrollspy" id="changelog">
-          <h4 class="header left-align">Change log</h4>
-          <hr class="header-sep">
-
-          <ul class="collapsible" data-collapsible="accordion">
-            <li>
-              <div class="collapsible-header active">v 1.0.1</div>
-              <div class="collapsible-body">
-                <p>
-                  <span>- added settings page</span>
-                  <br><span class="indent">- implemented real time setting saves</span>
-                  <br><span class="indent">- added contributions</span>
-                  <br><span>- added settings</span>
-                  <br><span class="indent">- added float value setting</span>
-                  <br><span class="indent">- added auto accept setting</span>
-                  <br><span>- added and edited icons</span>
-                </p>
-              </div>
-            </li>
-            <li>
-              <div class="collapsible-header">v 1.0.0</div>
-              <div class="collapsible-body">
-                <p>
-                  <span>- initial release</span>
-                </p>
-              </div>
-            </li>
-          </ul>
         </div>
 
         <div class="section scrollspy" id="contributions">
@@ -314,6 +324,52 @@
               </a>
             </div>
           </div>
+        </div>
+
+        <div class="section scrollspy" id="changelog">
+          <h4 class="header left-align">Change log</h4>
+          <hr class="header-sep">
+
+          <ul class="collapsible" data-collapsible="accordion">
+            <li>
+              <div class="collapsible-header active">v 1.0.2</div>
+              <div class="collapsible-body">
+                <p>
+                  <span>- added steam id verification for important profiles (bots, high tier traders)</span>
+                  <br><span class="indent">- verification appears above the profile picture on profile pages</span>
+                  <br><span class="indent">- verification appears near the report button for trade offers (after clicking 'show prices')</span>
+                </p>
+              </div>
+            </li>
+            <li>
+              <div class="collapsible-header">v 1.0.1</div>
+              <div class="collapsible-body">
+                <p>
+                  <span>- added various aesthetical changes to multiple pages</span>
+                  <br><span>- added settings page</span>
+                  <br><span class="indent">- implemented real time setting saves</span>
+                  <br><span class="indent">- added contributions</span>
+                  <br><span>- added settings</span>
+                  <br><span class="indent">- added float value setting</span>
+                  <br><span class="indent">- added auto accept setting</span>
+                  <br><span class="indent">- added in trade background setting</span>
+                  <br><span>- added auto accept for empty trades</span>
+                  <br><span>- added visual difference for items already in a trade offer</span>
+                  <br><span>- added and edited icons</span>
+                  <br><span>- added better support for when an inventory is changed</span>
+                  <br><span>- fixed bug causing duplicate action links</span>
+                </p>
+              </div>
+            </li>
+            <li>
+              <div class="collapsible-header">v 1.0.0</div>
+              <div class="collapsible-body">
+                <p>
+                  <span>- initial release</span>
+                </p>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

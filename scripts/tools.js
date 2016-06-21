@@ -1,7 +1,6 @@
 /* http://steamcommunity.com/id/i7xx/inventory/ becomes ['', 'id', 'i7xx', 'inventory', ''] */
 var path = window.location.pathname.split('/')
-if((['inventory', 'tradeoffers', 'home', 'friends', 'edit', 'chat', 'groups', 'commentnotifications', 'badges', 'screenshots', 'allcomments',
-    'inventoryhistory'].indexOf(path[3]) > -1 || ['chat'].indexOf(path[2]) > -1) || ['tradingcards'].indexOf(path[1]) > -1 && path.join('/').indexOf('/json/') == -1){
+if(path.join('/') !== '/' && ['tradeoffer'].indexOf(path[1]) == -1 && ['chat'].indexOf(path[2]) == -1 && ['tradingcards'].indexOf(path[1]) == -1 && path.join('/').indexOf('/json/') == -1){
   /* add a nicer background and make the profile element transparent */
   $('body, .profile_header_bg_texture').css('background', 'url("http://store.akamai.steamstatic.com/public/images/v6/colored_body_top.png?v=2") center top no-repeat #1b2838')
   $('.profile_small_header_texture').css({'background-image': 'inherit', 'background-color': 'rgba(26,41,58,0.75)', 'box-shadow': '0px 0px 15px -2px black'})
@@ -13,12 +12,6 @@ if((['inventory', 'tradeoffers', 'home', 'friends', 'edit', 'chat', 'groups', 'c
 if(['allcomments', 'groups', 'home'].indexOf(path[3]) > -1){
   $('#BG_bottom').css({'background-image': 'inherit', 'background-color': 'rgba(26,41,58,0.75)'})
 }
-
-/* replaces background (if they don't have one) and the texture with a nice gradient */
-$('.profile_header_bg_texture, .no_header.profile_page:not(.has_profile_background)').css('background', 'url("http://store.akamai.steamstatic.com/public/images/v6/colored_body_top.png?v=2") center top no-repeat #1b2838')
-
-/* set a box shadow around their profile picture */
-$('.playerAvatar.profile_header_size').css('box-shadow', '0px 0px 15px -3px black')
 
 var prices = {};
 requestPrices();
@@ -54,6 +47,14 @@ function buildItemSummary(types, tradeoffer){
   return summary + build.join(tradeoffer ? ', ' : '<br>');
 }
 
+/* verify a steamID */
+function checkVerification(steamID, callback){
+  $.ajax({
+    url: 'http://localhost:3000/api/1/verified',
+    data: { steamid: steamID },
+    success: callback
+  })
+}
 
 /* class id to item info */
 var idPairs = {};
@@ -153,7 +154,6 @@ function getInventory(steamID, successCallback, errorCallback, attempt){
       }
     },
     error: function(error){
-      console.log(error)
       if(typeof(errorCallback) === 'function') errorCallback()
     }
   });
@@ -219,7 +219,7 @@ function getInventoryDetails(steamID, callback, attempt){
 
         /* if we don't have the float, don't bother overlaying the info on items */
         if(!item.float) continue;
-        var float = typeof(item.float) == 'string' ? item.float.substr(0, settings.fvdecimals + 2) : item.float.toFixed(settings.fvdecimals)
+        var float = String(item.float).substr(0, settings.fvdecimals + 2);
         items[item.id] = { float: float, seed: item.texture || -1 }
         if(item.doppler && item.doppler.name) items[item.id].phase = phases[item.doppler.name]
       }
@@ -233,6 +233,24 @@ function getInventoryDetails(steamID, callback, attempt){
       }, 2000);
     }
   });
+}
+
+/* make api calls */
+function makeAPICall(url, data, callback){
+  getAPIKey(continueCall);
+
+  function continueCall(key){
+    data.key = key;
+    $.ajax({
+      url: url,
+      data: data,
+      success: function(response) {
+        callback({err: false, data: response});
+      }, error: function(){
+        callback({err: true}
+      )}
+    })
+  }
 }
 
 /* if the tradeoffer boolean is true, it means we're on a trade offer page
@@ -285,24 +303,6 @@ function removeItemFromTrade(elementID){
 
   document.body.appendChild(script);
   script.parentNode.removeChild(script);
-}
-
-/* make api calls */
-function makeAPICall(url, data, callback){
-  getAPIKey(continueCall);
-
-  function continueCall(key){
-    data.key = key;
-    $.ajax({
-      url: url,
-      data: data,
-      success: function(response) {
-        callback({err: false, data: response});
-      }, error: function(){
-        callback({err: true}
-      )}
-    })
-  }
 }
 
 /* inTradeOffer, boolean, true when in trade offer page */
