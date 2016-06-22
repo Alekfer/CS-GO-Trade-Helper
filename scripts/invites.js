@@ -20,6 +20,15 @@ function processQueue(){
   var info = queue.shift()
   getInventory(info.steamID, function(infoPairs){
     processQueue()
+
+    checkVerification(info.steamID, function(response){
+      if(response.success && response.verified){
+        $(info.element).find('.acceptDeclineBlock').before(
+          '<div class="st-verified-profile" style="float: right;margin-right: 10px;margin-top: 9px">' + response.name + '</div>'
+        )
+      }
+    })
+
     getPlayerInfo(info.steamID, function(data){
       /* error with api call, ignore this profile */
       if(data.err || typeof(data.data) == 'string' && data.data.indexOf('Error') > -1 && !data.data.error) return;
@@ -38,13 +47,13 @@ function processQueue(){
 
       if(bans.length > 0){
         $(info.element).addClass('st-scammer')
-        $(info.element).find('.acceptDeclineBlock').before(
+        $(info.element).find('.inviterBlock').prepend(
           '<a href="https://steamrep.com/profiles/' + info.steamID + '" class="whiteLink st-banned">' + bans.join(' | ') + '</a>'
         );
       } else {
-        $(info.element).find('.acceptDeclineBlock').before(
+        $(info.element).find('.inviterBlock').prepend(
           '<a href="https://steamrep.com/profiles/' + info.steamID + '" class="whiteLink st-banned">clean</a>' +
-          '<a href="https://steamcommunity.com/profiles/' + info.steamID + '/inventory" class="whiteLink st-banned">$' + invValue.toFixed(2) + '</a>'
+          '<a href="https://steamcommunity.com/profiles/' + info.steamID + '/inventory" class="whiteLink st-banned">' + formatPrice(invValue) + '</a>'
         );
       }
     })

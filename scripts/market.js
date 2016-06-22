@@ -73,6 +73,9 @@ script.textContent = '(' + function () {
     g_oSearchResults.m_bLoading = false;
     window.dispatchEvent(evt);
   };
+  /* set max page size to 50 and reload */
+  g_oSearchResults.m_cPageSize = 50;
+  g_oSearchResults.GoToPage(1);
 } + ')();';
 
 script.textContent = script.textContent.replace('%%id%%', id);

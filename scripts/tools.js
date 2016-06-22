@@ -1,8 +1,8 @@
 /* http://steamcommunity.com/id/i7xx/inventory/ becomes ['', 'id', 'i7xx', 'inventory', ''] */
 var path = window.location.pathname.split('/')
-if(path.join('/') !== '/' && ['tradeoffer'].indexOf(path[1]) == -1 && ['chat'].indexOf(path[2]) == -1 && ['tradingcards'].indexOf(path[1]) == -1 && path.join('/').indexOf('/json/') == -1){
+if(path.join('/') !== '/' && ['tradeoffer'].indexOf(path[1]) == -1 || ['chat'].indexOf(path[2]) > -1 && ['tradingcards'].indexOf(path[1]) == -1 && path.join('/').indexOf('/json/') == -1){
   /* add a nicer background and make the profile element transparent */
-  $('body, .profile_header_bg_texture').css('background', 'url("http://store.akamai.steamstatic.com/public/images/v6/colored_body_top.png?v=2") center top no-repeat #1b2838')
+  $('body, .profile_header_bg_texture, .popup_body.popup_menu').css('background', 'url("http://store.akamai.steamstatic.com/public/images/v6/colored_body_top.png?v=2") center top no-repeat #1b2838')
   $('.profile_small_header_texture').css({'background-image': 'inherit', 'background-color': 'rgba(26,41,58,0.75)', 'box-shadow': '0px 0px 15px -2px black'})
   $('.profile_small_header_bg').css('background-image', 'inherit')
 }
@@ -14,19 +14,24 @@ if(['allcomments', 'groups', 'home'].indexOf(path[3]) > -1){
 }
 
 var prices = {};
-requestPrices();
-
-function requestPrices(){
-  chrome.runtime.sendMessage({action: 'requestPrices'}, function(response){
-    if(response === undefined || response.err) return setTimeout(requestPrices, 1000);
-    prices = response.data;
-  });
-}
+chrome.runtime.sendMessage({action: 'requestPrices'}, function(response){
+  prices = response;
+});
 
 var settings = {};
 chrome.runtime.sendMessage({action: 'getSettings'}, function(response){
   settings = response;
 })
+
+var rates = {};
+chrome.runtime.sendMessage({action: 'getRates'}, function(response){
+  rates = response;
+})
+
+function formatPrice(price){
+  /* convert price based on settings */
+  return settings.exchangesymb + (price * rates[settings.exchangeabbr]).toFixed(2)
+}
 
 function getAPIKey(callback){
   chrome.runtime.sendMessage({action: 'getAPIKey'}, function(response){
@@ -115,7 +120,7 @@ function getInventory(steamID, successCallback, errorCallback, attempt){
           idPairs[item.classid + '_' + item.instanceid] = {
             /* clear out the stattrak part so we can match it to the name in patterns.js */
             name: item.name.replace('StatTrak\u2122 ', ''),
-            price: prices[item.market_hash_name],
+            price: Number(prices[item.market_hash_name]),
             wear: wear,
             color: item.name_color,
             tradable: item.tradable,

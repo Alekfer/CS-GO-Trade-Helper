@@ -3,6 +3,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
     <script src="../lib/jquery.min.js"></script>
     <script src="../lib/materialize.min.js"></script>
+    <link href="http://steamcommunity-a.akamaihd.net/public/shared/css/motiva_sans.css?v=F3z3QpekjE2f" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400" rel="stylesheet">
   </head>
   <!-- this will probably be the website, but for now we're just hosting it within the extension -->
@@ -36,12 +37,13 @@
     .card-content p { font-size: 15px }
     .card-content { height: 110px }
     .card-title { font-size: 18px; font-family: Roboto }
-    .example-item {
-      position: absolute; display: block; top: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.5); background-color: rgba(117, 117, 117, 0.2);  font-size: 12px; text-align: right; padding: 2px 5px 0px 0px;
-    }
+    .example-item-float { font-family: Motiva Sans Light; position: absolute; display: block; top: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.5); background-color: rgba(117, 117, 117, 0.2);  font-size: 12px; text-align: right; padding: 2px 5px 0px 0px }
     .example-item-holder { position: relative; height:98px; width: 98px; background-color: #292929; margin: auto }
+    .example-item-price { display: block; font-size: 14px; position: absolute; bottom: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.498039); background-color: rgba(117, 117, 117, 0.2); padding: 0px 0px 2px 5px; font-family: Motiva Sans Light }
+    .example-item-wear { position: absolute; bottom: 0px; right: 0px; color: rgba(255, 255, 255, 0.6); font-family: Motiva Sans Light; padding: 0px 5px 2px 0px; font-size: 14px }
     .save-btn { width: 20%; float: right }
     .indent { margin-left: 15px }
+    .col.s6 .range-field { margin-top: 0px }
     </style>
 
     <div class="row">
@@ -62,7 +64,7 @@
 
           <div class="row">
             <div class="col s4 m3">
-              <div class="card-panel hoverable lighten-5 z-depth-1">
+              <div style="height: 285px" class="card-panel hoverable lighten-5 z-depth-1">
                 <span class="card-title">Float Decimals</span>
                 <p>The number of decimals to display for float value.</p>
                 <p class="range-field">
@@ -72,21 +74,25 @@
                 <div class="row">
                   <div class="col s6">
                     <div class="z-depth-1 example-item-holder">
-                      <span id="example-float1" class="example-item"></span>
+                      <span id="exampleFloatLeft" class="example-item-float"></span>
                       <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
+                      <span class="example-item-price" data-price="397.42">$397.42</span>
+                      <span class="example-item-wear">FN</span>
                     </div>
                   </div>
                   <div class="col s6">
                     <div class="z-depth-1 example-item-holder">
-                      <span id="example-float2" class="example-item"></span>
+                      <span id="exampleFloatRight" class="example-item-float"></span>
                       <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
+                      <span class="example-item-price" data-price="397.42">$397.42</span>
+                      <span class="example-item-wear">FN</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="col s4 m3">
-              <div class="card-panel hoverable lighten-5 z-depth-1">
+              <div style="height: 285px" class="card-panel hoverable lighten-5 z-depth-1">
                 <span class="card-title">Items in Trade</span>
                 <p>Appearance for items already in a trade.</p>
                 <p class="range-field">
@@ -95,27 +101,109 @@
 
                 <div class="row">
                   <div class="col s6">
-                    <div id="example-trade1" class="z-depth-1 example-item-holder">
-                      <span class="example-item"></span>
+                    <div id="exampleTradeLeft" class="z-depth-1 example-item-holder">
+                      <span class="example-item-float"></span>
                       <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpou-6kejhjxszFJTwT09S5g4yCmfDLP7LWnn8f65Mli7DH9tXziQTgqUY4YmmnINSUJwQ-YVnT_wS7yOzngMW07ZrOmmwj5HeObpQQtA/96fx96f">
+                      <span class="example-item-price" data-price="397.42">$397.42</span>
+                      <span class="example-item-wear">FN</span>
                     </div>
                   </div>
                   <div class="col s6">
-                    <div id="example-trade2" class="z-depth-1 example-item-holder">
-                      <span class="example-item"></span>
+                    <div id="exampleTradeRight" class="z-depth-1 example-item-holder">
+                      <span class="example-item-float"></span>
                       <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17P7NdTRH-t26q4SZlvD7PYTQgXtu5Mx2gv2P9o6migzl_Us5ZmCmLYDDJgU9NA6B81S5yezvg8e-7cycnXJgvHZx5WGdwUJqz1Tl4g/96fx96f">
+                      <span class="example-item-price" data-price="397.42">$397.42</span>
+                      <span class="example-item-wear">FN</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="col s4 m3">
-              <div class="card-panel hoverable lighten-5 z-depth-1">
+              <div style="height: 285px" class="card-panel hoverable lighten-5 z-depth-1">
+                <span class="card-title">Font Size</span>
+                <p>The font size of the float value, price and wear.</p>
+                <div class="row">
+                  <div class="col s6">
+                    <p class="range-field">
+                      <input type="range" id="fontSizeTop" min="6" max="17" value="12"/>
+                    </p>
+                  </div>
+                  <div class="col s6">
+                    <p class="range-field">
+                      <input type="range" id="fontSizeBottom" min="6" max="17" value="14"/>
+                    </p>
+                  </div>
+                  <div class="col s6">
+                    <div class="z-depth-1 example-item-holder">
+                      <span class="example-item-float"></span>
+                      <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
+                      <span class="example-item-price" data-price="397.42">$397.42</span>
+                      <span class="example-item-wear">FN</span>
+                    </div>
+                  </div>
+                  <div class="col s6">
+                    <div class="z-depth-1 example-item-holder">
+                      <span class="example-item-float"></span>
+                      <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
+                      <span class="example-item-price" data-price="397.42">$397.42</span>
+                      <span class="example-item-wear">FN</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col s4 m3">
+              <div style="height: 285px" class="card-panel hoverable lighten-5 z-depth-1">
+                <span class="card-title">Currency Conversion</span>
+                <p>1 USD = <span id="exchange">1 USD</span></p>
+                <div class="row">
+                  <div class="col s6">
+                    <p>
+                      <input name="exchange" class="with-gap" type="radio" data-currency="USD" data-symbol="$" id="exchange-USD" />
+                      <label for="exchange-USD">USD</label>
+                    </p>
+                  </div>
+                  <div class="col s6">
+                    <p>
+                      <input name="exchange" class="with-gap" type="radio" data-currency="GBP" data-symbol="&#163;" id="exchange-GBP"/>
+                      <label for="exchange-GBP">GBP</label>
+                    </p>
+                  </div>
+                  <div class="col s6">
+                    <p>
+                      <input name="exchange" class="with-gap" type="radio" data-currency="EUR" data-symbol="&#8364;" id="exchange-EUR"/>
+                      <label for="exchange-EUR">EUR</label>
+                    </p>
+                  </div>
+                  <div class="col s6">
+                    <p>
+                      <input name="exchange" class="with-gap" type="radio" data-currency="AUD" data-symbol="A$" id="exchange-AUD"/>
+                      <label for="exchange-AUD">AUD</label>
+                    </p>
+                  </div>
+                  <div class="col s6">
+                    <p>
+                      <input name="exchange" class="with-gap" type="radio" data-currency="CAD" data-symbol="C$" id="exchange-CAD"/>
+                      <label for="exchange-CAD">CAD</label>
+                    </p>
+                  </div>
+                  <div class="col s6">
+                    <p>
+                      <input name="exchange" class="with-gap" type="radio" data-currency="CHF" data-symbol="Fr." id="exchange-CHF"/>
+                      <label for="exchange-CHF">CHF</label>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col s4 m3">
+              <div style="height: 285px" class="card-panel hoverable lighten-5 z-depth-1">
                 <span class="card-title">Empty Trades</span>
                 <p>Automatically accept empty trade offers where you are not giving any items away.</p>
                 <p>
-                  <input type="checkbox" id="auto-accept" />
-                  <label for="auto-accept">Auto Accept</label>
+                  <input type="checkbox" id="autoAccept" />
+                  <label for="autoAccept">Auto Accept</label>
                 </p>
               </div>
             </div>
@@ -338,6 +426,10 @@
                   <span>- added steam id verification for important profiles (bots, high tier traders)</span>
                   <br><span class="indent">- verification appears above the profile picture on profile pages</span>
                   <br><span class="indent">- verification appears near the report button for trade offers (after clicking 'show prices')</span>
+                  <br><span>- added various currencies</span>
+                  <br><span class="indent">- added currency setting</span>
+                  <br><span>- added font size customisation</span>
+                  <br><span class="indent">- font size for float/wear/price can now be adjusted</span>
                 </p>
               </div>
             </li>

@@ -181,7 +181,7 @@
   margin-top: -17px;
   background-color: rgba(255, 255, 255, 0.15);
   padding: 3px 5px;
-  width: 160px;
+  width: 158px;
   border-radius: 3px;
   text-align: center;
   color: rgba(255, 255, 255, 0.65);
@@ -191,7 +191,6 @@
 .st-verified-trade-outer {
   background-color: rgba(255, 255, 255, 0.15) !important;
   margin-top: -3px !important;
-  margin-right: 10px;
   float: right;
 }
 
@@ -201,6 +200,13 @@
   text-shadow: rgba(0, 0, 0, 0.4) 0px 2px 2px;
   padding: 0px 10px;
   margin: -5px 0px;
+}
+
+.st-verified-inv-page {
+  position: absolute;
+  left: 120px;
+  right: 30px;
+  bottom: 62px;
 }
 
 .st-containerOne {

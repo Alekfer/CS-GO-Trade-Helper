@@ -52,7 +52,7 @@ function populateDetails(loadingMyItems, e){
   /* pull the fraud warning icon down a bit to make space for our overlay */
   $(e).find('.slot_app_fraudwarning').css('margin-top', '15px');
 
-  $(e).append('<span class="st-item-float">' + text + '</span>');
+  $(e).append('<span style="font-size: ' + settings.fontsizetop + 'px" class="st-item-float">' + text + '</span>');
 }
 
 getSteamID(true, function(steamID){
@@ -129,9 +129,15 @@ function loadPricesForOffer(index){
   /* check if this profile has verification */
   checkVerification(steamID, function(response){
     if(response.success && response.verified){
-      $(offer).parent().find('.tradeoffer_partner').before(
-        '<div class="btn_grey_grey btn_medium st-verified-trade-outer"><span class="st-verified-trade-inner">' + response.name + '</span></div>'
-      )
+      if(sentScreen){
+        $(offer).parent().find('.tradeoffer_header').append(
+          '<div class="btn_grey_grey btn_medium st-verified-trade-outer"><span class="st-verified-trade-inner">' + response.name + '</span></div>'
+        )
+      } else {
+        $(offer).parent().find('.tradeoffer_partner').before(
+          '<div style="margin-right: 10px" class="btn_grey_grey btn_medium st-verified-trade-outer"><span class="st-verified-trade-inner">' + response.name + '</span></div>'
+        )
+      }
     }
   })
 
@@ -226,12 +232,12 @@ function loadPricesForOffer(index){
 
       /* if we have a price, append the price else append a red element to the item */
       if(item.price){
-        $(this).append('<span class="st-item-price">$' + item.price.toFixed(2) + '</span>');
+        $(this).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-price">' + formatPrice(item.price) + '</span>');
       } else {
         $(this).append('<div class="st-item-no-price"></div>');
       }
 
-      $(this).append('<span class="st-item-wear">' + item.wear + '</span>');
+      $(this).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-wear">' + item.wear + '</span>');
 
       /* add stickers */
       for(var i = 0; i < item.stickers.length; i++){
@@ -253,7 +259,7 @@ function loadPricesForOffer(index){
 
     /* add the summary of their items to the bottom of the offer */
     $('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items.' + theirOfferClass + ' .tradeoffer_item_list').after(
-      '<div class="st-trade-offer-prices">$' + summary.partner.total.toFixed(2) +
+      '<div class="st-trade-offer-prices">' + formatPrice(summary.partner.total) +
         '<div class="st-display-right">' + summary.partner.items + ' ' +
           (summary.partner.items == 1 ? 'item' : 'items') + '</div>' + buildItemSummary(summary.partner.types) + '</div>'
     );
@@ -261,7 +267,7 @@ function loadPricesForOffer(index){
 
     /* add a summary of our items to the bottom of the offer */
     $('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items.' + myOfferClass + ' .tradeoffer_item_list').after(
-      '<div class="st-trade-offer-prices">$' + summary.mine.total.toFixed(2) +
+      '<div class="st-trade-offer-prices">' + formatPrice(summary.mine.total) +
         '<div class="st-display-right">' + summary.mine.items + ' ' +
           (summary.mine.items == 1 ? 'item' : 'items') + '</div>' + buildItemSummary(summary.mine.types) + '</div>'
     );

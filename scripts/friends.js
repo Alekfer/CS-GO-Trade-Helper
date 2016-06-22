@@ -69,7 +69,7 @@ $('#st-search-start').click(function(){
     withItems[profile].forEach(function(item){
       if(item.type == 'Key') return
 
-      items += '<a class="hoverunderline" href="http://steamcommunity.com/profiles/' + profile + '/inventory/#730_2_' + item.id + '" style="margin-right: 5px; color:#' + item.color + '">' + item.name + ' (' + item.wear + ')' + (item.price ? ' - $' + item.price.toFixed(2) : '') + '</a><br>'
+      items += '<a class="hoverunderline" href="http://steamcommunity.com/profiles/' + profile + '/inventory/#730_2_' + item.id + '" style="margin-right: 5px; color:#' + item.color + '">' + item.name + ' (' + item.wear + ')' + (item.price ? ' - ' + formatPrice(item.price) : '') + '</a><br>'
       //items += '<div style="float:left;margin-right:5px;width:60px;height:60px;background-color:rgba(51,51,51,0.70);border: 1px solid #' + item.color + '"><img src="https://steamcommunity-a.akamaihd.net/economy/image/' + item.img + '/60fx60f"></div>'
     })
 

@@ -15,6 +15,17 @@ setInterval(isInventoryActive.bind(null, 730, function(active){
   }
 }), 1000)
 
+/* check if the user is verified */
+getSteamID(false, function(steamID){
+  checkVerification(steamID, function(response){
+    if(response.success && response.verified){
+      $('.profile_small_header_text').before('<div class="st-verified-profile st-verified-inv-page">' + response.name + '</div>')
+      /* after adding the verification, move the name down a little to give it space */
+      $('.profile_small_header_text').css('bottom', '25px')
+    }
+  })
+})
+
 function inventoryProcess(){
   /* to stop this function from repeatedely being called */
   inventory.loaded = true;
@@ -64,7 +75,7 @@ function inventoryProcess(){
           /* pull the fraud warning icon down a bit to make space for our overlay */
           $(this).find('.slot_app_fraudwarning').css('margin-top', '15px');
 
-          $(this).append('<span class="st-item-float">' + text + '</span>');
+          $(this).append('<span style="font-size: ' + settings.fontsizetop + 'px" class="st-item-float">' + text + '</span>');
         });
 
         $('.st-item-float').hide().fadeIn();
@@ -164,13 +175,13 @@ function setupItems(infoPairs){
     var item = infoPairs[id];
 
     if(item.price){
-      inventory.total += Number(item.price);
-      $(this).append('<span class="st-item-price">$' + item.price.toFixed(2) + '</span>');
+      inventory.total += item.price;
+      $(this).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-price">' + formatPrice(item.price) + '</span>');
     }
 
-    $(this).data('st-price', Number(item.price) || -1);
+    $(this).data('st-price', item.price || -1);
 
-    $(this).append('<span class="st-item-wear">' + item.wear + '</span>');
+    $(this).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-wear">' + item.wear + '</span>');
     if(!item.tradable){
       $(this).append('<div class="st-item-not-tradable"></div>')
     }
@@ -199,7 +210,7 @@ function setupItems(infoPairs){
   $('#st-sort-inventory-price').click(function(){sortInventory(true)});
 
   $('#st-load-prices').fadeOut(function(){
-    $(this).text('Inventory: ' + Object.keys(infoPairs).length + ' items worth $' + inventory.total.toFixed(2) + '!').fadeIn();
+    $(this).text('Inventory: ' + Object.keys(infoPairs).length + ' items worth ' + formatPrice(inventory.total) + '!').fadeIn();
   })
 
   /* make everything fade in */

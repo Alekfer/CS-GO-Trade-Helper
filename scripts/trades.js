@@ -1,3 +1,8 @@
+/* todo: use g_ActiveInventory.rgInventory to load inventory items and use
+   g_ActiveInventory.rgItemElements to get the elements instead of filtering manually,
+   using rgInventory will increase loading times dramatically as it'll save an ajax
+   request, and rgItemElements will improve accuracy and is just better practise */
+
 $('#nonresponsivetrade_itemfilters').before(
   '<div class="trade_rule selectableNone trade_responsive_hidden"></div>' +
   '<span id="st-load-prices" style="margin-left:0" class="st-log-msg">Loading prices...</span><br>' +
@@ -11,11 +16,11 @@ $('#trade_area').before(
 );
 
 $('#trade_yours .offerheader').after(
-  '<div class="st-trade-offer-totals"><span id="st-my-price">$0.00</span><span id="st-my-items" class="st-display-right">0 items</span><span style="font-size: 16px" id="st-my-types"></span></div>'
+  '<div class="st-trade-offer-totals"><span id="st-my-price">' + formatPrice(0) + '</span><span id="st-my-items" class="st-display-right">0 items</span><span style="font-size: 16px" id="st-my-types"></span></div>'
 );
 
 $('#trade_theirs .offerheader').after(
-  '<div class="st-trade-offer-totals"><span id="st-their-price">$0.00</span><span id="st-their-items" class="st-display-right">0 items</span><span style="font-size: 16px" id="st-their-types"></span></div>'
+  '<div class="st-trade-offer-totals"><span id="st-their-price">' + formatPrice(0) + '</span><span id="st-their-items" class="st-display-right">0 items</span><span style="font-size: 16px" id="st-their-types"></span></div>'
 );
 
 setInterval(function(){
@@ -39,7 +44,7 @@ setInterval(function(){
   })
 
   $('#st-my-types').html(buildItemSummary(total.mine.types, true));
-  $('#st-my-price').text('$' + total.mine.price.toFixed(2));
+  $('#st-my-price').text(formatPrice(total.mine.price));
   $('#st-my-items').text(total.mine.items + (total.mine.items == 1 ? ' item' : ' items'));
 
   /* */
@@ -59,7 +64,7 @@ setInterval(function(){
   })
 
   $('#st-their-types').html(buildItemSummary(total.theirs.types, true));
-  $('#st-their-price').text('$' + total.theirs.price.toFixed(2));
+  $('#st-their-price').text(formatPrice(total.theirs.price));
   $('#st-their-items').text(total.theirs.items + (total.theirs.items == 1 ? ' item' : ' items'));
 }, 350);
 
@@ -115,7 +120,7 @@ getSteamID(false, function(steamID){
 
 function populateDetails(steamID, isMyItems){
   /* if we haven't loaded this inventory yet, just wait */
-  if(!inventories.infoPairs.hasOwnProperty(steamID)) return setTimeout(function(){ populateDetails(steamID, isMyItems) }, 750);
+  if(!inventories.infoPairs.hasOwnProperty(steamID)) return setTimeout(populateDetails.bind(null, steamID, isMyItems), 750);
 
   /* if we've not already done so, add details to the items inside the trade offer
      and then set the meta data property to stop repeatingly adding them as this
@@ -129,14 +134,14 @@ function populateDetails(steamID, isMyItems){
     $(itemsInOffer).data('st-loaded-floats', true);
   }
 
-  /* check if inventory has loaded, if not, wait */
-  var inv = $('#inventory_' + steamID + '_730_2');
+  whenInventoryLoads(steamID, function(){
+    if(Object.keys(inventories.infoPairs[steamID]).length == 0) return setTimeout(populateDetails.bind(null, steamID, isMyItems), 100)
 
-  if(!inv || inv.length == 0 || inv.css('display') === 'none' || Object.keys(inventories.infoPairs[steamID]).length == 0){
-    return setTimeout(function(){ populateDetails(steamID, isMyItems) }, 750);
-  }
+    /* populate each item and then animate them to fade in when the inventory loads */
+    $('.item.app730.context2').each(addItemDetails)
+    $('.st-item-float').hide().fadeIn();
+  })
 
-  $('.item.app730.context2').each(addItemDetails)
 
   function addItemDetails(){
     if(!$(this).attr('id') || $(this).data('st-loaded-floats')) return;
@@ -164,11 +169,9 @@ function populateDetails(steamID, isMyItems){
     /* pull the fraud warning icon down a bit to make space for our overlay */
     $(this).find('.slot_app_fraudwarning').css('margin-top', '15px');
 
-    $(this).append('<span class="st-item-float">' + text + '</span>');
+    $(this).append('<span style="font-size: ' + settings.fontsizetop + 'px" class="st-item-float">' + text + '</span>');
     $(this).data('st-loaded-floats', true);
   }
-
-  $('.st-item-float').hide().fadeIn();
 }
 
 var sort = {
@@ -313,7 +316,7 @@ function loadPricesFor(steamID, isMyItems){
     $(this).data('st-type', item.type);
 
     if(item.price){
-      $(this).append('<span class="st-item-price">$' + item.price.toFixed(2) + '</span>');
+      $(this).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-price">' + formatPrice(item.price) + '</span>');
     } else {
       /* only in trade offers we want to get rid of
          the box shadow to make everything clearer */
@@ -323,7 +326,7 @@ function loadPricesFor(steamID, isMyItems){
       if(['rgb(210, 210, 210)', 'rgb(134, 80, 172)'].indexOf($(this).css('border-color')) > -1) $(this).css('border-color', 'red')
     }
 
-    $(this).append('<span class="st-item-wear">' + item.wear + '</span>');
+    $(this).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-wear">' + item.wear + '</span>');
 
     /* add stickers */
     for(var i = 0; i < item.stickers.length; i++){
@@ -332,4 +335,36 @@ function loadPricesFor(steamID, isMyItems){
       )
     }
   }
+}
+
+/* calls the callback when the inventory for the given steamID loads */
+function whenInventoryLoads(steamID, callback){
+  /* random id to stop event confusion */
+  var id = String(Math.random () * 1000).substr(0, 3);
+
+  /* set up event listener for steam id */
+  window.addEventListener('steamID' + id, function (e) {
+    callback();
+  });
+
+  /* create script that will emit the steam id */
+  var script = document.createElement('script');
+  script.textContent = '(' + function () {
+    var evt = document.createEvent('CustomEvent');
+    evt.initCustomEvent('steamID%%id%%', true, true, true);
+
+    var _interval = setInterval(function(){
+      console.log(g_ActiveInventory.owner.strSteamId == '%%steamIDVariable%%', g_ActiveInventory.BIsPendingInventory())
+      if(g_ActiveInventory.owner.strSteamId == '%%steamIDVariable%%' && !g_ActiveInventory.BIsPendingInventory()){
+        window.dispatchEvent(evt);
+        clearInterval(_interval);
+      }
+    }, 150)
+  } + ')();';
+
+  script.textContent = script.textContent.replace('%%steamIDVariable%%', steamID).replace('%%steamIDVariable%%', steamID);
+  script.textContent = script.textContent.replace('%%id%%', id);
+
+  document.body.appendChild(script);
+  script.parentNode.removeChild(script);
 }

@@ -88,7 +88,7 @@ function getNotifications(){
            notifications defined in mappings.notifications */
         if(notifs[n] > mappings.notifications[n]){
           var count = notifs[n] - mappings.notifications[n];
-
+          newOfferSound.play();
           chrome.notifications.create(n, {
             type: 'basic',
             title: 'CS:GO Trade Helper',
@@ -151,8 +151,10 @@ function getOffers(){
       }
 
       /* accept offers giving us free items */
-      chrome.storage.sync.get('autoaccept', function(accept){
-        if(accept && !offer.items_to_give || offer.items_to_give.length == 0) acceptOffer(offer.tradeofferid, steamid)
+      chrome.storage.sync.get('autoaccept', function(setting){
+        if(setting.autoaccept && (!offer.items_to_give || offer.items_to_give.length == 0) ){
+          acceptOffer(offer.tradeofferid, steamid)
+        }
       })
 
       /* only get incoming trade offers */
@@ -294,29 +296,48 @@ function getBlob(url, callback) {
   xhr.send();
 }
 
-var prices = {};
+var prices = {}, rates = {};
+
+function getPrices(callback){
+  $.ajax({
+    url: 'https://steam.expert/api/items/all/730',
+    success: function(response){
+      callback(response)
+    },
+    error: function(){
+      setTimeout(getPrices.bind(null, callback), 500)
+    }
+  })
+}
+
+function getRates(callback){
+  $.ajax({
+    url: 'http://api.fixer.io/latest?base=USD',
+    success: function(response){
+      callback(response)
+    },
+    error: function(){
+      setTimeout(getRates.bind(null, callback), 500)
+    }
+  })
+}
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   /* requestPrices is sent by tools.js to get the price list */
   if(request.action === 'requestPrices'){
     /* if we haven't got the prices yet, request them and cache them */
     if(Object.keys(prices).length == 0){
-      $.ajax({
-        url: 'https://steam.expert/api/items/all/730',
-        success: function(response){
-          var temp = {};
-          response.data.forEach(function(item){
-            temp[item.market_hash_name] = item.median_month;
-          })
+      getPrices(function(response){
+        var temp = {};
+        response.data.forEach(function(item){
+          temp[item.market_hash_name] = item.median_month;
+        })
 
-          sendResponse({err: false, data: prices = temp});
-        },
-        error: function(){
-          sendResponse({err: true});
-        }
+        sendResponse(prices = temp);
       })
     } else {
       /* if we do already have them, send the cached version */
-      sendResponse({err: false, data: prices});
+      sendResponse(prices);
     }
   } else if(request.action === 'getAPIKey'){
     getAPIKey(function(key){
@@ -329,9 +350,30 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     chrome.storage.sync.get(function(settings){
       sendResponse({
         fvdecimals: settings.hasOwnProperty('fvdecimals') ? settings.fvdecimals : 6,
-        intradebg: settings.hasOwnProperty('intradebg') ? settings.intradebg : 188
+        autoaccept: settings.hasOwnProperty('autoaccept') ? settings.autoaccept : false,
+        intradebg: settings.hasOwnProperty('intradebg') ? settings.intradebg : 188,
+        exchangeabbr: settings.hasOwnProperty('exchangeabbr') ? settings.exchangeabbr : 'USD',
+        exchangesymb: settings.hasOwnProperty('exchangesymb') ? settings.exchangesymb : '$',
+        fontsizetop: settings.hasOwnProperty('fontsizetop') ? settings.fontsizetop : 12,
+        fontsizebottom: settings.hasOwnProperty('fontsizebottom') ? settings.fontsizebottom : 14
       })
     })
+  } else if(request.action === 'getRates'){
+    if(Object.keys(rates).length == 0){
+      getRates(function(response){
+        if(response && response.rates){
+          /* the base is not included
+             in the response, so we set it */
+          response.rates.USD = 1;
+          rates = response.rates;
+        }
+
+        sendResponse(rates)
+      })
+    } else {
+      /* if we already have the rates, send the cached version */
+      sendResponse(rates)
+    }
   }
 
   /* this is necessary or the function becomes invalidated */
