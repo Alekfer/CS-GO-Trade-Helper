@@ -36,7 +36,7 @@ function inventoryProcess(){
   );
 
   getSteamID(false, function(steamID){
-    getInventory(steamID, setupItems, getInventory);
+    getInventory(steamID, setupItems);
 
     getInventoryDetails(steamID, function(details, attempt){
       if(!details){
@@ -157,7 +157,13 @@ function expandInventory(){
 }
 
 /* load the prices into the items in the inventory */
-function setupItems(infoPairs){
+function setupItems(error, infoPairs, idPairs){
+  /* if this error ever occurs on the inventory page, the reason isn't because the inv is private */
+  if(error){
+    $('#st-load-floats').hide();
+    return $('#st-load-prices').text('Error loading inventory, Steam may be having problems.').fadeIn();
+  }
+
   /* if we don't have the prices yet or if the loading inventory element cover is still in place, do not
      load the overlay on the items, check again after a delay */
   if(Object.keys(prices).length == 0 || $("#pending_inventory_page").css("display") == 'block'){
@@ -219,23 +225,9 @@ function setupItems(infoPairs){
 
 /* checks which inventory is active */
 function isInventoryActive(appid, callback){
-  /* random id to stop event confusion */
-  var id = String(Math.random () * 1000).substr(0, 3);
-
-  /* set up event listener for the event */
-  window.addEventListener('activeInventory' + id, function (e) {
-    callback(e.detail === appid);
-  });
-
-  /* create script that will emit the active inventory app id */
-  var script = document.createElement('script');
-  script.textContent = '(' + function () {
+  injectScriptWithEvent(null, function(){
     var evt = document.createEvent('CustomEvent');
-    evt.initCustomEvent('activeInventory%%id%%', true, true, g_ActiveInventory.appid);
-    window.dispatchEvent(evt); } + ')();';
-
-  script.textContent = script.textContent.replace('%%id%%', id);
-
-  document.body.appendChild(script);
-  script.parentNode.removeChild(script);
+    evt.initCustomEvent('%%event%%', true, true, g_ActiveInventory.appid);
+    window.dispatchEvent(evt);
+  }, callback)
 }

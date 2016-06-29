@@ -18,23 +18,19 @@ getProfileData(function(data){
 })
 
 function getProfileData(callback){
-  /* random id to stop event confusion */
-  var id = String(Math.random () * 1000).substr(0, 3);
+  injectScriptWithEvent(null, function(){
+      var evt = document.createEvent('CustomEvent');
+      evt.initCustomEvent('%%event%%', true, true, g_rgProfileData ? g_rgProfileData : null);
+      window.dispatchEvent(evt);
+  }, callback)
+}
 
-  /* set up event listener for steam id */
-  window.addEventListener('profileData' + id, function (e) {
-    callback(e.detail);
-  });
-
-  /* create script that will emit the steam id */
-  var script = document.createElement('script');
-  script.textContent = '(' + function () {
-    var evt = document.createEvent('CustomEvent');
-    evt.initCustomEvent('profileData%%id%%', true, true, g_rgProfileData ? g_rgProfileData : null);
-    window.dispatchEvent(evt); } + ')();';
-
-  script.textContent = script.textContent.replace('%%id%%', id);
-
-  document.body.appendChild(script);
-  script.parentNode.removeChild(script);
+function loadMoreComments(){
+  injectScript({ '%%pageSize%%': 20 }, function(){
+    g_rgCommentThreads[Object.keys(g_rgCommentThreads)[0]].m_cPageSize = '%%pageSize%%';
+    /* iCurrentPage is 0 when the page loads, to reload the comments we need to set it
+       to -1 (GoToPage will return if iCurrentPage == pageToGoTo) and then go to page 0 */
+    g_rgCommentThreads[Object.keys(g_rgCommentThreads)[0]].m_iCurrentPage = -1;
+    g_rgCommentThreads[Object.keys(g_rgCommentThreads)[0]].GoToPage(0)
+  })
 }

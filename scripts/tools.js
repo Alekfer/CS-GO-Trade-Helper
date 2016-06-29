@@ -2,7 +2,7 @@
 var path = window.location.pathname.split('/')
 if(path.join('/') !== '/' && ['tradeoffer'].indexOf(path[1]) == -1 || ['chat'].indexOf(path[2]) > -1 && ['tradingcards'].indexOf(path[1]) == -1 && path.join('/').indexOf('/json/') == -1){
   /* add a nicer background and make the profile element transparent */
-  $('body, .profile_header_bg_texture, .popup_body.popup_menu').css('background', 'url("http://store.akamai.steamstatic.com/public/images/v6/colored_body_top.png?v=2") center top no-repeat #1b2838')
+  $('body, .profile_header_bg_texture').css('background', 'url("http://store.akamai.steamstatic.com/public/images/v6/colored_body_top.png?v=2") center top no-repeat #1b2838')
   $('.profile_small_header_texture').css({'background-image': 'inherit', 'background-color': 'rgba(26,41,58,0.75)', 'box-shadow': '0px 0px 15px -2px black'})
   $('.profile_small_header_bg').css('background-image', 'inherit')
 }
@@ -55,7 +55,7 @@ function buildItemSummary(types, tradeoffer){
 /* verify a steamID */
 function checkVerification(steamID, callback){
   $.ajax({
-    url: 'http://localhost:3000/api/1/verified',
+    url: 'https://i7xx.xyz/api/1/verified',
     data: { steamid: steamID },
     success: callback
   })
@@ -64,15 +64,15 @@ function checkVerification(steamID, callback){
 /* class id to item info */
 var idPairs = {};
 
-function getInventory(steamID, successCallback, errorCallback, attempt){
+function getInventory(steamID, callback, attempt){
   /* if the attempt argument was not provided, set it to 0 */
-  if(arguments.length < 4) attempt = 0
+  if(arguments.length < 3) attempt = 0
 
   console.log('Loading inventory JSON for ' + steamID + ', attempt #' + (attempt + 1));
 
   /* if the total tries is above the threshold, stop retrying */
   if(++attempt > 3){
-    if(typeof(errorCallback) === 'function') errorCallback();
+    if(typeof(callback) === 'function') callback(true, null, null);
     return;
   }
 
@@ -80,6 +80,14 @@ function getInventory(steamID, successCallback, errorCallback, attempt){
   $.ajax({
     url: 'https://steamcommunity.com/profiles/' + steamID + '/inventory/json/730/2',
     success: function(response){
+      if(!response.success){
+        /* we could pass "response.error" as a parameter to this callback,
+           but it doesn't really matter - if the success is false, it usually
+           means the inventory is private or Steam is having problems */
+        if(typeof(callback) === 'function') callback(true, null, null)
+        return
+      }
+
       parseResponse();
       function parseResponse(){
         /* wait until the prices have loaded, we could do this earlier but to
@@ -136,6 +144,10 @@ function getInventory(steamID, successCallback, errorCallback, attempt){
         for(var id in response.rgInventory){
           var item = response.rgInventory[id];
 
+          /* sometimes we just won't get any item here, not sure why, haven't
+             been able to reproduce, so let's just skip over */
+          if(!item) continue;
+
           idPairs[item.classid + '_' + item.instanceid]['id'] = id
           var inspect = idPairs[item.classid + '_' + item.instanceid].inspect
           if(inspect){
@@ -155,11 +167,11 @@ function getInventory(steamID, successCallback, errorCallback, attempt){
           infoPairs[item.id] = idPairs[item.classid + '_' + item.instanceid];
         }
 
-        if(typeof(successCallback) === 'function') successCallback(infoPairs, idPairs);
+        if(typeof(callback) === 'function') callback(false, infoPairs, idPairs);
       }
     },
     error: function(error){
-      if(typeof(errorCallback) === 'function') errorCallback()
+      if(typeof(callback) === 'function') callback(true, null, null)
     }
   });
 }
@@ -261,59 +273,31 @@ function makeAPICall(url, data, callback){
 /* if the tradeoffer boolean is true, it means we're on a trade offer page
    and need to get their steamID through a different variable */
 function getSteamID(mine, callback, tradeoffer){
-  /* random id to stop event confusion */
-  var id = String(Math.random () * 1000).substr(0, 3);
-
-  /* set up event listener for steam id */
-  window.addEventListener('steamID' + id, function (e) {
-    callback(e.detail);
-  });
-
-  /* create script that will emit the steam id */
-  var script = document.createElement('script');
-  script.textContent = '(' + function () {
+  injectScriptWithEvent({ '\'%%steamID%%\'': mine ? 'g_steamID' : tradeoffer ? 'g_ulTradePartnerSteamID' : 'UserYou.strSteamId' }, function(){
     var evt = document.createEvent('CustomEvent');
-    evt.initCustomEvent('steamID%%id%%', true, true, '%%steamIDVariable%%');
-    window.dispatchEvent(evt); } + ')();';
-
-  script.textContent = script.textContent.replace('\'%%steamIDVariable%%\'', mine ? 'g_steamID' : tradeoffer ? 'g_ulTradePartnerSteamID' : 'UserYou.strSteamId');
-  script.textContent = script.textContent.replace('%%id%%', id);
-
-  document.body.appendChild(script);
-  script.parentNode.removeChild(script);
+    evt.initCustomEvent('%%event%%', true, true, '%%steamID%%');
+    window.dispatchEvent(evt);
+  }, callback)
 }
 
 /* we want to manipulate items in the trade offer, so we need to make a script and
    insert it to call Steam functions */
 function addItemToTrade(elementID){
-  var script = document.createElement('script');
-  script.textContent = '(' + function () {
+  injectScript({ '\'%%rgItem%%\'': 'jQuery("#' + elementID + '")[0].rgItem' }, function(){
     FindSlotAndSetItem('%%rgItem%%')
-  } + ')();';
-
-  script.textContent = script.textContent.replace('\'%%rgItem%%\'', 'jQuery("#' + elementID + '")[0].rgItem');
-
-  document.body.appendChild(script);
-  script.parentNode.removeChild(script);
+  })
 }
 
 /* same as above, but for removing items */
 function removeItemFromTrade(elementID){
-  var script = document.createElement('script');
-  script.textContent = '(' + function () {
+  injectScript({ '\'%%rgItem%%\'': 'jQuery("#' + elementID + '")[0].rgItem' }, function(){
     RevertItem('%%rgItem%%')
-  } + ')();';
-
-  script.textContent = script.textContent.replace('\'%%rgItem%%\'', 'jQuery("#' + elementID + '")[0].rgItem');
-
-  document.body.appendChild(script);
-  script.parentNode.removeChild(script);
+  })
 }
 
 /* inTradeOffer, boolean, true when in trade offer page */
 function editActionMenu(inTradeOffer, steamID){
-  var script = document.createElement('script');
-  script.textContent = '(' + function () {
+  injectScript({ '%%steamID%%': steamID, '%%steamID%%': steamID }, function(){
     /* bit of a hacky solution, but we need to do two seperate selections
        and iterations due to the html structure of items within the inventory
        and the actual trade offer items */
@@ -342,14 +326,45 @@ function editActionMenu(inTradeOffer, steamID){
         $J(this)[0].rgItem.actions.push({link: 'https://metjm.net/extensionLink.php?inspectlink=' + inspect, name: 'View on Metjm...'})
       }
     })
-  } + ')();';
-
-  /* replace the two instances with our steam id */
-  script.textContent = script.textContent.replace(/'%%steamID%%'/g, steamID)
-
-  document.body.appendChild(script);
-  script.parentNode.removeChild(script);
+  })
 }
+
+function injectScript(args, source){
+  /* stringify our function */
+  source = source.toString()
+
+  /* insert all of our arguments into the script */
+  for(var arg in args)
+    source = source.replace(arg, args[arg])
+
+    /* inject and remove the script */
+  var script = document.createElement('script');
+  script.textContent = '(' + source + ')();';
+  document.body.appendChild(script)
+  script.parentNode.removeChild(script)
+}
+
+function injectScriptWithEvent(args, source, callback){
+  /* generate a random event name and insert it into the source */
+  var eventID = String(Math.floor(Math.random() * 10000))
+  source = source.toString().replace('%%event%%', eventID)
+
+  /* insert all of our arguments into the script */
+  for(var arg in args)
+    source = source.replace(arg, args[arg])
+
+  /* set up the event listener to invoke the callback */
+  $(window).on(eventID, function(event){
+    callback(event.originalEvent.detail)
+  })
+
+  /* inject and remove the script */
+  var script = document.createElement('script');
+  script.textContent = '(' + source + ')();';
+  document.body.appendChild(script)
+  script.parentNode.removeChild(script)
+}
+
 
 function getCookie(name) {
   var parts = ('; ' + document.cookie).split('; ' + name + '=');

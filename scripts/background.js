@@ -22,11 +22,13 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 });
 
 var headerCookies = []
-chrome.cookies.getAll({url: 'https://steamcommunity.com'}, function(cookies) {
-  headerCookies = cookies.map(function(cookie){
-    return cookie.name + '=' + cookie.value;
-  }).join(';')
-})
+function getAllCookies(){
+  chrome.cookies.getAll({url: 'https://steamcommunity.com'}, function(cookies) {
+    headerCookies = cookies.map(function(cookie){
+      return cookie.name + '=' + cookie.value;
+    }).join(';')
+  })
+}
 
 function getAPIKey(callback){
   /* if no API key is stored locally, create one */
@@ -88,7 +90,13 @@ function getNotifications(){
            notifications defined in mappings.notifications */
         if(notifs[n] > mappings.notifications[n]){
           var count = notifs[n] - mappings.notifications[n];
-          newOfferSound.play();
+
+          /* set the volume of the sound before playing it */
+          chrome.storage.sync.get('volume', function(setting){
+            notificationSound.volume = setting.volume / 100
+            notificationSound.play();
+          })
+
           chrome.notifications.create(n, {
             type: 'basic',
             title: 'CS:GO Trade Helper',
@@ -109,7 +117,7 @@ function getNotifications(){
 }
 
 var knownOffers = [], itemsInTrade = {};
-var newOfferSound = new Audio('../lib/offer.mp3');
+var notificationSound = new Audio('../lib/offer.mp3');
 getOffers();
 function getOffers(){
   makeAPICall('https://api.steampowered.com/IEconService/GetTradeOffers/v1', {
@@ -153,6 +161,7 @@ function getOffers(){
       /* accept offers giving us free items */
       chrome.storage.sync.get('autoaccept', function(setting){
         if(setting.autoaccept && (!offer.items_to_give || offer.items_to_give.length == 0) ){
+          getAllCookies()
           acceptOffer(offer.tradeofferid, steamid)
         }
       })
@@ -195,7 +204,12 @@ function getOffers(){
       data.response.players.forEach(function(player){
         getBlob(player.avatarfull, function(data){
           var offer = offers[player.steamid];
-          newOfferSound.play();
+
+          /* set the volume of the sound before playing it */
+          chrome.storage.sync.get('volume', function(setting){
+            notificationSound.volume = setting.volume / 100
+            notificationSound.play();
+          })
 
           chrome.notifications.create(offer.id, {
             type: 'basic',
@@ -273,7 +287,7 @@ function makeAPICall(url, data, callback){
 
 chrome.notifications.onClicked.addListener(function(id){
   if(mappings.urls[id]){
-    window.open('https://steamcommunity.com/id/me/' + mappings.urls[id]);
+    window.open('https://steamcommunity.com/my/' + mappings.urls[id]);
   } else {
     window.open('https://steamcommunity.com/tradeoffer/' + id);
   }
@@ -355,7 +369,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         exchangeabbr: settings.hasOwnProperty('exchangeabbr') ? settings.exchangeabbr : 'USD',
         exchangesymb: settings.hasOwnProperty('exchangesymb') ? settings.exchangesymb : '$',
         fontsizetop: settings.hasOwnProperty('fontsizetop') ? settings.fontsizetop : 12,
-        fontsizebottom: settings.hasOwnProperty('fontsizebottom') ? settings.fontsizebottom : 14
+        fontsizebottom: settings.hasOwnProperty('fontsizebottom') ? settings.fontsizebottom : 14,
+        volume: settings.hasOwnProperty('volume') ? settings.volume : 100
       })
     })
   } else if(request.action === 'getRates'){

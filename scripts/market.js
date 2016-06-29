@@ -18,7 +18,7 @@ function populateWithLinks(){
 
       var inspect = item.market_actions[0].link.replace('%assetid%', item.id);
       $('.listing_' + id).find('.market_listing_game_name').eq(0).after(
-        ' - <span class="market_listing_game_name">view on</span> <a class="market_listing_game_name" target="_blank" href="https://beta.glws.org/#' + inspect.split('%20')[1] + '">glws.org</a>' +
+        ' - <span class="market_listing_game_name">view on</span> <a class="market_listing_game_name" target="_blank" href="https://i7xx.xyz/#/' + inspect.split('%20')[1] + '">floatr</a>' +
         ' / <a class="market_listing_game_name" id="st-metjm" target="_blank" href="https://metjm.net/extensionLink.php?inspectlink=' + inspect + '">metjm.net</a>'
       );
 
@@ -33,42 +33,19 @@ function populateWithLinks(){
 
 /* return asset information for the item */
 function getItem(listingID, callback){
-  /* random id to stop event confusion */
-  var id = String(Math.random () * 1000).substr(0, 3);
-
-  /* set up event listener for steam id */
-  window.addEventListener('assetInfo' + id, function (e) {
-    callback(e.detail);
-  });
-
-  /* create script that will emit the steam id */
-  var script = document.createElement('script');
-  script.textContent = '(' + function () {
+  injectScriptWithEvent({ '%%listingID%%': listingID }, function(){
     var evt = document.createEvent('CustomEvent');
-    evt.initCustomEvent('assetInfo%%id%%', true, true, g_rgAssets[730][2][g_rgListingInfo['%%listingID%%'].asset.id]);
-    window.dispatchEvent(evt); } + ')();';
-
-  script.textContent = script.textContent.replace('%%listingID%%', listingID);
-  script.textContent = script.textContent.replace('%%id%%', id);
-
-  document.body.appendChild(script);
-  script.parentNode.removeChild(script);
+    evt.initCustomEvent('%%event%%', true, true, g_rgAssets[730][2][g_rgListingInfo['%%listingID%%'].asset.id]);
+    window.dispatchEvent(evt);
+  }, callback)
 }
 
 /* the injection below will fire 'populateWithLinks' when the user
    changes the page of the items they're on */
 
-/* random id to stop event confusion */
-var id = String(Math.random () * 1000).substr(0, 3);
-
-/* set up event listener for steam id */
-window.addEventListener('newResults' + id, populateWithLinks);
-
-/* create script that will emit the steam id */
-var script = document.createElement('script');
-script.textContent = '(' + function () {
+injectScriptWithEvent(null, function(){
   var evt = document.createEvent('CustomEvent');
-  evt.initCustomEvent('newResults%%id%%', true, true, '');
+  evt.initCustomEvent('%%event%%', true, true, '');
   g_oSearchResults.OnAJAXComplete = function () {
     g_oSearchResults.m_bLoading = false;
     window.dispatchEvent(evt);
@@ -76,9 +53,4 @@ script.textContent = '(' + function () {
   /* set max page size to 50 and reload */
   g_oSearchResults.m_cPageSize = 50;
   g_oSearchResults.GoToPage(1);
-} + ')();';
-
-script.textContent = script.textContent.replace('%%id%%', id);
-
-document.body.appendChild(script);
-script.parentNode.removeChild(script);
+}, populateWithLinks)

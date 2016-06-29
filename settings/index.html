@@ -28,7 +28,7 @@
     .table-of-contents a.active { border-left: 3px solid #29a4d6 }
     .table-of-contents a:hover:not(.active) { border-left: 1px solid #29a4d6 }
     .collapsible-header { font-family: Roboto; font-size: 18px }
-    .collapsible-body p { font-family: Roboto Light; font-size: 15px; padding: 1rem }
+    .collapsible-body p { font-family: Roboto; font-weight: 300; font-size: 15px; padding: 1rem }
     .tabs .indicator { background-color: #29a4d6 }
     .tabs .tab a { font-size: 15px; font-family: Roboto; color: rgba(0, 0, 0, 0.5) }
     .tabs .tab a.active { color: rgba(0, 0, 0, 0.8) }
@@ -44,6 +44,7 @@
     .save-btn { width: 20%; float: right }
     .indent { margin-left: 15px }
     .col.s6 .range-field { margin-top: 0px }
+    .collab-title { font-family: Roboto; font-weight: 300 }
     </style>
 
     <div class="row">
@@ -57,14 +58,14 @@
           <li><a href="#changelog">Change log</a></li>
         </ul>
       </div>
-      <div class="col m6 l8">
+      <div class="col m9 l8">
         <div class="section scrollspy" id="settings">
           <h4 class="header left-align">Settings</h4>
           <hr class="header-sep">
 
           <div class="row">
-            <div class="col s4 m3">
-              <div style="height: 285px" class="card-panel hoverable lighten-5 z-depth-1">
+            <div class="col s12 m6 l4">
+              <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
                 <span class="card-title">Float Decimals</span>
                 <p>The number of decimals to display for float value.</p>
                 <p class="range-field">
@@ -72,7 +73,7 @@
                 </p>
 
                 <div class="row">
-                  <div class="col s6">
+                  <div class="col s6 m12 l6">
                     <div class="z-depth-1 example-item-holder">
                       <span id="exampleFloatLeft" class="example-item-float"></span>
                       <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
@@ -80,7 +81,7 @@
                       <span class="example-item-wear">FN</span>
                     </div>
                   </div>
-                  <div class="col s6">
+                  <div class="col s6 m12 l6">
                     <div class="z-depth-1 example-item-holder">
                       <span id="exampleFloatRight" class="example-item-float"></span>
                       <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
@@ -91,8 +92,8 @@
                 </div>
               </div>
             </div>
-            <div class="col s4 m3">
-              <div style="height: 285px" class="card-panel hoverable lighten-5 z-depth-1">
+            <div class="col s12 m6 l4">
+              <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
                 <span class="card-title">Items in Trade</span>
                 <p>Appearance for items already in a trade.</p>
                 <p class="range-field">
@@ -100,7 +101,7 @@
                 </p>
 
                 <div class="row">
-                  <div class="col s6">
+                  <div class="col s6 m12 l6">
                     <div id="exampleTradeLeft" class="z-depth-1 example-item-holder">
                       <span class="example-item-float"></span>
                       <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpou-6kejhjxszFJTwT09S5g4yCmfDLP7LWnn8f65Mli7DH9tXziQTgqUY4YmmnINSUJwQ-YVnT_wS7yOzngMW07ZrOmmwj5HeObpQQtA/96fx96f">
@@ -108,7 +109,7 @@
                       <span class="example-item-wear">FN</span>
                     </div>
                   </div>
-                  <div class="col s6">
+                  <div class="col s6 m12 l6">
                     <div id="exampleTradeRight" class="z-depth-1 example-item-holder">
                       <span class="example-item-float"></span>
                       <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17P7NdTRH-t26q4SZlvD7PYTQgXtu5Mx2gv2P9o6migzl_Us5ZmCmLYDDJgU9NA6B81S5yezvg8e-7cycnXJgvHZx5WGdwUJqz1Tl4g/96fx96f">
@@ -119,17 +120,17 @@
                 </div>
               </div>
             </div>
-            <div class="col s4 m3">
-              <div style="height: 285px" class="card-panel hoverable lighten-5 z-depth-1">
+            <div class="col s12 m6 l4">
+              <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
                 <span class="card-title">Font Size</span>
                 <p>The font size of the float value, price and wear.</p>
                 <div class="row">
-                  <div class="col s6">
+                  <div class="col s6 m12 l6">
                     <p class="range-field">
                       <input type="range" id="fontSizeTop" min="6" max="17" value="12"/>
                     </p>
                   </div>
-                  <div class="col s6">
+                  <div class="col s6 m12 l6">
                     <p class="range-field">
                       <input type="range" id="fontSizeBottom" min="6" max="17" value="14"/>
                     </p>
@@ -153,8 +154,8 @@
                 </div>
               </div>
             </div>
-            <div class="col s4 m3">
-              <div style="height: 285px" class="card-panel hoverable lighten-5 z-depth-1">
+            <div class="col s12 m6 l4">
+              <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
                 <span class="card-title">Currency Conversion</span>
                 <p>1 USD = <span id="exchange">1 USD</span></p>
                 <div class="row">
@@ -197,13 +198,19 @@
                 </div>
               </div>
             </div>
-            <div class="col s4 m3">
-              <div style="height: 285px" class="card-panel hoverable lighten-5 z-depth-1">
+            <div class="col s12 m6 l4">
+              <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
                 <span class="card-title">Empty Trades</span>
                 <p>Automatically accept empty trade offers where you are not giving any items away.</p>
                 <p>
                   <input type="checkbox" id="autoAccept" />
                   <label for="autoAccept">Auto Accept</label>
+                </p>
+
+                <span class="card-title">Notification Volume</span>
+                <p>Volume for sounds when notifications occur.</p>
+                <p style="margin-bottom: 10px" class="range-field">
+                  <input type="range" id="volume" min="0" max="100" value="100"/>
                 </p>
               </div>
             </div>
@@ -226,34 +233,34 @@
             </div>
             <div id="f-trades" class="col s12">
               <div class="row">
-                <div class="col s4 m4">
+                <div class="col s12 m6 l4">
                   <div class="card hoverable">
-                    <div class="card-image"><img src="https://i.imgur.com/LYeraie.png" style="width:385px"></div>
-                    <div class="card-content">
+                    <div class="card-image"><img src="https://i.imgur.com/LYeraie.png" style="/*width:385px*/"></div>
+                    <div class="card-content" style="height: auto">
                       <p>Trades have a quick summary of item types and item quantities. Prices and float values are also displayed for each item.</p>
                     </div>
                   </div>
                 </div>
-                <div class="col s4 m4">
+                <div class="col s12 m6 l4">
                   <div class="card hoverable">
-                    <div class="card-image"><img src="https://i.imgur.com/ViYxJfn.png" style="width:385px"></div>
-                    <div class="card-content">
+                    <div class="card-image"><img src="https://i.imgur.com/ViYxJfn.png" style="/*width:385px*/"></div>
+                    <div class="card-content" style="height: auto">
                       <p>Quick shortcut links to view the item on <a target="_blank" href="https://csgo.exchange">csgo.exchange</a> and to easily screenshot the item on <a target="_blank" href="http://metjm.net">metjm.net</a>.</p>
                     </div>
                   </div>
                 </div>
-                <div class="col s4 m4">
+                <div class="col s12 m6 l4">
                   <div class="card hoverable">
-                    <div class="card-image"><img src="https://i.imgur.com/zzwfA9K.png" style="width:385px"></div>
-                    <div class="card-content">
-                      <p>Items that are already in a trade appear with a different colour background.</p>
+                    <div class="card-image"><img src="https://i.imgur.com/zzwfA9K.png" style="/*width:385px*/"></div>
+                    <div class="card-content" style="height: auto">
+                      <p>Items that are already in a trade appear with a different colour background to prevent items becoming unavailable in trade offers.</p>
                     </div>
                   </div>
                 </div>
-                <div class="col s4 m4">
+                <div class="col s12 m6 l4">
                   <div class="card hoverable">
-                    <div class="card-image"><img src="https://i.imgur.com/5tnOqG3.png" style="width:385px"></div>
-                    <div class="card-content">
+                    <div class="card-image"><img src="https://i.imgur.com/5tnOqG3.png" style="/*width:385px*/"></div>
+                    <div class="card-content" style="height: auto">
                       <p>'Take All' will take all items on the page. 'Take Keys' button will take all the keys on the current page or a specified number of keys.</p>
                     </div>
                   </div>
@@ -261,44 +268,52 @@
               </div>
             </div>
             <div id="f-tradeoffers" class="col s12">
-              <div class="col s6 m6">
+              <div class="col s12 m12 l6">
                 <div class="card hoverable">
                   <div class="card-image"><img src="https://i.imgur.com/iE9M38p.png"></div>
-                  <div class="card-content">
+                  <div class="card-content" style="height: auto">
                     <p>Trade offers have a quick summary of item types and item quantities. Each items displays its price and float value. Items are sorted in descending order by price.</p>
                   </div>
                 </div>
               </div>
-              <div class="col s6 m6">
+              <div class="col s12 m12 l6">
                 <div class="card hoverable">
                   <div class="card-image"><img src="https://i.imgur.com/AJ39Etm.png"></div>
-                  <div class="card-content">
+                  <div class="card-content" style="height: auto">
                     <p>Items that have no price available appear vividly red to stand out and are not counted in the trade offer total.</p>
                   </div>
                 </div>
               </div>
-              <div class="col s6 m6">
+              <div class="col s12 m12 l6">
                 <div class="card hoverable">
-                  <div class="card-image"><img src="https://i.imgur.com/cQpLXMI.png"></div>
-                  <div class="card-content">
+                  <div class="card-image"><img src="https://i.imgur.com/cQpLXMI.png" style="width:auto"></div>
+                  <div class="card-content" style="height: auto">
                     <p>Reminders appear in offers where you either recieve no items or are not sending any items.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col s12 m12 l6">
+                <div class="card hoverable">
+                  <div class="card-image"><img src="https://i.imgur.com/0z2DNT4.png" style="width:auto"></div>
+                  <div class="card-content" style="height: auto">
+                    <p>Notifications appear for new items, new trade offers, new friend/group invites and new profile comments.</p>
                   </div>
                 </div>
               </div>
             </div>
             <div id="f-inventory" class="col s12">
-              <div class="col s6 m6">
+              <div class="col s12 m12 l6">
                 <div class="card hoverable">
-                  <div class="card-image"><img src="https://i.imgur.com/JD050lo.png" style="width:589px"></div>
-                  <div class="card-content">
+                  <div class="card-image"><img src="https://i.imgur.com/JD050lo.png" style="/*width:589px*/"></div>
+                  <div class="card-content" style="height: auto">
                     <p>Inventories can be sorted by both price and float value in ascending/descending order.</p>
                   </div>
                 </div>
               </div>
-              <div class="col s6 m6">
+              <div class="col s12 m12 l6">
                 <div class="card hoverable">
-                  <div class="card-image"><img src="https://i.imgur.com/02auuRu.png" style="width:589px"></div>
-                  <div class="card-content">
+                  <div class="card-image"><img src="https://i.imgur.com/02auuRu.png" style="/*width:589px*/"></div>
+                  <div class="card-content" style="height: auto">
                     <p>To make inventories easier to view, they can be expanded to become pageless and scrollable.</p>
                   </div>
                 </div>
@@ -308,23 +323,23 @@
               <div class="col s12 m12">
                 <div class="card hoverable">
                   <div class="card-image"><img src="http://i.imgur.com/IESR1x5.png"></div>
-                  <div class="card-content">
+                  <div class="card-content" style="height: auto">
                     <p>The profile header is tidied up and header backgrounds are replaced with a more aesthetically pleasing look.</p>
                   </div>
                 </div>
               </div>
-              <div class="col s6 m6">
+              <div class="col s12 m12 l6">
                 <div class="card hoverable">
                   <div class="card-image"><img src="http://i.imgur.com/jkPFbD5.png"></div>
-                  <div class="card-content">
+                  <div class="card-content" style="height: auto">
                     <p>Important profiles (such as high tier traders and bots) will have verification above the profile picture.</p>
                   </div>
                 </div>
               </div>
-              <div class="col s6 m6">
+              <div class="col s12 m12 l6">
                 <div class="card hoverable">
                   <div class="card-image"><img src="http://i.imgur.com/lMKF5DL.png"></div>
-                  <div class="card-content">
+                  <div class="card-content" style="height: auto">
                     <p>Verification for important profiles also appears on the trade offers page after clicking 'show prices'.</p>
                   </div>
                 </div>
@@ -332,7 +347,7 @@
               <div class="col s12 m12">
                 <div class="card hoverable">
                   <div class="card-image"><img src="https://i.imgur.com/oDWkGCY.png"></div>
-                  <div class="card-content">
+                  <div class="card-content" style="height: auto">
                     <p>Invites now show inventory value that directly link to the user's inventory. A <a target="_blank" href="https://steamrep.com">SteamRep</a> status is also displayed by each invite.</p>
                   </div>
                 </div>
@@ -340,23 +355,23 @@
               <div class="col s12 m12">
                 <div class="card hoverable">
                   <div class="card-image"><img src="http://i.imgur.com/uqpH1EL.png"></div>
-                  <div class="card-content">
+                  <div class="card-content" style="height: auto">
                     <p>Friends' inventories can be easily loaded and searched for any CS:GO item.</p>
                   </div>
                 </div>
               </div>
-              <div class="col s6 m6">
+              <div class="col s12 m12 l6">
                 <div class="card hoverable">
                   <div class="card-image"><img src="https://i.imgur.com/IDtzwOS.png"></div>
-                  <div class="card-content">
+                  <div class="card-content" style="height: auto">
                     <p>Search anyone else's friend's inventory too.</p>
                   </div>
                 </div>
               </div>
-              <div class="col s6 m6">
+              <div class="col s12 m12 l6">
                 <div class="card hoverable">
                   <div class="card-image"><img src="https://i.imgur.com/KT1ifsF.png"></div>
-                  <div class="card-content">
+                  <div class="card-content" style="height: auto">
                     <p>Filtering is simplistic and easy.</p>
                   </div>
                 </div>
@@ -370,27 +385,27 @@
           <hr class="header-sep">
 
           <div class="row">
-            <div class="col s4">
+            <div class="col s12 m12 l4">
               <a target="_blank" href="https://csgo.exchange">
                 <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
                   <div class="row valign-wrapper">
                     <div class="col s2"><img src="http://csgo.exchange/images/logo.png" width="50px" height="50px" class="z-depth-1"></div>
-                    <div class="col s10">
-                      <h5 style="font-family: Roboto Light">csgo.exchange</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
-                      <span>for providing detailed information about items</span>
+                    <div class="col s8">
+                      <h5 class="collab-title">csgo.exchange</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
+                      <span>for providing detailed info about items</span>
                     </div>
                   </div>
                 </div>
               </a>
             </div>
 
-            <div class="col s4">
+            <div class="col s12 m12 l4">
               <a target="_blank" href="https://metjm.net">
                 <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
                   <div class="row valign-wrapper">
                     <div class="col s2"><img src="http://metjm.net/csgo/web/img/logo.svg" width="50px" height="50px"></div>
-                    <div class="col s10">
-                      <h5 style="font-family: Roboto Light">metjm.net</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
+                    <div class="col s8">
+                      <h5 class="collab-title">metjm.net</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
                       <span>for providing a quick screenshot method</span>
                     </div>
                   </div>
@@ -398,14 +413,14 @@
               </a>
             </div>
 
-            <div class="col s4">
+            <div class="col s12 m12 l4">
               <a target="_blank" href="https://steam.expert">
                 <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
                   <div class="row valign-wrapper">
                     <div class="col s2"><img src="http://i.imgur.com/QW6t8E0.png" width="50px" height="50px"></div>
-                    <div class="col s10">
-                      <h5 style="font-family: Roboto Light">steam.expert</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
-                      <span>for providing a pricing api</span>
+                    <div class="col s8">
+                      <h5 class="collab-title">steam.expert</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
+                      <span>for providing a pricing api for cs:go items</span>
                     </div>
                   </div>
                 </div>
@@ -420,7 +435,24 @@
 
           <ul class="collapsible" data-collapsible="accordion">
             <li>
-              <div class="collapsible-header active">v 1.0.2</div>
+              <div class="collapsible-header active">v 1.0.3</div>
+              <div class="collapsible-body">
+                <p>
+                  <span>- improved script interaction with the web page (DRY concept)</span>
+                  <br><span>- notification sounds now occur for friend/group invites, new comments and new items</span>
+                  <br><span>- fixed bug with auto accepting trade offers</span>
+                  <br><span class="indent">- cookies are now updated before every offer is accepted</span>
+                  <br><span>- fixed bugs with notification urls</span>
+                  <br><span>- added notification volume setting</span>
+                  <br><span>- added better error handling for retrieving inventories</span>
+                  <br><span>- added <a target="_blank" href="https://i7xx.xyz">floatr</a> to market listings</span>
+                  <br><span>- added basis for loading more comments on profile page, to be implemented soon</span>
+                  <br><span>- made the settings page more responsive</span>
+                </p>
+              </div>
+            </li>
+            <li>
+              <div class="collapsible-header">v 1.0.2</div>
               <div class="collapsible-body">
                 <p>
                   <span>- added steam id verification for important profiles (bots, high tier traders)</span>
@@ -430,6 +462,10 @@
                   <br><span class="indent">- added currency setting</span>
                   <br><span>- added font size customisation</span>
                   <br><span class="indent">- font size for float/wear/price can now be adjusted</span>
+                  <br><span>- faster loading times for inventories inside a trade offer</span>
+                  <br><span>- increased number of items shown on market page to 50</span>
+                  <br><span>- better error handling (fallback requests) for ajax requests</span>
+                  <br><span>- various bug fixes</span>
                 </p>
               </div>
             </li>

@@ -25,7 +25,7 @@ $('#st-search-load').click(function(){
   if(steamids.length > 0) inventoryFromIndex(0)
 
   function inventoryFromIndex(index){
-    getInventory(steamids[index], function(infoPairs, idPairs){
+    getInventory(steamids[index], function(error, infoPairs, idPairs){
       inventories[steamids[index]] = infoPairs;
       if((index + 1) < steamids.length) inventoryFromIndex((index + 1))
       $('#st-loaded').text('Loading: ' + Object.keys(inventories).length + ' / ' + totalFriends);

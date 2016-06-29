@@ -71,7 +71,8 @@ setInterval(function(){
 var inventories = {
   infoPairs: {},
   details: {},
-  itemsInTrade: {}
+  itemsInTrade: {},
+  errorLoadingInv: {}
 };
 
 /* get my inventory */
@@ -80,9 +81,15 @@ getSteamID(true, function(steamID){
     inventories.itemsInTrade['me'] = response.items;
   });
 
-  getInventory(steamID, function(infoPairs, idPairs){
+  getInventory(steamID, function(error, infoPairs, idPairs){
     inventories.infoPairs[steamID] = infoPairs;
-    loadPricesFor(steamID, true);
+
+    inventories.errorLoadingInv[steamID] = error;
+    if(error){
+      $('#st-load-prices').text('Error: unable to load your inventory.');
+    } else {
+      loadPricesFor(steamID, true);
+    }
   });
 
   getInventoryDetails(steamID, function(details, attempt){
@@ -102,9 +109,15 @@ getSteamID(false, function(steamID){
     inventories.itemsInTrade[steamID] = response.items;
   });
 
-  getInventory(steamID, function(infoPairs, idPairs){
+  getInventory(steamID, function(error, infoPairs, idPairs){
     inventories.infoPairs[steamID] = infoPairs;
-    loadPricesFor(steamID, false);
+
+    inventories.errorLoadingInv[steamID] = error;
+    if(error){
+      $('#st-load-prices').text('Error: unable to load partner\'s inventory.');
+    } else {
+      loadPricesFor(steamID, false);
+    }
   });
 
   getInventoryDetails(steamID, function(details, attempt){
@@ -135,7 +148,7 @@ function populateDetails(steamID, isMyItems){
   }
 
   whenInventoryLoads(steamID, function(){
-    if(Object.keys(inventories.infoPairs[steamID]).length == 0) return setTimeout(populateDetails.bind(null, steamID, isMyItems), 100)
+    if(Object.keys(inventories.infoPairs[steamID]).length == 0 && !inventories.errorLoadingInv[steamID]) return setTimeout(populateDetails.bind(null, steamID, isMyItems), 100)
 
     /* populate each item and then animate them to fade in when the inventory loads */
     $('.item.app730.context2').each(addItemDetails)
@@ -162,7 +175,7 @@ function populateDetails(steamID, isMyItems){
       text += ' ' + inventories.details[steamID][id].phase;
     }
 
-    if(inventories.details[steamID][id].seed){
+    if(inventories.details[steamID][id].seed && inventories.infoPairs[steamID][id]){
       text += formatPattern(inventories.infoPairs[steamID][id].name, inventories.details[steamID][id].seed);
     }
 
@@ -310,7 +323,9 @@ function loadPricesFor(steamID, isMyItems){
        didn't load as expected, but I'm not sure yet. so in the case this happens
        and we can't match the id to an item in the inventory, just log and skip the
        item (we have no class id to match as a back up either...) */
-    if(!item) return console.log('item glitched', steamID, item);
+    if(!item){
+      return console.log('item glitched', steamID, item);
+    }
 
     $(this).data('st-price', Number(item.price) || 0);
     $(this).data('st-type', item.type);
@@ -339,32 +354,15 @@ function loadPricesFor(steamID, isMyItems){
 
 /* calls the callback when the inventory for the given steamID loads */
 function whenInventoryLoads(steamID, callback){
-  /* random id to stop event confusion */
-  var id = String(Math.random () * 1000).substr(0, 3);
-
-  /* set up event listener for steam id */
-  window.addEventListener('steamID' + id, function (e) {
-    callback();
-  });
-
-  /* create script that will emit the steam id */
-  var script = document.createElement('script');
-  script.textContent = '(' + function () {
+  injectScriptWithEvent({ '%%steamID%%': steamID, '%%steamID%%': steamID }, function(){
     var evt = document.createEvent('CustomEvent');
-    evt.initCustomEvent('steamID%%id%%', true, true, true);
+    evt.initCustomEvent('%%event%%', true, true, true);
 
     var _interval = setInterval(function(){
-      console.log(g_ActiveInventory.owner.strSteamId == '%%steamIDVariable%%', g_ActiveInventory.BIsPendingInventory())
-      if(g_ActiveInventory.owner.strSteamId == '%%steamIDVariable%%' && !g_ActiveInventory.BIsPendingInventory()){
+      if(g_ActiveInventory.owner.strSteamId == '%%steamID%%' && !g_ActiveInventory.BIsPendingInventory()){
         window.dispatchEvent(evt);
         clearInterval(_interval);
       }
     }, 150)
-  } + ')();';
-
-  script.textContent = script.textContent.replace('%%steamIDVariable%%', steamID).replace('%%steamIDVariable%%', steamID);
-  script.textContent = script.textContent.replace('%%id%%', id);
-
-  document.body.appendChild(script);
-  script.parentNode.removeChild(script);
+  }, callback)
 }
