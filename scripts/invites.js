@@ -7,6 +7,7 @@ $('.invite_row').sort(function(a, b){
 var queue = [];
 $('.invite_row').each(function(){
   $(this).data('st-level', Number($(this).find('.friendPlayerLevelNum').text()))
+  $(this).data('st-value', -1)
   var steamID = $(this).find('.acceptDeclineBlock').children()[0].href.split('\'')[1];
   queue.push({steamID: steamID, element: this})
 })
@@ -37,6 +38,10 @@ function processQueue(){
       for(var item in infoPairs){
         if(infoPairs[item] && infoPairs[item].price) invValue += infoPairs[item].price
       }
+
+      /* if there was an error loading the inventory, set the inv value to -1
+         so these profiles sink to the bottom when sorting */
+      if(error) invValue = -1
       $(info.element).data('st-value', invValue);
 
       var bans = [];
@@ -78,8 +83,8 @@ $('#errorText').after(
       '<center><span class="st-invite-block">You have ' + gInvites + ' group invite' + (gInvites != 'no' && gInvites == 1 ? '' : 's') + '</span><br>' + (gInvites === 'no' ? '' : gInviteButtons) + '</center>' +
     '</div>' +
   '</div></div>' +
-  '<a id="st-sort-level" style="margin: 5px 5px 10px 0px" class="btn_small btnv6_blue_hoverfade"><span>Sort by Level</span></a>' +
-  '<a id="st-sort-value" style="margin: 5px 5px 10px 0px" class="btn_small btnv6_blue_hoverfade"><span>Sort by Inventory Value</span></a>'
+  '<a id="st-sort-level" style="margin: 5px 5px 0px 0px" class="btn_small btnv6_blue_hoverfade"><span>Sort by Level</span></a>' +
+  '<a id="st-sort-value" style="margin: 5px 5px 0px 0px" class="btn_small btnv6_blue_hoverfade"><span>Sort by Inventory Value</span></a>'
 )
 $('.sectionText').remove()
 
@@ -89,6 +94,14 @@ var sortAsc = true;
     $('.invite_row').sort(function(a, b){
       var personOne = $(a).data('st-' + filter);
       var personTwo = $(b).data('st-' + filter);
+
+      if(filter === 'value'){
+      /* if the attribute is -1 it means we have no inventory value yet, so adjust the metadata
+         for the inv value to ensure that these profiles with no information yet always sink to the bottom */
+        if(personOne === -1) personOne = sortAsc ? -1 : 9999999;
+        if(personTwo === -1) personTwo = sortAsc ? -1 : 9999999;
+      }
+
       return sortAsc ? personTwo - personOne : personOne - personTwo;
     }).appendTo('#BG_bottom');
     sortAsc = !sortAsc;

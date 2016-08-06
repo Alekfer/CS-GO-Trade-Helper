@@ -1,8 +1,3 @@
-/* todo: use g_ActiveInventory.rgInventory to load inventory items and use
-   g_ActiveInventory.rgItemElements to get the elements instead of filtering manually,
-   using rgInventory will increase loading times dramatically as it'll save an ajax
-   request, and rgItemElements will improve accuracy and is just better practise */
-
 $('#nonresponsivetrade_itemfilters').before(
   '<div class="trade_rule selectableNone trade_responsive_hidden"></div>' +
   '<span id="st-load-prices" style="margin-left:0" class="st-log-msg">Loading prices...</span><br>' +
@@ -75,61 +70,33 @@ var inventories = {
   errorLoadingInv: {}
 };
 
-/* get my inventory */
-getSteamID(true, function(steamID){
-  chrome.runtime.sendMessage({action: 'getTradeItems', steamID: 'me'}, function(response){
-    inventories.itemsInTrade['me'] = response.items;
-  });
+/* true = me (user), false = partner, use iteration this way to reduce code
+   repetition, get SteamID, inventory, parse, prices, float etc for each user */
+[true, false].forEach(function(mine){
+  getSteamID(mine, function(steamID){
+    chrome.runtime.sendMessage({action: 'getTradeItems', steamID: mine ? 'me' : steamID}, function(response){
+      inventories.itemsInTrade[mine ? 'me' : steamID] = response.items;
+    });
 
-  getInventory(steamID, function(error, infoPairs, idPairs){
-    inventories.infoPairs[steamID] = infoPairs;
+    getInventoryFromOffer(mine ? 'You' : 'Them', function(data){
+      console.log(data)
+      parseInventory(data.steamID, replicateSteamResponse(data), function(infoPairs, idPairs){
+        inventories.infoPairs[data.steamID] = infoPairs;
+        loadPricesFor(steamID, mine);
+      })
+    })
 
-    inventories.errorLoadingInv[steamID] = error;
-    if(error){
-      $('#st-load-prices').text('Error: unable to load your inventory.');
-    } else {
-      loadPricesFor(steamID, true);
-    }
-  });
+    getInventoryDetails(steamID, function(details, attempt){
+      if(!details){
+        return $('#st-load-' + (mine ? 'my' : 'partner') + '-floats').text('Loading ' + (mine ? 'my' : 'partner') + ' floats: attempt #' + attempt);
+      }
 
-  getInventoryDetails(steamID, function(details, attempt){
-    if(!details){
-      return $('#st-load-my-floats').text('Loading my floats: attempt #' + attempt);
-    }
-
-    $('#st-load-my-floats').text('Loaded my floats successfully...');
-    inventories.details[steamID] = details;
-    populateDetails(steamID, true);
-  }, 0)
-}, true);
-
-/* get their inventory */
-getSteamID(false, function(steamID){
-  chrome.runtime.sendMessage({action: 'getTradeItems', steamID: steamID}, function(response){
-    inventories.itemsInTrade[steamID] = response.items;
-  });
-
-  getInventory(steamID, function(error, infoPairs, idPairs){
-    inventories.infoPairs[steamID] = infoPairs;
-
-    inventories.errorLoadingInv[steamID] = error;
-    if(error){
-      $('#st-load-prices').text('Error: unable to load partner\'s inventory.');
-    } else {
-      loadPricesFor(steamID, false);
-    }
-  });
-
-  getInventoryDetails(steamID, function(details, attempt){
-    if(!details){
-      return $('#st-load-partner-floats').text('Loading partner floats: attempt #' + attempt);
-    }
-
-    $('#st-load-partner-floats').text('Loaded partner floats successfully...');
-    inventories.details[steamID] = details;
-    populateDetails(steamID, false);
-  }, 0)
-}, true);
+      $('#st-load-' + (mine ? 'my' : 'partner') + '-floats').text('Loaded ' + (mine ? 'my' : 'partner') + ' floats successfully...');
+      inventories.details[steamID] = details;
+      populateDetails(steamID, mine);
+    }, 0)
+  }, true)
+})
 
 function populateDetails(steamID, isMyItems){
   /* if we haven't loaded this inventory yet, just wait */
@@ -148,7 +115,7 @@ function populateDetails(steamID, isMyItems){
   }
 
   whenInventoryLoads(steamID, function(){
-    if(Object.keys(inventories.infoPairs[steamID]).length == 0 && !inventories.errorLoadingInv[steamID]) return setTimeout(populateDetails.bind(null, steamID, isMyItems), 100)
+    if(Object.keys(inventories.infoPairs[steamID]).length == 0) return setTimeout(populateDetails.bind(null, steamID, isMyItems), 100)
 
     /* populate each item and then animate them to fade in when the inventory loads */
     $('.item.app730.context2').each(addItemDetails)
@@ -354,15 +321,44 @@ function loadPricesFor(steamID, isMyItems){
 
 /* calls the callback when the inventory for the given steamID loads */
 function whenInventoryLoads(steamID, callback){
-  injectScriptWithEvent({ '%%steamID%%': steamID, '%%steamID%%': steamID }, function(){
-    var evt = document.createEvent('CustomEvent');
-    evt.initCustomEvent('%%event%%', true, true, true);
-
+  injectScriptWithEvent({ '%%steamID%%': steamID }, function(){
     var _interval = setInterval(function(){
       if(g_ActiveInventory.owner.strSteamId == '%%steamID%%' && !g_ActiveInventory.BIsPendingInventory()){
-        window.dispatchEvent(evt);
+        window.dispatchEvent(new CustomEvent('%%event%%', {
+          detail: true
+        }));
         clearInterval(_interval);
       }
     }, 150)
+  }, callback)
+}
+
+/* retrieves a given inventory without needing to make a request */
+function getInventoryFromOffer(who, callback){
+  injectScriptWithEvent({ '%%who%%': who, '%%who1%%': who }, function(){
+    /* the 'who' parameter determines if we want our inventory or our partner's,
+       we evaluate this to get UserYou or UserThem respectively */
+    var _interval = setInterval(function(){
+      var user = '%%who%%' === 'You' ? UserYou : UserThem;
+      if(user.getInventory(730, 2).rgInventory !== null){
+        clearInterval(_interval);
+
+        var duplicateInventory = {}, inventory = user.getInventory(730, 2).rgInventory;
+        for(var item in inventory){
+          duplicateInventory[item] = jQuery.extend({}, inventory[item])
+
+          /* remove circular structure by removing both 'element' and 'homeElement',
+             a deep copy doesn't work due to the nature of the process and invokes similar
+             issues to simply passing along the circular structure, I've also tried
+             Object.assign which doesn't work */
+          duplicateInventory[item].element = duplicateInventory[item].homeElement = undefined
+        }
+
+        window.dispatchEvent(new CustomEvent('%%event%%', {
+          detail: { inventory: duplicateInventory, steamID: ('%%who1%%' === 'You' ? UserYou : UserThem).strSteamId }
+        }));
+      }
+    }, 50)
+
   }, callback)
 }

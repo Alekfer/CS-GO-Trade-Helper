@@ -26,8 +26,9 @@ function updateSettings(){
     $('#fontSizeTop').val(settings.hasOwnProperty('fontsizetop') ? settings.fontsizetop : 12)
     $('#fontSizeBottom').val(settings.hasOwnProperty('fontsizebottom') ? settings.fontsizebottom : 14)
     $('#autoAccept').prop('checked', settings.hasOwnProperty('autoaccept') ? settings.autoaccept : false)
-    $('#exchange-' + (settings.hasOwnProperty('exchangeabbr') ? settings.exchangeabbr : 'usd')).prop('checked', true).change()
+    $('#exchange-' + (settings.hasOwnProperty('exchangeabbr') ? settings.exchangeabbr : 'USD')).prop('checked', true).change()
     $('#volume').val(settings.hasOwnProperty('volume') ? settings.volume : 100)
+    $('#prices-' + (settings.hasOwnProperty('prices') ? settings.prices : 'fast')).prop('checked', true).change()
     updateFloat();
     updateBackground();
     updateFontSize();
@@ -52,13 +53,13 @@ function updateBackground(){
 }
 
 /* set events for when the selected currency changes */
-$('input:radio').on('change', updateCurrency);
+$('input:radio[name="exchange"]').on('change', updateCurrency);
 function updateCurrency(){
   var curr = $(this).data('currency');
   $('#exchange').text(rates[curr] + ' ' + curr)
 
   /* update all other values on the page */
-  var symbol = $('input:checked').data('symbol')
+  var symbol = $('input:radio[name="exchange"]:checked').data('symbol')
   var price = rates[curr] * $('.example-item-price').data('price')
   $('.example-item-price').text(symbol + price.toFixed(2))
 }
@@ -80,14 +81,29 @@ $('#volume').on('mouseup', function(){
 })
 
 $('.save-btn').click(function(){
-  chrome.storage.sync.set({
-    'fvdecimals': Number($('#floatDecimals').val()),
-    'autoaccept': $('#autoAccept').is(':checked'),
-    'intradebg': Number($('#itemsBackground').val()),
-    'exchangeabbr': $('input:checked').data('currency'),
-    'exchangesymb': $('input:checked').data('symbol'),
-    'fontsizetop': $('#fontSizeTop').val(),
-    'fontsizebottom': $('#fontSizeBottom').val(),
-    'volume': $('#volume').val()
-  });
+  saveSettings(false)
 })
+
+$('.default-btn').click(function(){
+  saveSettings(true)
+})
+
+function saveSettings(reset){
+  /* edit settings to default if requested, else save them */
+  chrome.storage.sync.set({
+    'fvdecimals': reset ? 6 : Number($('#floatDecimals').val()),
+    'autoaccept': reset ? false : $('#autoAccept').is(':checked'),
+    'intradebg': reset ? 180 : Number($('#itemsBackground').val()),
+    'exchangeabbr': reset ? 'USD' : $('input:checked').data('currency'),
+    'exchangesymb': reset ? '$' : $('input:checked').data('symbol'),
+    'fontsizetop': reset ? 12 : $('#fontSizeTop').val(),
+    'fontsizebottom': reset ? 14 : $('#fontSizeBottom').val(),
+    'volume': reset ? 100 : $('#volume').val(),
+    'prices': reset ? 'fast' : $('input:radio[name="prices"]:checked').data('prices')
+  });
+
+  /* if we're defaulting them, update them (responsive behaviour) */
+  if(reset) updateSettings()
+
+  chrome.runtime.sendMessage({action: 'updatePrices'});
+}

@@ -1,7 +1,7 @@
 chrome.webRequest.onHeadersReceived.addListener(function(details){
     details.responseHeaders.push({ name: 'Access-Control-Allow-Origin', value: '*' });
     return { responseHeaders: details.responseHeaders };
-}, {urls: ['*://csgoapi.xyz/*', '*://api.steampowered.com/*', '*://steamrep.com/*']}, ['blocking', 'responseHeaders']);
+}, {urls: ['*://api.steampowered.com/*', '*://steamrep.com/*']}, ['blocking', 'responseHeaders']);
 
 chrome.webRequest.onBeforeSendHeaders.addListener(function(details){
   return { requestHeaders: [
@@ -32,12 +32,12 @@ function getAllCookies(){
 
 function getAPIKey(callback){
   /* if no API key is stored locally, create one */
-  chrome.storage.sync.get('apikey', function(items){
-    if(Object.keys(items).length == 0){
+  chrome.storage.sync.get('apikey', function(setting){
+    if(Object.keys(setting).length == 0){
       console.log('Getting Steam API Key.');
       getNewAPIKey(callback);
     } else {
-      if(typeof(callback) === 'function') callback(items['apikey']);
+      if(typeof(callback) === 'function') callback(setting.apikey);
     }
   });
 }
@@ -313,14 +313,36 @@ function getBlob(url, callback) {
 var prices = {}, rates = {};
 
 function getPrices(callback){
-  $.ajax({
-    url: 'https://steam.expert/api/items/all/730',
-    success: function(response){
-      callback(response)
-    },
-    error: function(){
-      setTimeout(getPrices.bind(null, callback), 500)
-    }
+  var urls = {
+    fast: 'https://api.csgofast.com/sih/all',
+    expert: 'https://steam.expert/api/items/all/730'
+  };
+
+  chrome.storage.sync.get('prices', function(setting){
+    var source = setting.hasOwnProperty('prices') ? setting.prices : 'fast'
+    $.ajax({
+      url: urls[source],
+      success: function(response){
+        var temp = {}
+
+        if(source === 'expert'){
+          response.data.forEach(function(item){
+            temp[item.market_hash_name] = item.average_median_week;
+          })
+        }
+
+        if(source === 'fast'){
+          for(var item in response.prices){
+            temp[item] = response.prices[item]
+          }
+        }
+
+        callback(prices = temp)
+      },
+      error: function(){
+        setTimeout(getPrices.bind(null, callback), 500)
+      }
+    })
   })
 }
 
@@ -341,18 +363,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if(request.action === 'requestPrices'){
     /* if we haven't got the prices yet, request them and cache them */
     if(Object.keys(prices).length == 0){
-      getPrices(function(response){
-        var temp = {};
-        response.data.forEach(function(item){
-          temp[item.market_hash_name] = item.median_month;
-        })
-
-        sendResponse(prices = temp);
-      })
+        getPrices(sendResponse);
     } else {
       /* if we do already have them, send the cached version */
       sendResponse(prices);
     }
+  } else if(request.action === 'updatePrices'){
+    /* force update the prices */
+    getPrices(console.log);
   } else if(request.action === 'getAPIKey'){
     getAPIKey(function(key){
       sendResponse({data: key})
@@ -370,7 +388,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         exchangesymb: settings.hasOwnProperty('exchangesymb') ? settings.exchangesymb : '$',
         fontsizetop: settings.hasOwnProperty('fontsizetop') ? settings.fontsizetop : 12,
         fontsizebottom: settings.hasOwnProperty('fontsizebottom') ? settings.fontsizebottom : 14,
-        volume: settings.hasOwnProperty('volume') ? settings.volume : 100
+        volume: settings.hasOwnProperty('volume') ? settings.volume : 100,
+        prices: settings.hasOwnProperty('prices') ? settings.prices : 'fast'
       })
     })
   } else if(request.action === 'getRates'){

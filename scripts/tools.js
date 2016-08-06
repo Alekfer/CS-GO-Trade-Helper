@@ -79,7 +79,7 @@ function getInventory(steamID, callback, attempt){
   /* load the inventory and parse it upon success */
   $.ajax({
     url: 'https://steamcommunity.com/profiles/' + steamID + '/inventory/json/730/2',
-    success: function(response){
+    success: function(response, status, xhr){
       if(!response.success){
         /* we could pass "response.error" as a parameter to this callback,
            but it doesn't really matter - if the success is false, it usually
@@ -88,92 +88,95 @@ function getInventory(steamID, callback, attempt){
         return
       }
 
-      parseResponse();
-      function parseResponse(){
-        /* wait until the prices have loaded, we could do this earlier but to
-           speed things up we get the inventory first and wait for prices before
-           we parse it */
-        if(Object.keys(prices).length == 0) return setTimeout(parseResponse, 500);
-
-        /* loop over descriptions, match 'classid_instanceid' to item name */
-        for(var id in response.rgDescriptions){
-          var item = response.rgDescriptions[id];
-          /* replace special characters to ensure compatibility with price list */
-          //item.market_hash_name = item.market_hash_name.replace('\u2122 ', '™').replace('\u2605 ', '★');
-
-          /* sometimes Steam goes weird and we don't have the right attributes,
-             we could retry, but it'd be easier for now to just skip the item */
-          if(!item || !item.market_hash_name) continue;
-
-          /* search the tags for the wear */
-          var wear = 'V', type = 'Unknown';
-          item.tags.forEach(function(tag){
-            if(tag.category == 'Exterior') wear = tag.name.replace(/[-a-z ]/g, '');
-            if(tag.category == 'Type') type = tag.name;
-          })
-
-          /* if it's not painted, change it to vanilla */
-          if(wear === 'NP') wear = 'V';
-
-          /* find the stickers */
-          var stickers = [];
-          item.descriptions.forEach(function(desc){
-            if(desc.value.indexOf('Sticker Details') == -1) return;
-
-            $(desc.value).find('img').each(function(){
-              stickers.push($(this).attr('src'));
-            })
-          })
-
-          idPairs[item.classid + '_' + item.instanceid] = {
-            /* clear out the stattrak part so we can match it to the name in patterns.js */
-            name: item.name.replace('StatTrak\u2122 ', ''),
-            price: Number(prices[item.market_hash_name]),
-            wear: wear,
-            color: item.name_color,
-            tradable: item.tradable,
-            img: item.icon_url,
-            type: type,
-            stickers: stickers,
-            inspect: item.actions && item.actions.length == 1 ? item.actions[0].link.replace('%owner_steamid%', steamID) : null
-          };
-        }
-
-        /* loop over inventory, match 'assetid' to the item in idPairs */
-        var infoPairs = {};
-        for(var id in response.rgInventory){
-          var item = response.rgInventory[id];
-
-          /* sometimes we just won't get any item here, not sure why, haven't
-             been able to reproduce, so let's just skip over */
-          if(!item) continue;
-
-          idPairs[item.classid + '_' + item.instanceid]['id'] = id
-          var inspect = idPairs[item.classid + '_' + item.instanceid].inspect
-          if(inspect){
-            idPairs[item.classid + '_' + item.instanceid].inspect = inspect.replace('%assetid%', item.id)
-
-            /*$.ajax({
-              url: 'http://localhost:3000/api/1/',
-              data: { url: inspect },
-              success: function(response) {
-                //console.log({err: false, data: response});
-              }, error: function(){
-                //console.log({err: true})
-              }
-            })*/
-          }
-
-          infoPairs[item.id] = idPairs[item.classid + '_' + item.instanceid];
-        }
-
+      parseInventory(steamID, response, function(infoPairs, idPairs){
         if(typeof(callback) === 'function') callback(false, infoPairs, idPairs);
-      }
+      })
     },
     error: function(error){
-      if(typeof(callback) === 'function') callback(true, null, null)
+      setTimeout(getInventory.bind(null, steamID, callback, attempt), 2000)
     }
   });
+}
+
+function parseInventory(steamID, response, callback){
+  /* wait until the prices have loaded, we could do this earlier but to
+     speed things up we get the inventory first and wait for prices before
+     we parse it */
+  if(Object.keys(prices).length == 0) return setTimeout(parseInventory.bind(null, steamID, response, callback), 500);
+
+  /* loop over descriptions, match 'classid_instanceid' to item name */
+  for(var id in response.rgDescriptions){
+    var item = response.rgDescriptions[id];
+    /* replace special characters to ensure compatibility with price list */
+    //item.market_hash_name = item.market_hash_name.replace('\u2122 ', '™').replace('\u2605 ', '★');
+
+    /* sometimes Steam goes weird and we don't have the right attributes,
+       we could retry, but it'd be easier for now to just skip the item */
+    if(!item || !item.market_hash_name) continue;
+
+    /* search the tags for the wear */
+    var wear = 'V', type = 'Unknown';
+    item.tags.forEach(function(tag){
+      if(tag.category == 'Exterior') wear = tag.name.replace(/[-a-z ]/g, '');
+      if(tag.category == 'Type') type = tag.name;
+    })
+
+    /* if it's not painted, change it to vanilla */
+    if(wear === 'NP') wear = 'V';
+
+    /* find the stickers */
+    var stickers = [];
+    item.descriptions.forEach(function(desc){
+      if(desc.value.indexOf('Sticker Details') == -1) return;
+
+      $(desc.value).find('img').each(function(){
+        stickers.push($(this).attr('src'));
+      })
+    })
+
+    idPairs[item.classid + '_' + item.instanceid] = {
+      /* clear out the stattrak part so we can match it to the name in patterns.js */
+      name: item.name.replace('StatTrak\u2122 ', ''),
+      price: Number(prices[item.market_hash_name]),
+      wear: wear,
+      color: item.name_color,
+      tradable: item.tradable,
+      img: item.icon_url,
+      type: type,
+      stickers: stickers,
+      inspect: item.actions && item.actions.length == 1 ? item.actions[0].link.replace('%owner_steamid%', steamID) : null
+    };
+  }
+
+  /* loop over inventory, match 'assetid' to the item in idPairs */
+  var infoPairs = {};
+  for(var id in response.rgInventory){
+    var item = response.rgInventory[id];
+
+    /* sometimes we just won't get any item here, not sure why, haven't
+       been able to reproduce, so let's just skip over */
+    if(!item || !item.id) continue;
+
+    idPairs[item.classid + '_' + item.instanceid]['id'] = id
+    var inspect = idPairs[item.classid + '_' + item.instanceid].inspect
+    if(inspect){
+      idPairs[item.classid + '_' + item.instanceid].inspect = inspect.replace('%assetid%', item.id)
+
+      /*$.ajax({
+        url: 'http://localhost:3000/api/1/',
+        data: { url: inspect },
+        success: function(response) {
+          //console.log({err: false, data: response});
+        }, error: function(){
+          //console.log({err: true})
+        }
+      })*/
+    }
+
+    infoPairs[item.id] = idPairs[item.classid + '_' + item.instanceid];
+  }
+
+  callback(infoPairs, idPairs)
 }
 
 /* formats the percentage/pattern for the overlay */
@@ -252,6 +255,25 @@ function getInventoryDetails(steamID, callback, attempt){
   });
 }
 
+function replicateSteamResponse(data){
+  var invToParse = { rgInventory: {}, rgDescriptions: {} }
+
+  /* parseInventory function was designed to work with JSON responses from Steam,
+     instead of reworking the whole function we just replicate the rg_ActiveInventory information
+     and pretend it's a Steam response, not ideal but it works */
+  for(var id in data.inventory){
+    var item = data.inventory[id]
+
+    invToParse.rgInventory[item.id] = {
+      id: id, classid: item.classid, instanceid: item.instanceid
+    }
+
+    invToParse.rgDescriptions[item.id + '_' + item.instanceid] = item
+  }
+
+  return invToParse;
+}
+
 /* make api calls */
 function makeAPICall(url, data, callback){
   getAPIKey(continueCall);
@@ -274,9 +296,9 @@ function makeAPICall(url, data, callback){
    and need to get their steamID through a different variable */
 function getSteamID(mine, callback, tradeoffer){
   injectScriptWithEvent({ '\'%%steamID%%\'': mine ? 'g_steamID' : tradeoffer ? 'g_ulTradePartnerSteamID' : 'UserYou.strSteamId' }, function(){
-    var evt = document.createEvent('CustomEvent');
-    evt.initCustomEvent('%%event%%', true, true, '%%steamID%%');
-    window.dispatchEvent(evt);
+    window.dispatchEvent(new CustomEvent('%%event%%', {
+      detail: '%%steamID%%'
+    }));
   }, callback)
 }
 

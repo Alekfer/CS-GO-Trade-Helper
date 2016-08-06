@@ -19,9 +19,9 @@ getProfileData(function(data){
 
 function getProfileData(callback){
   injectScriptWithEvent(null, function(){
-      var evt = document.createEvent('CustomEvent');
-      evt.initCustomEvent('%%event%%', true, true, g_rgProfileData ? g_rgProfileData : null);
-      window.dispatchEvent(evt);
+      window.dispatchEvent(new CustomEvent('%%event%%', {
+        detail: g_rgProfileData ? g_rgProfileData : null
+      }));
   }, callback)
 }
 

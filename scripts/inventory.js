@@ -36,7 +36,12 @@ function inventoryProcess(){
   );
 
   getSteamID(false, function(steamID){
-    getInventory(steamID, setupItems);
+    getActiveInventory(function(data){
+      parseInventory(data.steamID, replicateSteamResponse(data), function(infoPairs, idPairs){
+        inventory.infoPairs = infoPairs;
+        setupItems(infoPairs, idPairs)
+      })
+    })
 
     getInventoryDetails(steamID, function(details, attempt){
       if(!details){
@@ -133,7 +138,7 @@ function expandInventory(){
      so we need to delete them all and manually load them and
      insert the correct images into each item */
   $('.item.app730.context2').each(function(){
-    $(this).find('img').remove();
+    $(this).find('img:not(.st-item-sticker)').remove();
     var id = $(this).attr('id').split('item730_2_')[1];
 
     var img = inventory.infoPairs[id].img;
@@ -157,23 +162,13 @@ function expandInventory(){
 }
 
 /* load the prices into the items in the inventory */
-function setupItems(error, infoPairs, idPairs){
-  /* if this error ever occurs on the inventory page, the reason isn't because the inv is private */
-  if(error){
-    $('#st-load-floats').hide();
-    return $('#st-load-prices').text('Error loading inventory, Steam may be having problems.').fadeIn();
-  }
-
+function setupItems(infoPairs, idPairs){
   /* if we don't have the prices yet or if the loading inventory element cover is still in place, do not
      load the overlay on the items, check again after a delay */
   if(Object.keys(prices).length == 0 || $("#pending_inventory_page").css("display") == 'block'){
-    return setTimeout(function(){
-      setupItems(infoPairs);
-    }, 500);
+    return setTimeout(setupItems.bind(null, infoPairs, idPairs), 500);
   }
-
-  inventory.infoPairs = infoPairs;
-
+  
   /* for each inventory item, add the price element */
   $('.item.app730.context2').each(function(){
     var id = $(this).attr('id').split('item730_2_')[1];
@@ -226,8 +221,33 @@ function setupItems(error, infoPairs, idPairs){
 /* checks which inventory is active */
 function isInventoryActive(appid, callback){
   injectScriptWithEvent(null, function(){
-    var evt = document.createEvent('CustomEvent');
-    evt.initCustomEvent('%%event%%', true, true, g_ActiveInventory.appid);
-    window.dispatchEvent(evt);
+    window.dispatchEvent(new CustomEvent('%%event%%', {
+      detail: g_ActiveInventory.appid
+    }));
+  }, callback)
+}
+
+/* get inventory from g_ActiveInventory rather than using a request to make
+   the loading times faster */
+function getActiveInventory(callback){
+  injectScriptWithEvent({}, function(){
+    var _interval = setInterval(function(){
+      if(g_ActiveInventory.rgInventory !== null){
+        clearInterval(_interval);
+
+        var inventory = g_ActiveInventory.rgInventory
+        /* remove circular structure by removing both element and homeElement,
+           sometimes the item has either one of those two properties */
+        for(var item in inventory){
+          delete inventory[item].element
+          delete inventory[item].homeElement
+        }
+
+        window.dispatchEvent(new CustomEvent('%%event%%', {
+          detail: { inventory: inventory, steamID: g_ActiveInventory.owner.strSteamId }
+        }));
+      }
+    }, 50)
+
   }, callback)
 }

@@ -34,9 +34,9 @@ function populateWithLinks(){
 /* return asset information for the item */
 function getItem(listingID, callback){
   injectScriptWithEvent({ '%%listingID%%': listingID }, function(){
-    var evt = document.createEvent('CustomEvent');
-    evt.initCustomEvent('%%event%%', true, true, g_rgAssets[730][2][g_rgListingInfo['%%listingID%%'].asset.id]);
-    window.dispatchEvent(evt);
+    window.dispatchEvent(new CustomEvent('%%event%%', {
+      detail: g_rgAssets[730][2][g_rgListingInfo['%%listingID%%'].asset.id]
+    }))
   }, callback)
 }
 
@@ -44,13 +44,15 @@ function getItem(listingID, callback){
    changes the page of the items they're on */
 
 injectScriptWithEvent(null, function(){
-  var evt = document.createEvent('CustomEvent');
-  evt.initCustomEvent('%%event%%', true, true, '');
   g_oSearchResults.OnAJAXComplete = function () {
     g_oSearchResults.m_bLoading = false;
-    window.dispatchEvent(evt);
+    window.dispatchEvent(new CustomEvent('%%event%%', {
+      detail: ''
+    }));
   };
+
   /* set max page size to 50 and reload */
   g_oSearchResults.m_cPageSize = 50;
   g_oSearchResults.GoToPage(1);
+  setTimeout(function(){g_oSearchResults.GoToPage(0)}, 1000)
 }, populateWithLinks)
