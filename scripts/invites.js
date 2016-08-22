@@ -23,9 +23,22 @@ function processQueue(){
     processQueue()
     checkVerification(info.steamID, function(response){
       if(response.success && response.verified){
+        /* if the profile is a scammer, change the background row color */
+        if(response.scammer){
+          $(info.element).css('background-color', '#6f1b1b');
+          $(info.element).find('.playerAvatar, .playerAvatar img').css('background', 'red')
+
+          if(settings.autoignore){
+              injectScript({ '%%steamID%%': info.steamID }, function(){
+              javascript:FriendAccept( '%%steamID%%', 'ignore' );
+            })
+          }
+        }
+
         $(info.element).find('.acceptDeclineBlock').before(
-          '<div class="st-verified-profile" style="float: right;margin-right: 10px;margin-top: 9px">' + response.name + '</div>'
+          '<div class="st-verified-profile st-verified-invites ' + (response.scammer ? 'st-verified-scammer' : '') + '">' + response.name + '</div>'
         )
+        $(info.element).data('st-verified', true)
       }
     })
 
@@ -101,6 +114,9 @@ var sortAsc = true;
         if(personOne === -1) personOne = sortAsc ? -1 : 9999999;
         if(personTwo === -1) personTwo = sortAsc ? -1 : 9999999;
       }
+
+      if($(a).data('st-verified')) personOne = sortAsc ? 9999999 : -1;
+      if($(b).data('st-verified')) personTwo = sortAsc ? 9999999 : -1;
 
       return sortAsc ? personTwo - personOne : personOne - personTwo;
     }).appendTo('#BG_bottom');

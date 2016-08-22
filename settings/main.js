@@ -29,6 +29,7 @@ function updateSettings(){
     $('#exchange-' + (settings.hasOwnProperty('exchangeabbr') ? settings.exchangeabbr : 'USD')).prop('checked', true).change()
     $('#volume').val(settings.hasOwnProperty('volume') ? settings.volume : 100)
     $('#prices-' + (settings.hasOwnProperty('prices') ? settings.prices : 'fast')).prop('checked', true).change()
+    $('#autoIgnore').prop('checked', settings.hasOwnProperty('autoignore') ? settings.autoignore : true)
     updateFloat();
     updateBackground();
     updateFontSize();
@@ -99,7 +100,8 @@ function saveSettings(reset){
     'fontsizetop': reset ? 12 : $('#fontSizeTop').val(),
     'fontsizebottom': reset ? 14 : $('#fontSizeBottom').val(),
     'volume': reset ? 100 : $('#volume').val(),
-    'prices': reset ? 'fast' : $('input:radio[name="prices"]:checked').data('prices')
+    'prices': reset ? 'fast' : $('input:radio[name="prices"]:checked').data('prices'),
+    'autoignore': reset ? true : $('#autoIgnore').is(':checked')
   });
 
   /* if we're defaulting them, update them (responsive behaviour) */

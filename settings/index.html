@@ -3,12 +3,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
     <script src="../lib/jquery.min.js"></script>
     <script src="../lib/materialize.min.js"></script>
-    <link href="http://steamcommunity-a.akamaihd.net/public/shared/css/motiva_sans.css?v=F3z3QpekjE2f" rel="stylesheet">
+    <link href="https://steamcommunity-a.akamaihd.net/public/shared/css/motiva_sans.css?v=F3z3QpekjE2f" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400" rel="stylesheet">
   </head>
-  <!-- this will probably be the website, but for now we're just hosting it within the extension -->
+
   <body>
-    <div class="section" style="background-image: url('http://i.imgur.com/7ql5lCA.png'); box-shadow: 0px 0px 10px 0px black">
+    <div class="section" style="background-image: url('https://i.imgur.com/7ql5lCA.png'); box-shadow: 0px 0px 10px 0px black">
       <div class="row">
         <div class="col s8 offset-s2">
           <h1 class="center-align" style="text-shadow: 0px 0px 11px rgba(0, 0, 0, 0.29); color: white; font-size: 100px; margin-top: 140px; border-bottom: 1px solid rgba(255, 255, 255, 0); font-family: Roboto">CS:GO Trade Helper</h1>
@@ -219,20 +219,27 @@
               <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
                 <span class="card-title">Price Sources</span>
                 <p>Choose a pricing source.</p>
-                <div class="row">
-                  <div class="col s12">
-                    <p>
-                      <input name="prices" class="with-gap" data-prices="expert" type="radio" id="prices-expert" />
-                      <label for="prices-expert">Expert (Steam Market only)</label>
-                    </p>
-                  </div>
-                  <div class="col s12">
+                <div class="row" style="margin-bottom: 5px">
+                  <div class="col s6">
                     <p>
                       <input name="prices" class="with-gap" data-prices="fast" type="radio" id="prices-fast" />
-                    <label for="prices-fast">Fast (includes non Steam Market)</label>
+                      <label for="prices-fast">Fast</label>
+                    </p>
+                  </div>
+                  <div class="col s6">
+                    <p>
+                      <input name="prices" class="with-gap" data-prices="expert" type="radio" id="prices-expert" />
+                      <label for="prices-expert">Expert</label>
                     </p>
                   </div>
                 </div>
+
+                <span class="card-title">Auto Ignore Scammers</span>
+                <p>Automatically ignore friend invites from scammers.</p>
+                <p style="margin-bottom: 20px">
+                  <input type="checkbox" id="autoIgnore" />
+                  <label for="autoIgnore">Auto Ignore</label>
+                </p>
               </div>
             </div>
           </div>
@@ -301,13 +308,13 @@
                 <div class="card hoverable">
                   <div class="card-image"><img src="https://i.imgur.com/AJ39Etm.png"></div>
                   <div class="card-content" style="height: auto">
-                    <p>Items that have no price available appear vividly red to stand out and are not counted in the trade offer total.</p>
+                    <p>Items that have no price available appear vividly red to stand out (red overlay and red glowing shadow) and are not counted in the trade offer total.</p>
                   </div>
                 </div>
               </div>
               <div class="col s12 m12 l6">
                 <div class="card hoverable">
-                  <div class="card-image"><img src="https://i.imgur.com/cQpLXMI.png" style="width:auto"></div>
+                  <div class="card-image"><img src="https://i.imgur.com/cQpLXMI.png"></div>
                   <div class="card-content" style="height: auto">
                     <p>Reminders appear in offers where you either recieve no items or are not sending any items.</p>
                   </div>
@@ -315,7 +322,7 @@
               </div>
               <div class="col s12 m12 l6">
                 <div class="card hoverable">
-                  <div class="card-image"><img src="https://i.imgur.com/0z2DNT4.png" style="width:auto"></div>
+                  <div class="card-image"><img src="https://i.imgur.com/0z2DNT4.png"></div>
                   <div class="card-content" style="height: auto">
                     <p>Notifications appear for new items, new trade offers, new friend/group invites and new profile comments.</p>
                   </div>
@@ -343,7 +350,7 @@
             <div id="f-misc" class="col s12">
               <div class="col s12 m12">
                 <div class="card hoverable">
-                  <div class="card-image"><img src="http://i.imgur.com/IESR1x5.png"></div>
+                  <div class="card-image"><img src="https://i.imgur.com/IESR1x5.png"></div>
                   <div class="card-content" style="height: auto">
                     <p>The profile header is tidied up and header backgrounds are replaced with a more aesthetically pleasing look.</p>
                   </div>
@@ -351,7 +358,7 @@
               </div>
               <div class="col s12 m12 l6">
                 <div class="card hoverable">
-                  <div class="card-image"><img src="http://i.imgur.com/jkPFbD5.png"></div>
+                  <div class="card-image"><img src="https://i.imgur.com/jkPFbD5.png"></div>
                   <div class="card-content" style="height: auto">
                     <p>Important profiles (such as high tier traders and bots) will have verification above the profile picture.</p>
                   </div>
@@ -359,7 +366,7 @@
               </div>
               <div class="col s12 m12 l6">
                 <div class="card hoverable">
-                  <div class="card-image"><img src="http://i.imgur.com/lMKF5DL.png"></div>
+                  <div class="card-image"><img src="https://i.imgur.com/lMKF5DL.png"></div>
                   <div class="card-content" style="height: auto">
                     <p>Verification for important profiles also appears on the trade offers page after clicking 'show prices'.</p>
                   </div>
@@ -373,9 +380,25 @@
                   </div>
                 </div>
               </div>
+              <div class="col s12 m12 l6">
+                <div class="card hoverable">
+                  <div class="card-image"><img src="https://i.imgur.com/9pH6ME2.png"></div>
+                  <div class="card-content" style="height: auto">
+                    <p>Profiles belonging to users that are marked as a scammer/impersonator will appear with a red flair and red background. It is recommended to avoid profiles belonging to scammers. To report a scammer/impersonator please contact <a href="https://steamcommunity.com/id/i7xx" target="_blank">i7xx</a>.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col s12 m12 l6">
+                <div class="card hoverable">
+                  <div class="card-image"><img src="https://i.imgur.com/r0ol8tV.png"></div>
+                  <div class="card-content" style="height: auto">
+                    <p>Users marked as a scammer/impersonator will appear with a red warning flair and red background. By default, the setting to automatically ignore invites from users marked as a scammer/impersonator is enabled.</p>
+                  </div>
+                </div>
+              </div>
               <div class="col s12 m12">
                 <div class="card hoverable">
-                  <div class="card-image"><img src="http://i.imgur.com/uqpH1EL.png"></div>
+                  <div class="card-image"><img src="https://i.imgur.com/uqpH1EL.png"></div>
                   <div class="card-content" style="height: auto">
                     <p>Friends' inventories can be easily loaded and searched for any CS:GO item.</p>
                   </div>
@@ -410,7 +433,7 @@
               <a target="_blank" href="https://csgo.exchange">
                 <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
                   <div class="row valign-wrapper">
-                    <div class="col s2"><img src="http://csgo.exchange/images/logo.png" width="50px" height="50px" class="z-depth-1"></div>
+                    <div class="col s2"><img src="https://csgo.exchange/images/logo.png" width="50px" height="50px" class="z-depth-1"></div>
                     <div class="col s8">
                       <h5 class="collab-title">csgo.exchange</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
                       <span>for providing detailed info about items</span>
@@ -424,7 +447,7 @@
               <a target="_blank" href="https://metjm.net">
                 <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
                   <div class="row valign-wrapper">
-                    <div class="col s2"><img src="http://metjm.net/csgo/web/img/logo.svg" width="50px" height="50px"></div>
+                    <div class="col s2"><img src="https://metjm.net/csgo/web/img/logo.svg" width="50px" height="50px"></div>
                     <div class="col s8">
                       <h5 class="collab-title">metjm.net</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
                       <span>for providing a quick screenshot method</span>
@@ -438,7 +461,7 @@
               <a target="_blank" href="https://steam.expert">
                 <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
                   <div class="row valign-wrapper">
-                    <div class="col s2"><img src="http://i.imgur.com/QW6t8E0.png" width="50px" height="50px"></div>
+                    <div class="col s2"><img src="https://i.imgur.com/QW6t8E0.png" width="50px" height="50px"></div>
                     <div class="col s8">
                       <h5 class="collab-title">steam.expert</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
                       <span>for providing a pricing api for cs:go items</span>
@@ -456,7 +479,38 @@
 
           <ul class="collapsible" data-collapsible="accordion">
             <li>
-              <div class="collapsible-header active">v 1.0.4</div>
+              <div class="collapsible-header active">v 1.6.0</div>
+              <div class="collapsible-body">
+                <p>
+                  <span>- fixed 'sell' button not working on inventory page</span>
+                  <br><span>- fixed bug causing interference with inventory item selection</span>
+                  <br><span>- added quick sell feature to inventory items</span>
+                  <br><span class="indent">- when clicking on an inventory item, a quick sell button appears near the 'Sell' button</span>
+                  <br><span>- edited changelog versioning</span>
+                </p>
+              </div>
+            </li>
+            <li>
+              <div class="collapsible-header active">v 1.5.1</div>
+              <div class="collapsible-body">
+                <p>
+                  <span>- fixed font issues</span>
+                </p>
+              </div>
+            </li>
+            <li>
+              <div class="collapsible-header">v 1.5.0</div>
+              <div class="collapsible-body">
+                <p>
+                  <span>- added verified scammers feature</span>
+                  <br><span class="indent">- users marked as an impersonator/scammer will appear with a red flair on the invites page</span>
+                  <br><span class="indent">- users marked as an impersonator/scammer will appear with a red flair on their profile page</span>
+                  <br><span>- added feature to automatically ignore invites from marked impersonators/scammers</span>
+                </p>
+              </div>
+            </li>
+            <li>
+              <div class="collapsible-header">v 1.4.0</div>
               <div class="collapsible-body">
                 <p>
                   <span>- improved invites page, fixed incorrect sorting</span>
@@ -471,7 +525,7 @@
               </div>
             </li>
             <li>
-              <div class="collapsible-header">v 1.0.3</div>
+              <div class="collapsible-header">v 1.3.0</div>
               <div class="collapsible-body">
                 <p>
                   <span>- improved script interaction with the web page (DRY concept)</span>
@@ -488,7 +542,7 @@
               </div>
             </li>
             <li>
-              <div class="collapsible-header">v 1.0.2</div>
+              <div class="collapsible-header">v 1.2.0</div>
               <div class="collapsible-body">
                 <p>
                   <span>- added steam id verification for important profiles (bots, high tier traders)</span>
@@ -506,7 +560,7 @@
               </div>
             </li>
             <li>
-              <div class="collapsible-header">v 1.0.1</div>
+              <div class="collapsible-header">v 1.1.0</div>
               <div class="collapsible-body">
                 <p>
                   <span>- added various aesthetical changes to multiple pages</span>

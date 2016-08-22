@@ -1,5 +1,6 @@
 getProfileData(function(data){
-  /* ensure we're on a profile page */
+  /* ensure we're on a profile page, this content script is loaded on every page because
+     there is no default url that indicates a profile page */
   if(!data || !data.url || !data.steamid) return;
 
   /* replaces background (if they don't have one) and the texture with a nice gradient */
@@ -10,11 +11,19 @@ getProfileData(function(data){
 
   checkVerification(data.steamid, function(response){
     if(response.success && response.verified){
-      $('.profile_header_content').before('<div class="st-verified-profile">' + response.name + '</div>')
+      /* if the user is a marked scammer or impersonator, set their profile header background
+         to have a red background */
+      if(response.scammer){
+        $('.profile_header_bg_texture, .no_header.profile_page:not(.has_profile_background)').css('background', 'rgb(101, 18, 32)')
+        $('.playerAvatar.profile_header_size').css('background', 'red')
+      }
+
+      $('.profile_header_content').before('<div class="st-verified-profile ' + (response.scammer ? 'st-verified-scammer' : '') + '">' + response.name + '</div>')
     }
   })
 
   /* add a SteamRep check here in the future */
+
 })
 
 function getProfileData(callback){
@@ -33,4 +42,5 @@ function loadMoreComments(){
     g_rgCommentThreads[Object.keys(g_rgCommentThreads)[0]].m_iCurrentPage = -1;
     g_rgCommentThreads[Object.keys(g_rgCommentThreads)[0]].GoToPage(0)
   })
+
 }

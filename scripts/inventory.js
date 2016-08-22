@@ -126,9 +126,6 @@ function expandInventory(){
   /* disable the button */
   $('#st-expand-inventory').addClass('btn_disabled');
 
-  /* remove this element, don't know what it is but it messes up the layout */
-  $('#market_sell_dialog_item').parent().remove();
-
   /* display all the pages in the inventory */
   $('.inventory_page').each(function(){
     $(this).css('display', '');
@@ -168,7 +165,7 @@ function setupItems(infoPairs, idPairs){
   if(Object.keys(prices).length == 0 || $("#pending_inventory_page").css("display") == 'block'){
     return setTimeout(setupItems.bind(null, infoPairs, idPairs), 500);
   }
-  
+
   /* for each inventory item, add the price element */
   $('.item.app730.context2').each(function(){
     var id = $(this).attr('id').split('item730_2_')[1];
@@ -231,13 +228,34 @@ function isInventoryActive(appid, callback){
    the loading times faster */
 function getActiveInventory(callback){
   injectScriptWithEvent({}, function(){
+    /* clone javascript objects (http://stackoverflow.com/a/12690148/5631268)*/
+    function copyObject(source, deep) {
+      if (typeof source != 'object' || source === null) return source
+      var o = new source.constructor(), prop, type;
+
+      for (prop in source) {
+        if (source.hasOwnProperty(prop)) {
+          type = typeof source[prop];
+          if (deep && type == 'object' && source[prop] !== null) {
+            o[prop] = copyObject(source[prop]);
+          } else {
+            o[prop] = source[prop];
+          }
+        }
+      }
+      return o;
+    }
+
     var _interval = setInterval(function(){
       if(g_ActiveInventory.rgInventory !== null){
         clearInterval(_interval);
 
-        var inventory = g_ActiveInventory.rgInventory
+        var inventory = copyObject(g_ActiveInventory.rgInventory, true)
         /* remove circular structure by removing both element and homeElement,
-           sometimes the item has either one of those two properties */
+           sometimes the item has either one of those two properties, we need to
+           the inventory object so we can pass on the inventory without deleting
+           the 'element' and 'homeElement' properties required to allow for item
+           selection within the inventory */
         for(var item in inventory){
           delete inventory[item].element
           delete inventory[item].homeElement
@@ -251,3 +269,130 @@ function getActiveInventory(callback){
 
   }, callback)
 }
+
+/* injects quick sell button */
+injectScript({}, function(){
+  window.PopulateMarketActions = function(elActions, item){
+  	elActions.update('');
+  	if(!item.marketable || (item.is_currency && CurrencyIsWalletFunds(item))){
+  		return elActions.hide()
+    }
+
+  	var bIsTrading = typeof(g_bIsTrading) != 'undefined' && g_bIsTrading;
+
+  	if((typeof(g_bViewingOwnProfile) != 'undefined' && g_bViewingOwnProfile) || bIsTrading){
+  		var strMarketName = GetMarketHashName(item);
+
+  		var elPriceInfo = new Element('div');
+  		var elPriceInfoHeader = new Element('div', { 'style': 'height: 24px;' });
+
+  		var elMarketLink = new Element('a', {
+  			'href': 'https://steamcommunity.com/market/listings/' + item.appid + '/' + encodeURIComponent(strMarketName)
+  		});
+  		elMarketLink.update('View in Community Market');
+
+  		if(bIsTrading)
+  			Steam.LinkInNewWindow($J(elMarketLink));
+
+  		elPriceInfoHeader.appendChild(elMarketLink);
+  		elPriceInfo.appendChild(elPriceInfoHeader);
+
+  		var elPriceInfoContent = new Element('div', { 'style': 'min-height: 3em; margin-left: 1em;' });
+  		elPriceInfoContent.update('<img src="https://steamcommunity-a.akamaihd.net/public/images/login/throbber.gif" alt="Working...">');
+  		elPriceInfo.appendChild(elPriceInfoContent);
+
+  		new Ajax.Request('https://steamcommunity.com/market/priceoverview/', {
+  				method: 'get',
+  				parameters: {
+  					country: g_strCountryCode,
+  					currency: typeof(g_rgWalletInfo) != 'undefined' ? g_rgWalletInfo['wallet_currency'] : 1,
+  					appid: item.appid,
+  					market_hash_name: strMarketName
+  				},
+  				onSuccess: function(transport) {
+  					if (transport.responseJSON && transport.responseJSON.success){
+  						var strInfo = '';
+  						if(transport.responseJSON.lowest_price){
+  							strInfo += 'Starting at: ' + transport.responseJSON.lowest_price + '<br>'
+
+                if(!bIsTrading){
+                  /* lowest current listing price, take away 1 lowest denomination, e.g: £90 is 9000, so 9000 - 1 = £89.99 */
+                  var quickSellPrice = GetPriceValueAsInt(transport.responseJSON.lowest_price) - 1
+
+                  /* formatted version of the price, e.g: 9000 -> £90.00 */
+                  var formattedQuickSellPrice = v_currencyformat(quickSellPrice, GetCurrencyCode(g_rgWalletInfo.wallet_currency), g_strCountryCode)
+
+                  /* creates the button quick sell button */
+                  var elQuickSellButton = CreateMarketActionButton('green', 'javascript:false', 'Quick Sell ' + formattedQuickSellPrice);
+
+                  /* event for the quick sell, creates the ajax request */
+                  $J(elQuickSellButton).click(function(){
+                    /* when making the request, we only send off the buyerPays value */
+                    var publisherFee = typeof(g_ActiveInventory.selectedItem.market_fee) == 'undefined' ? g_rgWalletInfo.wallet_publisher_fee_percent_default : g_ActiveInventory.selectedItem.market_fee
+                    var buyerPays = quickSellPrice - CalculateFeeAmount(quickSellPrice, publisherFee).fees
+
+                		$J.ajax({
+                			url: 'https://steamcommunity.com/market/sellitem/',
+                			type: 'POST',
+                			data: {
+                				sessionid: g_sessionID,
+                				appid: g_ActiveInventory.selectedItem.appid,
+                				contextid: g_ActiveInventory.selectedItem.contextid,
+                				assetid: g_ActiveInventory.selectedItem.id,
+                				amount: 1,
+                				price: buyerPays
+                			},
+                			crossDomain: true,
+                			xhrFields: { withCredentials: true }
+                		}).done(function(data){
+                      var alertText = '';
+				              if(data.needs_mobile_confirmation){
+					              alertText = 'In order to list this item on the Community Market, you must verify the listing in your Steam Mobile app. You can verify it by launching the app and navigating to the Confirmations page from the menu.<br><br>If you don\'t see the Confirmations option in the main menu of the app, then make sure you have the latest version of the app.';
+                      } else {
+					              alertText = 'In order to list this item on the Community Market, you must complete an additional verification step.  An email has been sent to your address (ending in "%s") with additional instructions.'.replace(/%s/, data.email_domain);
+                      }
+
+				              ShowAlertDialog('Additional confirmation needed', alertText);
+                		}).fail(function(jqXHR){
+                  		/* jQuery doesn't parse JSON on failure */
+                			var data = JSON.parse(jqXHR.responseText);
+
+                      /* an error has occurred, just inform the user */
+                      ShowAlertDialog('An error occurred', (data && data.hasOwnProperty('message')) ? data.message : 'There was a problem listing your item. Refresh the page and try again.')
+                		});
+                  })
+                  elActions.appendChild($J(elQuickSellButton).css('margin-left', '10px')[0])
+                }
+
+  						} else {
+  							strInfo += 'There are no listings currently available for this item.' + '<br>';
+  						}
+
+  						if(transport.responseJSON.volume){
+  							strInfo += 'Volume: ' + '%1$s sold in the last 24 hours'.replace('%1$s', transport.responseJSON.volume) + '<br>';
+  						}
+
+  						elPriceInfoContent.update(strInfo);
+  					}
+  				},
+  				onFailure: function(transport){ elPriceInfo.hide() }
+  		});
+
+  		elActions.appendChild(elPriceInfo);
+
+  		if (!bIsTrading){
+  			var elSellButton = CreateMarketActionButton('green', 'javascript:SellCurrentSelection()', 'Sell');
+  			elActions.appendChild(elSellButton);
+  		}
+
+  		if (!g_bMarketAllowed){
+  			var elTooltip = $('market_tip_noaccess');
+  			InstallHoverTooltip( elSellButton, elTooltip );
+  		}
+  	} else {
+  		return elActions.hide()
+  	}
+
+  	elActions.show();
+  }
+})

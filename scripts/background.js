@@ -389,7 +389,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         fontsizetop: settings.hasOwnProperty('fontsizetop') ? settings.fontsizetop : 12,
         fontsizebottom: settings.hasOwnProperty('fontsizebottom') ? settings.fontsizebottom : 14,
         volume: settings.hasOwnProperty('volume') ? settings.volume : 100,
-        prices: settings.hasOwnProperty('prices') ? settings.prices : 'fast'
+        prices: settings.hasOwnProperty('prices') ? settings.prices : 'fast',
+        autoignore: settings.hasOwnProperty('autoignore') ? settings.autoignore : true
       })
     })
   } else if(request.action === 'getRates'){
