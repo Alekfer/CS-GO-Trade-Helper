@@ -36,10 +36,33 @@ function inventoryProcess(){
   );
 
   getSteamID(false, function(steamID){
-    getActiveInventory(function(data){
-      parseInventory(data.steamID, replicateSteamResponse(data), function(infoPairs, idPairs){
-        inventory.infoPairs = infoPairs;
-        setupItems(infoPairs, idPairs)
+      /* call this once manually as the HideLoadingIndicator isn't called when the page intially loads */
+      getActiveInventory(function(data){
+          parseInventory(data.steamID, replicateSteamResponse(data), function(infoPairs, idPairs){
+              inventory.infoPairs = infoPairs;
+              setupItems(infoPairs, idPairs, data.totalItems)
+          })
+      })
+
+      /* due to the new loading mechanism for inventories (only load when the page needs to be loaded, i.e. user is
+         scrolling through pages) I need to create a listener event for when the new items are loaded - to do this
+         I hijack their 'HideLoadingIndicator' function (as it's only called when the items are loaded) and use it
+         to then retrieve the newly loaded items */
+    injectScriptWithEvent(null, function(){
+      g_ActiveInventory.m_owner.HideLoadingIndicator = function(){
+        this.cLoadsInFlight--;
+          if(!this.cLoadsInFlight){
+            $J(document.body).removeClass('inventory_loading');
+          }
+
+          window.dispatchEvent(new CustomEvent('%%event%%', {}));
+      }
+    }, function(){
+      getActiveInventory(function(data){
+        parseInventory(data.steamID, replicateSteamResponse(data), function(infoPairs, idPairs){
+          inventory.infoPairs = infoPairs;
+          setupItems(infoPairs, idPairs, data.totalItems)
+        })
       })
     })
 
@@ -57,8 +80,8 @@ function inventoryProcess(){
         }
 
         $('.itemHolder:not(.disabled)').each(function(){
-          if(!$(this).find('.item.app730.context2').attr('id')) return;
-          var id = $(this).find('.item.app730.context2').attr('id').split('item730_2_')[1];
+          if(!$(this).find('.item.app730.context2:not(.pendingItem)').attr('id')) return;
+          var id = $(this).find('.item.app730.context2:not(.pendingItem)').attr('id').split('730_2_')[1];
 
           /* if we have no details for this item, set the float to max (will not be displayed)*/
           if(!details[id]) return $(this).children().eq(0).data('st-float', -1);
@@ -104,7 +127,7 @@ function sortInventory(byPrice){
 
   expandInventory();
 
-  $('.itemHolder').has('.item.app730.context2').sort(function(a, b) {
+  $('.itemHolder').has('.item.app730.context2:not(.pendingItem)').sort(function(a, b) {
     var attrOne = $(a).children().eq(0).data(byPrice ? 'st-price' : 'st-float');
     var attrTwo = $(b).children().eq(0).data(byPrice ? 'st-price' : 'st-float');
 
@@ -134,9 +157,9 @@ function expandInventory(){
   /* the images only load when necessary to increase page loading speed,
      so we need to delete them all and manually load them and
      insert the correct images into each item */
-  $('.item.app730.context2').each(function(){
+  $('.item.app730.context2:not(.pendingItem)').each(function(){
     $(this).find('img:not(.st-item-sticker)').remove();
-    var id = $(this).attr('id').split('item730_2_')[1];
+    var id = $(this).attr('id').split('730_2_')[1];
 
     var img = inventory.infoPairs[id].img;
     /* we need to set a position of absolute here because steam will seemingly
@@ -159,7 +182,7 @@ function expandInventory(){
 }
 
 /* load the prices into the items in the inventory */
-function setupItems(infoPairs, idPairs){
+function setupItems(infoPairs, idPairs, totalItems){
   /* if we don't have the prices yet or if the loading inventory element cover is still in place, do not
      load the overlay on the items, check again after a delay */
   if(Object.keys(prices).length == 0 || $("#pending_inventory_page").css("display") == 'block'){
@@ -167,8 +190,8 @@ function setupItems(infoPairs, idPairs){
   }
 
   /* for each inventory item, add the price element */
-  $('.item.app730.context2').each(function(){
-    var id = $(this).attr('id').split('item730_2_')[1];
+  $('.item.app730.context2:not(.pendingItem)').each(function(){
+    var id = $(this).attr('id').split('730_2_')[1];
 
     var item = infoPairs[id];
 
@@ -192,27 +215,33 @@ function setupItems(infoPairs, idPairs){
     }
   })
 
-  /* Add the buttons/labels */
-  $('#st-load-prices').parent().before(
-    '<a id="st-expand-inventory" class="btn_darkblue_white_innerfade btn_medium new_trade_offer_btn"' +
-      'style="margin-left: 17px">' +
-      '<span>Expand Inventory</span>' +
-    '</a>' +
-    '<a id="st-sort-inventory-price" class="btn_darkblue_white_innerfade btn_medium new_trade_offer_btn"' +
-      'style="margin-left: 5px">' +
-      '<span>Sort by price</span>' +
-    '</a>'
-  );
-
-  $('#st-expand-inventory').click(expandInventory);
-  $('#st-sort-inventory-price').click(function(){sortInventory(true)});
-
   $('#st-load-prices').fadeOut(function(){
     $(this).text('Inventory: ' + Object.keys(infoPairs).length + ' items worth ' + formatPrice(inventory.total) + '!').fadeIn();
   })
 
-  /* make everything fade in */
-  $('.st-trade-offer-prices, .st-item-price, .st-item-float').hide().fadeIn();
+  /* only load the sort buttons and expand buttons when all inventory items have been loaded */
+  if(Object.keys(infoPairs).length == totalItems) {
+
+    /* Add the buttons/labels */
+    $('#st-load-prices').parent().before(
+      '<a id="st-expand-inventory" class="btn_darkblue_white_innerfade btn_medium new_trade_offer_btn"' +
+      'style="margin-left: 17px">' +
+      '<span>Expand Inventory</span>' +
+      '</a>' +
+      '<a id="st-sort-inventory-price" class="btn_darkblue_white_innerfade btn_medium new_trade_offer_btn"' +
+      'style="margin-left: 5px">' +
+      '<span>Sort by price</span>' +
+      '</a>'
+    );
+
+    $('#st-expand-inventory').click(expandInventory);
+    $('#st-sort-inventory-price').click(function () {
+      sortInventory(true)
+    });
+
+    /* make everything fade in */
+    $('.st-trade-offer-prices, .st-item-price, .st-item-float').hide().fadeIn();
+  }
 }
 
 /* checks which inventory is active */
@@ -247,24 +276,25 @@ function getActiveInventory(callback){
     }
 
     var _interval = setInterval(function(){
-      if(g_ActiveInventory.rgInventory !== null){
+      if(g_ActiveInventory.rgItemElements !== null){
         clearInterval(_interval);
 
-        var inventory = copyObject(g_ActiveInventory.rgInventory, true)
-        /* remove circular structure by removing both element and homeElement,
-           sometimes the item has either one of those two properties, we need to
-           the inventory object so we can pass on the inventory without deleting
-           the 'element' and 'homeElement' properties required to allow for item
-           selection within the inventory */
-        for(var item in inventory){
-          delete inventory[item].element
-          delete inventory[item].homeElement
-        }
+        var inventory = {};
 
-        window.dispatchEvent(new CustomEvent('%%event%%', {
-          detail: { inventory: inventory, steamID: g_ActiveInventory.owner.strSteamId }
-        }));
-      }
+        for(var i = 0; i < g_ActiveInventory.m_rgItemElements.length; i++){
+          var item = g_ActiveInventory.m_rgItemElements[i][0].rgItem;
+
+          /* all the elements are in the rgItemElements array, but the ones that haven't
+             loaded will be undefined, so we break and return the elements that have been loaded so far */
+          if(item == undefined) break;
+
+            inventory[item.assetid] = item.description;
+          }
+
+          window.dispatchEvent(new CustomEvent('%%event%%', {
+            detail: { inventory: inventory, steamID: g_ActiveInventory.m_owner.strSteamId, totalItems: g_ActiveInventory.m_rgItemElements.length }
+          }));
+        }
     }, 50)
 
   }, callback)
@@ -281,20 +311,18 @@ injectScript({}, function(){
   	var bIsTrading = typeof(g_bIsTrading) != 'undefined' && g_bIsTrading;
 
   	if((typeof(g_bViewingOwnProfile) != 'undefined' && g_bViewingOwnProfile) || bIsTrading){
-  		var strMarketName = GetMarketHashName(item);
+  	  var strMarketName = GetMarketHashName(item);
 
-  		var elPriceInfo = new Element('div');
-  		var elPriceInfoHeader = new Element('div', { 'style': 'height: 24px;' });
+  	  var elPriceInfo = new Element('div');
+  	  var elPriceInfoHeader = new Element('div', { 'style': 'height: 24px;' });
 
-  		var elMarketLink = new Element('a', {
-  			'href': 'https://steamcommunity.com/market/listings/' + item.appid + '/' + encodeURIComponent(strMarketName)
-  		});
-  		elMarketLink.update('View in Community Market');
+  	  var elMarketLink = new Element('a', {
+  	    'href': 'https://steamcommunity.com/market/listings/' + item.appid + '/' + encodeURIComponent(strMarketName)
+  	  });
+  	  elMarketLink.update('View in Community Market');
 
-  		if(bIsTrading)
-  			Steam.LinkInNewWindow($J(elMarketLink));
-
-  		elPriceInfoHeader.appendChild(elMarketLink);
+  	  if(bIsTrading) Steam.LinkInNewWindow($J(elMarketLink));
+        elPriceInfoHeader.appendChild(elMarketLink);
   		elPriceInfo.appendChild(elPriceInfoHeader);
 
   		var elPriceInfoContent = new Element('div', { 'style': 'min-height: 3em; margin-left: 1em;' });
@@ -331,6 +359,12 @@ injectScript({}, function(){
                     var publisherFee = typeof(g_ActiveInventory.selectedItem.market_fee) == 'undefined' ? g_rgWalletInfo.wallet_publisher_fee_percent_default : g_ActiveInventory.selectedItem.market_fee
                     var buyerPays = quickSellPrice - CalculateFeeAmount(quickSellPrice, publisherFee).fees
 
+                    /* save the element incase the selected item changes */
+                    var activeItemElement = $J(g_ActiveInventory.selectedItem.element)
+
+                    /* add the loading icon to the item */
+                    activeItemElement.append('<div class="st-item-quick-sold"><img class="st-item-quick-selling" src="https://steamcommunity-a.akamaihd.net/public/images/login/throbber.gif"></div>').hide().fadeIn();
+
                 		$J.ajax({
                 			url: 'https://steamcommunity.com/market/sellitem/',
                 			type: 'POST',
@@ -352,13 +386,19 @@ injectScript({}, function(){
 					              alertText = 'In order to list this item on the Community Market, you must complete an additional verification step.  An email has been sent to your address (ending in "%s") with additional instructions.'.replace(/%s/, data.email_domain);
                       }
 
-				              ShowAlertDialog('Additional confirmation needed', alertText);
+				              //ShowAlertDialog('Additional confirmation needed', alertText);
+
+                      /* remove the loading icon which leaves a gray background */
+                      activeItemElement.find('.st-item-quick-selling').fadeOut();
                 		}).fail(function(jqXHR){
-                  		/* jQuery doesn't parse JSON on failure */
+                  		    /* jQuery doesn't parse JSON on failure */
                 			var data = JSON.parse(jqXHR.responseText);
 
                       /* an error has occurred, just inform the user */
                       ShowAlertDialog('An error occurred', (data && data.hasOwnProperty('message')) ? data.message : 'There was a problem listing your item. Refresh the page and try again.')
+
+                      /* remove the gray background and loading icon if it fails to list */
+                      activeItemElement.find('.st-item-quick-sold').fadeOut();
                 		});
                   })
                   elActions.appendChild($J(elQuickSellButton).css('margin-left', '10px')[0])

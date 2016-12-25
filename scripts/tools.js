@@ -117,8 +117,8 @@ function parseInventory(steamID, response, callback){
     /* search the tags for the wear */
     var wear = 'V', type = 'Unknown';
     item.tags.forEach(function(tag){
-      if(tag.category == 'Exterior') wear = tag.name.replace(/[-a-z ]/g, '');
-      if(tag.category == 'Type') type = tag.name;
+      if(tag.category == 'Exterior') wear = tag.localized_tag_name.replace(/[-a-z ]/g, '');
+      if(tag.category == 'Type') type = tag.localized_tag_name;
     })
 
     /* if it's not painted, change it to vanilla */
@@ -157,7 +157,7 @@ function parseInventory(steamID, response, callback){
        been able to reproduce, so let's just skip over */
     if(!item || !item.id) continue;
 
-    idPairs[item.classid + '_' + item.instanceid]['id'] = id
+    idPairs[item.classid + '_' + item.instanceid]['id'] = item.id
     var inspect = idPairs[item.classid + '_' + item.instanceid].inspect
     if(inspect){
       idPairs[item.classid + '_' + item.instanceid].inspect = inspect.replace('%assetid%', item.id)
@@ -264,11 +264,11 @@ function replicateSteamResponse(data){
   for(var id in data.inventory){
     var item = data.inventory[id]
 
-    invToParse.rgInventory[item.id] = {
+    invToParse.rgInventory[id] = {
       id: id, classid: item.classid, instanceid: item.instanceid
     }
 
-    invToParse.rgDescriptions[item.id + '_' + item.instanceid] = item
+    invToParse.rgDescriptions[id + '_' + item.instanceid] = item
   }
 
   return invToParse;
@@ -338,7 +338,7 @@ function editActionMenu(inTradeOffer, steamID){
       }
     })
 
-    $J('.slot_inner .item.app730').each(function(){
+    $J('.slot_inner .item.app730:not(.pendingItem)').each(function(){
       var item = $J(this)[0].rgItem;
       if(item && item.actions){
         if(item.actions.some(function(item){ return item.name === 'View on Exchange...' || item.name === 'View on Metjm...'})) return;

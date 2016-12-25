@@ -37,10 +37,10 @@
     .card-content p { font-size: 15px }
     .card-content { height: 110px }
     .card-title { font-size: 18px; font-family: Roboto }
-    .example-item-float { font-family: Motiva Sans Light; position: absolute; display: block; top: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.5); background-color: rgba(117, 117, 117, 0.2);  font-size: 12px; text-align: right; padding: 2px 5px 0px 0px }
+    .example-item-float { font-family: Motiva Sans; font-weight: 300; position: absolute; display: block; top: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.5); background-color: rgba(117, 117, 117, 0.2);  font-size: 12px; text-align: right; padding: 2px 5px 0px 0px }
     .example-item-holder { position: relative; height:98px; width: 98px; background-color: #292929; margin: auto }
-    .example-item-price { display: block; font-size: 14px; position: absolute; bottom: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.498039); background-color: rgba(117, 117, 117, 0.2); padding: 0px 0px 2px 5px; font-family: Motiva Sans Light }
-    .example-item-wear { position: absolute; bottom: 0px; right: 0px; color: rgba(255, 255, 255, 0.6); font-family: Motiva Sans Light; padding: 0px 5px 2px 0px; font-size: 14px }
+    .example-item-price { display: block; font-size: 14px; position: absolute; bottom: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.498039); background-color: rgba(117, 117, 117, 0.2); padding: 0px 0px 2px 5px; font-family: Motiva Sans; font-weight: 300 }
+    .example-item-wear { position: absolute; bottom: 0px; right: 0px; color: rgba(255, 255, 255, 0.6); font-family: Motiva Sans; font-weight: 300; padding: 0px 5px 2px 0px; font-size: 14px }
     .save-btn { font-size: 14px; width: 20%; float: right }
     .default-btn { font-size: 14px; width: 20%; float: right; margin-right: 10px }
     .indent { margin-left: 15px }
@@ -479,7 +479,19 @@
 
           <ul class="collapsible" data-collapsible="accordion">
             <li>
-              <div class="collapsible-header active">v 1.6.0</div>
+              <div class="collapsible-header active">v 1.6.1</div>
+              <div class="collapsible-body">
+                <p>
+                  <span>- added loading icon when quick selling icons to determine whether or not the item is being listed or has been listed</span>
+                  <br><span class="indent">- when an item is being listed a loading icon will appear on top of it</span>
+                  <br><span class="indent">- when an item has been listed the loading icon will be replaced with a dark gray background</span>
+                  <br><span>- suppressed confirmation alerts when quick selling items</span>
+                  <br><span>- fixed font issue on settings page</span>
+                </p>
+              </div>
+            </li>
+            <li>
+              <div class="collapsible-header">v 1.6.0</div>
               <div class="collapsible-body">
                 <p>
                   <span>- fixed 'sell' button not working on inventory page</span>
@@ -491,7 +503,7 @@
               </div>
             </li>
             <li>
-              <div class="collapsible-header active">v 1.5.1</div>
+              <div class="collapsible-header">v 1.5.1</div>
               <div class="collapsible-body">
                 <p>
                   <span>- fixed font issues</span>

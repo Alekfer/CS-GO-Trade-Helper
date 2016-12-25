@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "CS:GO Trade Helper",
-  "version": "1.0.5.1",
+  "version": "1.6.1",
   "icons": { "128": "assets/icon128.png" },
   "description": "Implements a variety of features to improve both the Steam Community and trading for CS:GO.",
   "browser_action": {

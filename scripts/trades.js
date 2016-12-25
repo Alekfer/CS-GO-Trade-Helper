@@ -24,7 +24,7 @@ setInterval(function(){
     theirs: { items: 0, price: 0, types: {} }
   };
 
-  $('#your_slots .item.app730.context2').each(function(){
+  $('#your_slots .item.app730.context2:not(.pendingItem)').each(function(){
     total.mine.items += 1;
     if($(this).data('st-price')){
       total.mine.price += $(this).data('st-price');
@@ -44,7 +44,7 @@ setInterval(function(){
 
   /* */
 
-  $('#their_slots .item.app730.context2').each(function(){
+  $('#their_slots .item.app730.context2:not(.pendingItem)').each(function(){
     total.theirs.items += 1;
     if($(this).data('st-price')){
       total.theirs.price += $(this).data('st-price');
@@ -79,7 +79,6 @@ var inventories = {
     });
 
     getInventoryFromOffer(mine ? 'You' : 'Them', function(data){
-      console.log(data)
       parseInventory(data.steamID, replicateSteamResponse(data), function(infoPairs, idPairs){
         inventories.infoPairs[data.steamID] = infoPairs;
         loadPricesFor(steamID, mine);
@@ -108,9 +107,9 @@ function populateDetails(steamID, isMyItems){
   var itemsInOffer = '#' + (isMyItems ? 'your_slots' : 'their_slots');
   /*  make sure that the items have loaded in, and there are no loading items in the trade offer */
   if(!$(itemsInOffer).data('st-loaded-floats') &&
-        $(itemsInOffer + ' .item.app730.context2').length > 0 && $(itemsInOffer + '.item.unknownItem').length == 0){
+        $(itemsInOffer + ' .item.app730.context2:not(.pendingItem)').length > 0 && $(itemsInOffer + '.item.unknownItem').length == 0){
 
-    $(itemsInOffer + ' .item.app730.context2').each(addItemDetails);
+    $(itemsInOffer + ' .item.app730.context2:not(.pendingItem)').each(addItemDetails);
     $(itemsInOffer).data('st-loaded-floats', true);
   }
 
@@ -118,7 +117,7 @@ function populateDetails(steamID, isMyItems){
     if(Object.keys(inventories.infoPairs[steamID]).length == 0) return setTimeout(populateDetails.bind(null, steamID, isMyItems), 100)
 
     /* populate each item and then animate them to fade in when the inventory loads */
-    $('.item.app730.context2').each(addItemDetails)
+    $('.item.app730.context2:not(.pendingItem)').each(addItemDetails)
     $('.st-item-float').hide().fadeIn();
   })
 
@@ -126,7 +125,7 @@ function populateDetails(steamID, isMyItems){
   function addItemDetails(){
     if(!$(this).attr('id') || $(this).data('st-loaded-floats')) return;
 
-    var id = $(this).attr('id').split('item730_2_')[1];
+    var id = $(this).attr('id').split('730_2_')[1];
 
     /* if we have no details for this item, set the float to max (will not be displayed)*/
     if(!inventories.details[steamID][id]) return $(this).data('st-float', -1);
@@ -160,8 +159,8 @@ var sort = {
 }
 
 function sortItems(a, b){
-  var attrOne = $(a).find('.item.app730.context2').eq(0).data(sort.byPrice ? 'st-price' : 'st-float');
-  var attrTwo = $(b).find('.item.app730.context2').eq(0).data(sort.byPrice ? 'st-price' : 'st-float');
+  var attrOne = $(a).find('.item.app730.context2:not(.pendingItem)').eq(0).data(sort.byPrice ? 'st-price' : 'st-float');
+  var attrTwo = $(b).find('.item.app730.context2:not(.pendingItem)').eq(0).data(sort.byPrice ? 'st-price' : 'st-float');
 
   /* if the attribute is -1 it means we have no float value, so adjust the metadata
   float value to ensure that these items with no value always sink to the bottom */
@@ -187,7 +186,7 @@ function loadPricesFor(steamID, isMyItems){
       $('.inventory_page').each(function(){
         if($(this).css('display') === 'none' || $(this).parent().css('display') === 'none') return;
 
-        $(this).find('.item.app730.context2').each(function(){
+        $(this).find('.item.app730.context2:not(.pendingItem)').each(function(){
           /* we check if it's visible, if it's not it means the user is filtering items */
           if($(this).parent().css('display') !== 'none') addItemToTrade($(this).attr('id'));
         })
@@ -210,8 +209,8 @@ function loadPricesFor(steamID, isMyItems){
 
         var steamID = $(this).parent().attr('id').split('_')[1];
 
-        $(this).find('.item.app730.context2').each(function(){
-          /* id is stored as item730_2_6378488731, so we split to get assetid and
+        $(this).find('.item.app730.context2:not(.pendingItem)').each(function(){
+          /* id is stored as 730_2_6378488731, so we split to get assetid and
              check if it's a key, if it is we add it to the trade */
           var id = $(this).attr('id');
           if(inventories.infoPairs[steamID][id.split('_')[2]].type !== 'Key') return;
@@ -252,15 +251,15 @@ function loadPricesFor(steamID, isMyItems){
   var itemsInOffer = '#' + (isMyItems ? 'your_slots' : 'their_slots');
   /*  make sure that the items have loaded in, and there are no loading items in the trade offer */
   if(!$(itemsInOffer).data('st-loaded-prices') &&
-        $(itemsInOffer + ' .item.app730.context2').length > 0 && $(itemsInOffer + '.item.unknownItem').length == 0){
+        $(itemsInOffer + ' .item.app730.context2:not(.pendingItem)').length > 0 && $(itemsInOffer + '.item.unknownItem').length == 0){
 
-    $(itemsInOffer + ' .item.app730.context2').each(addItemDetails);
+    $(itemsInOffer + ' .item.app730.context2:not(.pendingItem)').each(addItemDetails);
     $(itemsInOffer).data('st-loaded-prices', true);
   }
 
   if($('#inventory_' + steamID + '_730_2').css('display') == 'block'){
     /* inventory has loaded, let's put in the prices */
-    $('#inventory_' + steamID + '_730_2 .item.app730.context2').each(addItemDetails)
+    $('#inventory_' + steamID + '_730_2 .item.app730.context2:not(.pendingItem)').each(addItemDetails)
 
     editActionMenu(true, steamID);
 
@@ -277,7 +276,7 @@ function loadPricesFor(steamID, isMyItems){
     /* ^ for some reason, you can't remove items from a trade offer because
        it relies on the app logo */
 
-    var id = $(this).attr('id').split('item730_2_')[1];
+    var id = $(this).attr('id').split('730_2_')[1];
 
     /* only indicate the item is in a trade for items that aren't in the trade offer */
     var itemAlreadyInTrade = inventories.itemsInTrade[isMyItems ? 'me' : steamID].indexOf(id) > -1
@@ -323,7 +322,7 @@ function loadPricesFor(steamID, isMyItems){
 function whenInventoryLoads(steamID, callback){
   injectScriptWithEvent({ '%%steamID%%': steamID }, function(){
     var _interval = setInterval(function(){
-      if(g_ActiveInventory.owner.strSteamId == '%%steamID%%' && !g_ActiveInventory.BIsPendingInventory()){
+      if(g_ActiveInventory.m_owner.strSteamId == '%%steamID%%' && !g_ActiveInventory.BIsPendingInventory()){
         window.dispatchEvent(new CustomEvent('%%event%%', {
           detail: true
         }));
