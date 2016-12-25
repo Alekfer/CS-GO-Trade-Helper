@@ -117,8 +117,17 @@ function parseInventory(steamID, response, callback){
       /* search the tags for the wear */
         var wear = 'V', type = 'Unknown';
         item.tags.forEach(function(tag){
-            if(tag.category == 'Exterior') wear = tag.localized_tag_name.replace(/[-a-z ]/g, '');
-            if(tag.category == 'Type') type = tag.localized_tag_name;
+          /* sometimes that tag is `name` and sometimes it's `localized_tag_name` depending on the context from where
+             the information came (e.g. from g_ActiveInventory or /inventory/json) */
+          if(tag.category == 'Exterior'){
+            if(tag.localized_tag_name) wear = tag.localized_tag_name.replace(/[-a-z ]/g, '');
+            if(tag.name) wear = tag.name.replace(/[-a-z ]/g, '');
+          }
+
+          if(tag.category == 'Type'){
+            if(tag.localized_tag_name) type = tag.localized_tag_name;
+            if(tag.name) type = tag.name;
+          }
         })
 
       /* if it's not painted, change it to vanilla */
