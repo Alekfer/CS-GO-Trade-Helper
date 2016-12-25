@@ -8,7 +8,7 @@
 </head>
 
 <body>
-<div class="section" style="background-image: url('https://i.imgur.com/7ql5lCA.png'); box-shadow: 0px 0px 10px 0px black">
+<div class="section" style="background-image: linear-gradient(120deg, #155799, #159957); box-shadow: 0px 0px 10px 0px black">
   <div class="row">
     <div class="col s8 offset-s2">
       <h1 class="center-align" style="text-shadow: 0px 0px 11px rgba(0, 0, 0, 0.29); color: white; font-size: 100px; margin-top: 140px; border-bottom: 1px solid rgba(255, 255, 255, 0); font-family: Roboto">CS:GO Trade Helper</h1>
@@ -37,10 +37,10 @@
   .card-content p { font-size: 15px }
   .card-content { height: 110px }
   .card-title { font-size: 18px; font-family: Roboto }
-  .example-item-float { font-family: Motiva Sans; font-weight: 300; position: absolute; display: block; top: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.5); background-color: rgba(117, 117, 117, 0.2);  font-size: 12px; text-align: right; padding: 2px 5px 0px 0px }
+  .example-item-float { font-family: "Motiva Sans"; font-weight: 300; position: absolute; display: block; top: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.5); background-color: rgba(117, 117, 117, 0.2);  font-size: 12px; text-align: right; padding: 2px 5px 0px 0px }
   .example-item-holder { position: relative; height:98px; width: 98px; background-color: #292929; margin: auto }
-  .example-item-price { display: block; font-size: 14px; position: absolute; bottom: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.498039); background-color: rgba(117, 117, 117, 0.2); padding: 0px 0px 2px 5px; font-family: Motiva Sans; font-weight: 300 }
-  .example-item-wear { position: absolute; bottom: 0px; right: 0px; color: rgba(255, 255, 255, 0.6); font-family: Motiva Sans; font-weight: 300; padding: 0px 5px 2px 0px; font-size: 14px }
+  .example-item-price { display: block; font-size: 14px; position: absolute; bottom: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.498039); background-color: rgba(117, 117, 117, 0.2); padding: 0px 0px 2px 5px; font-family: "Motiva Sans"; font-weight: 300 }
+  .example-item-wear { position: absolute; bottom: 0px; right: 0px; color: rgba(255, 255, 255, 0.6); font-family: "Motiva Sans"; font-weight: 300; padding: 0px 5px 2px 0px; font-size: 14px }
   .save-btn { font-size: 14px; width: 20%; float: right }
   .default-btn { font-size: 14px; width: 20%; float: right; margin-right: 10px }
   .indent { margin-left: 15px }
@@ -224,12 +224,6 @@
                 <p>
                   <input name="prices" class="with-gap" data-prices="fast" type="radio" id="prices-fast" />
                   <label for="prices-fast">Fast</label>
-                </p>
-              </div>
-              <div class="col s6">
-                <p>
-                  <input name="prices" class="with-gap" data-prices="expert" type="radio" id="prices-expert" />
-                  <label for="prices-expert">Expert</label>
                 </p>
               </div>
             </div>
@@ -456,20 +450,6 @@
             </div>
           </a>
         </div>
-
-        <div class="col s12 m12 l4">
-          <a target="_blank" href="https://steam.expert">
-            <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
-              <div class="row valign-wrapper">
-                <div class="col s2"><img src="https://i.imgur.com/QW6t8E0.png" width="50px" height="50px"></div>
-                <div class="col s8">
-                  <h5 class="collab-title">steam.expert</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
-                  <span>for providing a pricing api for cs:go items</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
       </div>
     </div>
 
@@ -479,7 +459,19 @@
 
       <ul class="collapsible" data-collapsible="accordion">
         <li>
-          <div class="collapsible-header active">v 1.6.3</div>
+          <div class="collapsible-header active">v 1.6.4</div>
+          <div class="collapsible-body">
+            <p>
+              <span>- changed background gradient for settings page</span>
+              <br><span>- fixed image glitch when loading inventory page</span>
+              <br><span class="indent">- tracked already loaded elements to prevent duplicate elements</span>
+              <br><span class="indent">- special thanks to <a href="https://steamcommunity.com/profiles/76561198104649119">Marxy</a> for pointing the bug out</span>
+              <br><span>- removed `steam.expert` pricing source due to closure of the API</span>
+            </p>
+          </div>
+        </li>
+        <li>
+          <div class="collapsible-header">v 1.6.3</div>
           <div class="collapsible-body">
             <p>
               <span>- fixed tag name accession based on context</span>
@@ -594,7 +586,7 @@
           <div class="collapsible-header">v 1.1.0</div>
           <div class="collapsible-body">
             <p>
-              <span>- added various aesthetical changes to multiple pages</span>
+              <span>- added various visual changes to multiple pages</span>
               <br><span>- added settings page</span>
               <br><span class="indent">- implemented real time setting saves</span>
               <br><span class="indent">- added contributions</span>

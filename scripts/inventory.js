@@ -195,6 +195,8 @@ function setupItems(infoPairs, idPairs, totalItems){
 
         var item = infoPairs[id];
 
+        if($(this).data('st-loaded')) return;
+
         if(item.price){
             inventory.total += item.price;
             $(this).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-price">' + formatPrice(item.price) + '</span>');
@@ -207,12 +209,17 @@ function setupItems(infoPairs, idPairs, totalItems){
             $(this).append('<div class="st-item-not-tradable"></div>')
         }
 
-        /* add stickers */
+        /* add stickers, each sticker element _needs_ to be inside a DIV element, I'm not 100% sure but I believe
+           when Steam initialises each element it uses a generic img tag identifier to set the source of the image
+           so if we load our content in before Steam intialises the element it will set all images inside the item element
+           to the image of the gun it's initialising... wrapping our image element in a div stops it from being identified */
         for(var i = 0; i < item.stickers.length; i++){
             $(this).append(
-                '<img class="st-item-sticker" src="' + item.stickers[i] + '" style="margin-left: ' + (i * 25) + '%">'
+                '<div><img class="st-item-sticker" src="' + item.stickers[i] + '" style="margin-left: ' + (i * 25) + '%"></div>'
             )
         }
+
+        $(this).data('st-loaded', true);
     })
 
     $('#st-load-prices').fadeOut(function(){
