@@ -350,7 +350,8 @@ function getRates(callback){
     $.ajax({
         url: 'http://api.fixer.io/latest?base=USD',
         success: function(response){
-            callback(response)
+            /* parse it if  hasn't been parsed yet */
+            callback(typeof(response) == 'string' ? JSON.parse(response) : response);
         },
         error: function(){
             setTimeout(getRates.bind(null, callback), 500)

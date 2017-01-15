@@ -4,7 +4,7 @@ CS:GO Trade Helper improves the appearance of Steam pages and, in various ways, 
 
 For more information, add me on [Steam](https://steamcommunity.com/id/i7xx) or visit the [website](https://i7xx.xyz/helper).
 
-[![Foo](https://developer.chrome.com/webstore/images/ChromeWebStore_Badge_v2_206x58.png)](https://chrome.google.com/webstore/detail/csgo-trade-helper/miogdaopejcmpcjhkdaflnkcafghgkfc/)
+[![Chrome Web Store](https://developer.chrome.com/webstore/images/ChromeWebStore_Badge_v2_206x58.png)](https://chrome.google.com/webstore/detail/csgo-trade-helper/miogdaopejcmpcjhkdaflnkcafghgkfc/)
 ![Icon](assets/notification.png)
 
 ---

@@ -183,7 +183,13 @@
 }
 
 .st-scammer {
-  background-color: rgba(255, 0, 0, 0.3)
+  background-image: linear-gradient(to right, rgb(37, 60, 85) 20%, rgb(94, 30, 42));
+}
+
+.st-verified {
+  /* important tag added because if they are both a 'scammer' and verified,
+     we want the verified class to override the scammer class */
+  background-image: linear-gradient(to right, rgb(37, 60, 85) 20%, rgb(30, 94, 61)) !important;
 }
 
 .st-invite-block {

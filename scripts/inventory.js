@@ -37,12 +37,8 @@ function inventoryProcess(){
 
     getSteamID(false, function(steamID){
         /* call this once manually as the HideLoadingIndicator isn't called when the page intially loads */
-        getActiveInventory(function(data){
-            parseInventory(data.steamID, replicateSteamResponse(data), function(infoPairs, idPairs){
-                inventory.infoPairs = infoPairs;
-                setupItems(infoPairs, idPairs, data.totalItems)
-            })
-        })
+        getInventoryDetails(steamID, getInventoryDetailsCallback, 0)
+        getActiveInventory(getActiveInventoryCallback)
 
         /* due to the new loading mechanism for inventories (only load when the page needs to be loaded, i.e. user is
          scrolling through pages) I need to create a listener event for when the new items are loaded - to do this
@@ -58,15 +54,18 @@ function inventoryProcess(){
                 window.dispatchEvent(new CustomEvent('%%event%%', {}));
             }
         }, function(){
-            getActiveInventory(function(data){
-                parseInventory(data.steamID, replicateSteamResponse(data), function(infoPairs, idPairs){
-                    inventory.infoPairs = infoPairs;
-                    setupItems(infoPairs, idPairs, data.totalItems)
-                })
-            })
+            getInventoryDetails(steamID, getInventoryDetailsCallback, 0)
+            getActiveInventory(getActiveInventoryCallback)
         })
 
-        getInventoryDetails(steamID, function(details, attempt){
+        function getActiveInventoryCallback(data){
+            parseInventory(data.steamID, replicateSteamResponse(data), function(infoPairs, idPairs){
+                inventory.infoPairs = infoPairs;
+                setupItems(infoPairs, idPairs, data.totalItems)
+            })
+        }
+
+        function getInventoryDetailsCallback(details, attempt){
             if(!details){
                 return $('#st-load-floats').text('Loading Floats: attempt #' + attempt);
             }
@@ -117,7 +116,7 @@ function inventoryProcess(){
 
                 $('#st-sort-inventory-float').click(sortInventory.bind(null, false));
             }
-        }, 0)
+        }
     })
 }
 

@@ -12,66 +12,72 @@ $('.invite_row').each(function(){
     queue.push({steamID: steamID, element: this})
 })
 
-/* we call processQueue twice so we retrieve data twice as fast */
-processQueue()
-processQueue()
-function processQueue(){
-    if(queue.length == 0) return
+/* if true, it will only process inventories,
+   else it will only process verification checks */
+processQueue(true, 0)
+processQueue(false, 0)
+function processQueue(inventoryOnly, index){
+    if(index > queue.length - 1) return
+    var info = queue[index];
 
-    var info = queue.shift()
-    getInventory(info.steamID, function(error, infoPairs, idPairs){
-        processQueue()
-        checkVerification(info.steamID, function(response){
-            if(response.success && response.verified){
-              /* if the profile is a scammer, change the background row color */
-                if(response.scammer){
-                    $(info.element).css('background-color', '#6f1b1b');
-                    $(info.element).find('.playerAvatar, .playerAvatar img').css('background', 'red')
+    $(info.element).find('.inviterBlock').prepend(
+        '<a id="st-profile-value-' + info.steamID + '" href="https://steamcommunity.com/profiles/' + info.steamID + '/inventory" class="whiteLink st-banned"></a>' +
+        '<a id="st-profile-rep-' + info.steamID + '" href="https://steamrep.com/profiles/' + info.steamID + '" class="whiteLink st-banned"></a>'
+    );
 
-                    if(settings.autoignore){
-                        injectScript({ '%%steamID%%': info.steamID }, function(){
-                            javascript:FriendAccept( '%%steamID%%', 'ignore' );
-                        })
-                    }
-                }
-
-                $(info.element).find('.acceptDeclineBlock').before(
-                    '<div class="st-verified-profile st-verified-invites ' + (response.scammer ? 'st-verified-scammer' : '') + '">' + response.name + '</div>'
-                )
-                $(info.element).data('st-verified', true)
-            }
-        })
-
-        getPlayerInfo(info.steamID, function(data){
-          /* error with api call, ignore this profile */
-            if(data.err || typeof(data.data) == 'string' && data.data.indexOf('Error') > -1 && !data.data.error) return;
-            data = data.data;
+    if(inventoryOnly){
+        getInventory(info.steamID, function(error, infoPairs, idPairs){
+            setTimeout(function(){
+                processQueue(inventoryOnly, index + 1)
+            }, 1000);
 
             var invValue = 0;
             for(var item in infoPairs){
                 if(infoPairs[item] && infoPairs[item].price) invValue += infoPairs[item].price
             }
 
-          /* if there was an error loading the inventory, set the inv value to -1
-           so these profiles sink to the bottom when sorting */
+            /* if there was an error loading the inventory, set the inv value to -1
+             so these profiles sink to the bottom when sorting */
             if(error) invValue = -1
             $(info.element).data('st-value', invValue);
 
-            var bans = [];
-            if(data.hasOwnProperty('tradebanstate') && data.tradebanstate !== 'None') bans.push('TRADE BANNED');
-            if(data.hasOwnProperty('scammer') && data.scammer) bans.push('SCAMMER');
-            if(data.hasOwnProperty('caution') && data.caution) bans.push('CAUTION');
-
-            $(info.element).find('.inviterBlock').prepend(
-                '<a href="https://steamcommunity.com/profiles/' + info.steamID + '/inventory" class="whiteLink st-banned">' + (error ? '' : formatPrice(invValue)) + '</a>'
-            )
-
-            if(bans.length > 0) $(info.element).addClass('st-scammer')
-            $(info.element).find('.inviterBlock').prepend(
-                '<a href="https://steamrep.com/profiles/' + info.steamID + '" class="whiteLink st-banned">' + (bans.length > 0 ? bans.join(' | ') : 'clean') + '</a>'
-            )
+            $('#st-profile-value-' + info.steamID).text(error ? '' : formatPrice(invValue))
         })
-    })
+    } else {
+        checkVerification(info.steamID, function(response){
+            if(!response.success) return
+
+            /* if the profile is a scammer, change the background row color */
+            if (response.scammer) {
+                $(info.element).css('background-color', '#6f1b1b');
+                $(info.element).find('.playerAvatar, .playerAvatar img').css('background', 'red')
+
+                if (settings.autoignore) {
+                    injectScript({'%%steamID%%': info.steamID}, function () {
+                        javascript:FriendAccept('%%steamID%%', 'ignore');
+                    })
+                }
+            }
+
+            if(response.verified && response.name){
+                $(info.element).addClass('st-verified')
+                $(info.element).find('.acceptDeclineBlock').before(
+                    '<div class="st-verified-profile st-verified-invites ' + (response.scammer ? 'st-verified-scammer' : '') + '">' + response.name + '</div>'
+                )
+            }
+
+            $(info.element).data('st-verified', true)
+        })
+
+        getPlayerInfo(info.steamID, function(err, summary){
+            processQueue(inventoryOnly, index + 1);
+            /* error with api call, ignore this profile */
+            if(err || !summary) return;
+
+            if(summary != 'none') $(info.element).addClass('st-scammer')
+            $('#st-profile-rep-' + info.steamID).text(summary == 'none' ? 'clean steamrep' : summary);
+        })
+    }
 }
 
 /* if we have one friend invite, the singlular ('you have 1 friend invite') element
@@ -126,19 +132,17 @@ var sortAsc = true;
 
 function getPlayerInfo(steamID, callback){
   /* implement fall back methods
-   http://steamrep.com/api/beta4/reputation/76561198073590377
-   http://steamrep.com/id2rep.php?steamID32=STEAM_0:1:56662324 */
+    https://steamrep.com/util.php?op=getSteamBanInfo&id=steamID&tm=timeStamp
+    ^ first method was nuked
+
+    http://steamrep.com/api/beta4/reputation/76561198073590377
+    http://steamrep.com/id2rep.php?steamID32=STEAM_0:1:56662324 */
     $.ajax({
-        url: 'https://steamrep.com/util.php',
-        data: {
-            op: 'getSteamBanInfo',
-            id: steamID,
-            tm: Math.round(new Date().getTime() / 1000) - 9
-        },
+        url: 'https://steamrep.com/api/beta4/reputation/' + steamID,
         success: function(response) {
-            callback({err: false, data: response});
+            callback(null, $(response).find('reputation summary').text())
         }, error: function(){
-            callback({err: true});
+            callback(true);
         }
     })
 }
