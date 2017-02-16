@@ -322,7 +322,7 @@ function loadPricesFor(steamID, isMyItems){
 function whenInventoryLoads(steamID, callback){
     injectScriptWithEvent({ '%%steamID%%': steamID }, function(){
         var _interval = setInterval(function(){
-            if(g_ActiveInventory.m_owner.strSteamId == '%%steamID%%' && !g_ActiveInventory.BIsPendingInventory()){
+            if(g_ActiveInventory.owner.strSteamId == '%%steamID%%' && !g_ActiveInventory.BIsPendingInventory()){
                 window.dispatchEvent(new CustomEvent('%%event%%', {
                     detail: true
                 }));

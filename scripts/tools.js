@@ -1,7 +1,7 @@
 /* http://steamcommunity.com/id/i7xx/inventory/ becomes ['', 'id', 'i7xx', 'inventory', ''] */
 var path = window.location.pathname.split('/')
 if(path.join('/') !== '/' && ['tradeoffer'].indexOf(path[1]) == -1 || ['chat'].indexOf(path[2]) > -1 && ['tradingcards'].indexOf(path[1]) == -1 && path.join('/').indexOf('/json/') == -1){
-  /* add a nicer background and make the profile element transparent */
+    /* add a nicer background and make the profile element transparent */
     $('body, .profile_header_bg_texture').css('background', 'url("http://store.akamai.steamstatic.com/public/images/v6/colored_body_top.png?v=2") center top no-repeat #1b2838')
     $('.profile_small_header_texture').css({'background-image': 'inherit', 'background-color': 'rgba(26,41,58,0.75)', 'box-shadow': '0px 0px 15px -2px black'})
     $('.profile_small_header_bg').css('background-image', 'inherit')
@@ -29,7 +29,7 @@ chrome.runtime.sendMessage({action: 'getRates'}, function(response){
 })
 
 function formatPrice(price){
-  /* convert price based on settings */
+    /* convert price based on settings */
     return settings.exchangesymb + (price * rates[settings.exchangeabbr]).toFixed(2)
 }
 
@@ -40,13 +40,13 @@ function getAPIKey(callback){
 }
 
 function buildItemSummary(types, tradeoffer){
-  /* tradeoffer = is in trade offer page */
+    /* tradeoffer = is in trade offer page */
     if(Object.keys(types).length == 0) return '';
-  /* if we're in a trade offer, make the margin -2px else it's excessive */
+    /* if we're in a trade offer, make the margin -2px else it's excessive */
     var summary = '<hr ' + (tradeoffer ? 'style="margin-bottom:-2px" ' : '') + 'class="st-trade-offer-divider">';
     var build = []
     for(var type in types){
-      /* if we're in a trade offer, comma delimit the items to save space */
+        /* if we're in a trade offer, comma delimit the items to save space */
         build.push(type + ': ' + types[type])
     }
     return summary + build.join(tradeoffer ? ', ' : '<br>');
@@ -65,25 +65,25 @@ function checkVerification(steamID, callback){
 var idPairs = {};
 
 function getInventory(steamID, callback, attempt){
-  /* if the attempt argument was not provided, set it to 0 */
+    /* if the attempt argument was not provided, set it to 0 */
     if(arguments.length < 3) attempt = 0
 
     console.log('Loading inventory JSON for ' + steamID + ', attempt #' + (attempt + 1));
 
-  /* if the total tries is above the threshold, stop retrying */
+    /* if the total tries is above the threshold, stop retrying */
     if(++attempt > 3){
         if(typeof(callback) === 'function') callback(true, null, null);
         return;
     }
 
-  /* load the inventory and parse it upon success */
+    /* load the inventory and parse it upon success */
     $.ajax({
         url: 'https://steamcommunity.com/profiles/' + steamID + '/inventory/json/730/2',
         success: function(response, status, xhr){
             if(!response.success){
-              /* we could pass "response.error" as a parameter to this callback,
-               but it doesn't really matter - if the success is false, it usually
-               means the inventory is private or Steam is having problems */
+                /* we could pass "response.error" as a parameter to this callback,
+                 but it doesn't really matter - if the success is false, it usually
+                 means the inventory is private or Steam is having problems */
                 if(typeof(callback) === 'function') callback(true, null, null)
                 return
             }
@@ -99,41 +99,41 @@ function getInventory(steamID, callback, attempt){
 }
 
 function parseInventory(steamID, response, callback){
-  /* wait until the prices have loaded, we could do this earlier but to
-   speed things up we get the inventory first and wait for prices before
-   we parse it */
+    /* wait until the prices have loaded, we could do this earlier but to
+     speed things up we get the inventory first and wait for prices before
+     we parse it */
     if(Object.keys(prices).length == 0) return setTimeout(parseInventory.bind(null, steamID, response, callback), 500);
 
-  /* loop over descriptions, match 'classid_instanceid' to item name */
+    /* loop over descriptions, match 'classid_instanceid' to item name */
     for(var id in response.rgDescriptions){
         var item = response.rgDescriptions[id];
-      /* replace special characters to ensure compatibility with price list */
+        /* replace special characters to ensure compatibility with price list */
         //item.market_hash_name = item.market_hash_name.replace('\u2122 ', '™').replace('\u2605 ', '★');
 
-      /* sometimes Steam goes weird and we don't have the right attributes,
-       we could retry, but it'd be easier for now to just skip the item */
+        /* sometimes Steam goes weird and we don't have the right attributes,
+         we could retry, but it'd be easier for now to just skip the item */
         if(!item || !item.market_hash_name) continue;
 
-      /* search the tags for the wear */
+        /* search the tags for the wear */
         var wear = 'V', type = 'Unknown';
         item.tags.forEach(function(tag){
-          /* sometimes that tag is `name` and sometimes it's `localized_tag_name` depending on the context from where
+            /* sometimes that tag is `name` and sometimes it's `localized_tag_name` depending on the context from where
              the information came (e.g. from g_ActiveInventory or /inventory/json) */
-          if(tag.category == 'Exterior'){
-            if(tag.localized_tag_name) wear = tag.localized_tag_name.replace(/[-a-z ]/g, '');
-            if(tag.name) wear = tag.name.replace(/[-a-z ]/g, '');
-          }
+            if(tag.category == 'Exterior'){
+                if(tag.localized_tag_name) wear = tag.localized_tag_name.replace(/[-a-z ]/g, '');
+                if(tag.name) wear = tag.name.replace(/[-a-z ]/g, '');
+            }
 
-          if(tag.category == 'Type'){
-            if(tag.localized_tag_name) type = tag.localized_tag_name;
-            if(tag.name) type = tag.name;
-          }
+            if(tag.category == 'Type'){
+                if(tag.localized_tag_name) type = tag.localized_tag_name;
+                if(tag.name) type = tag.name;
+            }
         })
 
-      /* if it's not painted, change it to vanilla */
+        /* if it's not painted, change it to vanilla */
         if(wear === 'NP') wear = 'V';
 
-      /* find the stickers */
+        /* find the stickers */
         var stickers = [];
         item.descriptions.forEach(function(desc){
             if(desc.value.indexOf('Sticker Details') == -1) return;
@@ -144,7 +144,7 @@ function parseInventory(steamID, response, callback){
         })
 
         idPairs[item.classid + '_' + item.instanceid] = {
-          /* clear out the stattrak part so we can match it to the name in patterns.js */
+            /* clear out the stattrak part so we can match it to the name in patterns.js */
             name: item.name.replace('StatTrak\u2122 ', ''),
             price: Number(prices[item.market_hash_name]),
             wear: wear,
@@ -157,13 +157,13 @@ function parseInventory(steamID, response, callback){
         };
     }
 
-  /* loop over inventory, match 'assetid' to the item in idPairs */
+    /* loop over inventory, match 'assetid' to the item in idPairs */
     var infoPairs = {};
     for(var id in response.rgInventory){
         var item = response.rgInventory[id];
 
-      /* sometimes we just won't get any item here, not sure why, haven't
-       been able to reproduce, so let's just skip over */
+        /* sometimes we just won't get any item here, not sure why, haven't
+         been able to reproduce, so let's just skip over */
         if(!item || !item.id) continue;
 
         idPairs[item.classid + '_' + item.instanceid]['id'] = item.id
@@ -171,15 +171,15 @@ function parseInventory(steamID, response, callback){
         if(inspect){
             idPairs[item.classid + '_' + item.instanceid].inspect = inspect.replace('%assetid%', item.id)
 
-          /*$.ajax({
-           url: 'http://localhost:3000/api/1/',
-           data: { url: inspect },
-           success: function(response) {
-           //console.log({err: false, data: response});
-           }, error: function(){
-           //console.log({err: true})
-           }
-           })*/
+            /*$.ajax({
+             url: 'http://localhost:3000/api/1/',
+             data: { url: inspect },
+             success: function(response) {
+             //console.log({err: false, data: response});
+             }, error: function(){
+             //console.log({err: true})
+             }
+             })*/
         }
 
         infoPairs[item.id] = idPairs[item.classid + '_' + item.instanceid];
@@ -194,7 +194,7 @@ function formatPattern(name, seed){
     if(!patterns[name] || !patterns[name][seed]) return '';
 
     if(name.indexOf('Case Hardened') == -1){
-      /* it's a fade.. */
+        /* it's a fade.. */
         return ' ' + patterns[name][seed] + '%';
     }
 
@@ -210,8 +210,8 @@ function isOfferGlitched(offerID, callback){
         if(response.err) return callback(false)
         if(!response.descriptions) return callback(true)
 
-      /* array of class ids, we do this to check if the items we loop over in the offer
-       are in the descriptions as glitched items do not appear in the descriptions */
+        /* array of class ids, we do this to check if the items we loop over in the offer
+         are in the descriptions as glitched items do not appear in the descriptions */
         var descriptions = response.descriptions.map(function(item){ return item.classid })
 
         var glitched = response.offer.items_to_give.concat(response.offer.items_to_receive).some(function(item){
@@ -246,7 +246,7 @@ function getInventoryDetails(steamID, callback, attempt){
             for(var item in response.inventory){
                 var item = response.inventory[item];
 
-              /* if we don't have the float, don't bother overlaying the info on items */
+                /* if we don't have the float, don't bother overlaying the info on items */
                 if(!item.float) continue;
                 var float = String(item.float).substr(0, settings.fvdecimals + 2);
                 items[item.id] = { float: float, seed: item.texture || -1 }
@@ -267,9 +267,9 @@ function getInventoryDetails(steamID, callback, attempt){
 function replicateSteamResponse(data){
     var invToParse = { rgInventory: {}, rgDescriptions: {} }
 
-  /* parseInventory function was designed to work with JSON responses from Steam,
-   instead of reworking the whole function we just replicate the rg_ActiveInventory information
-   and pretend it's a Steam response, not ideal but it works */
+    /* parseInventory function was designed to work with JSON responses from Steam,
+     instead of reworking the whole function we just replicate the rg_ActiveInventory information
+     and pretend it's a Steam response, not ideal but it works */
     for(var id in data.inventory){
         var item = data.inventory[id]
 
@@ -294,9 +294,9 @@ function makeAPICall(url, data, callback){
             data: data,
             success: function(response) {
                 callback({err: false, data: response});
-            }, error: function(){
-                callback({err: true}
-                )}
+            }, error: function() {
+                callback({err: true})
+            }
         })
     }
 }
@@ -329,12 +329,12 @@ function removeItemFromTrade(elementID){
 /* inTradeOffer, boolean, true when in trade offer page */
 function editActionMenu(inTradeOffer, steamID){
     injectScript({ '%%steamID%%': steamID, '%%steamID%%': steamID }, function(){
-      /* bit of a hacky solution, but we need to do two seperate selections
-       and iterations due to the html structure of items within the inventory
-       and the actual trade offer items */
+        /* bit of a hacky solution, but we need to do two seperate selections
+         and iterations due to the html structure of items within the inventory
+         and the actual trade offer items */
 
         $J('.itemHolder:not(.trade_slot)').each(function(){
-          /* length will only be one if there is no item there */
+            /* length will only be one if there is no item there */
             if($J(this).children().length == 1) return;
 
             var item = $J(this)[0].rgItem;
@@ -361,14 +361,14 @@ function editActionMenu(inTradeOffer, steamID){
 }
 
 function injectScript(args, source){
-  /* stringify our function */
+    /* stringify our function */
     source = source.toString()
 
-  /* insert all of our arguments into the script */
+    /* insert all of our arguments into the script */
     for(var arg in args)
         source = source.replace(arg, args[arg])
 
-  /* inject and remove the script */
+    /* inject and remove the script */
     var script = document.createElement('script');
     script.textContent = '(' + source + ')();';
     document.body.appendChild(script)
@@ -376,20 +376,20 @@ function injectScript(args, source){
 }
 
 function injectScriptWithEvent(args, source, callback){
-  /* generate a random event name and insert it into the source */
+    /* generate a random event name and insert it into the source */
     var eventID = String(Math.floor(Math.random() * 10000))
     source = source.toString().replace('%%event%%', eventID)
 
-  /* insert all of our arguments into the script */
+    /* insert all of our arguments into the script */
     for(var arg in args)
         source = source.replace(arg, args[arg])
 
-  /* set up the event listener to invoke the callback */
+    /* set up the event listener to invoke the callback */
     $(window).on(eventID, function(event){
         callback(event.originalEvent.detail)
     })
 
-  /* inject and remove the script */
+    /* inject and remove the script */
     var script = document.createElement('script');
     script.textContent = '(' + source + ')();';
     document.body.appendChild(script)

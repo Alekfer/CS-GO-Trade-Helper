@@ -5,7 +5,6 @@
   <script src="../lib/materialize.min.js"></script>
   <link href="https://steamcommunity-a.akamaihd.net/public/shared/css/motiva_sans.css?v=F3z3QpekjE2f" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400" rel="stylesheet">
-  <script src="../scripts/inventory.js"></script>
 </head>
 
 <body>
@@ -460,7 +459,25 @@
 
       <ul class="collapsible" data-collapsible="accordion">
         <li>
-          <div class="collapsible-header active">v 1.6.6</div>
+          <div class="collapsible-header active">v 1.6.8</div>
+          <div class="collapsible-body">
+            <p>
+              <span>- fixed a bug that stopped floats from loading in trade offer windows</span>
+              <br><span>- fixed a bug where levels were not being sorted properly on the invites page</span>
+              <br><span>- increased inventory loading intervals on invites page to prevent being rate limited by Steam</span>
+            </p>
+          </div>
+        </li>
+        <li>
+          <div class="collapsible-header">v 1.6.7</div>
+          <div class="collapsible-body">
+            <p>
+              <span>- cached data to speed up inventory loading times</span>
+            </p>
+          </div>
+        </li>
+        <li>
+          <div class="collapsible-header">v 1.6.6</div>
           <div class="collapsible-body">
             <p>
               <span>- edited invites page</span>

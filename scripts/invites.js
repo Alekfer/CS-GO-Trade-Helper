@@ -13,7 +13,7 @@ $('.invite_row').each(function(){
 })
 
 /* if true, it will only process inventories,
-   else it will only process verification checks */
+ else it will only process verification checks */
 processQueue(true, 0)
 processQueue(false, 0)
 function processQueue(inventoryOnly, index){
@@ -29,7 +29,7 @@ function processQueue(inventoryOnly, index){
         getInventory(info.steamID, function(error, infoPairs, idPairs){
             setTimeout(function(){
                 processQueue(inventoryOnly, index + 1)
-            }, 1000);
+            }, 2000);
 
             var invValue = 0;
             for(var item in infoPairs){
@@ -48,7 +48,7 @@ function processQueue(inventoryOnly, index){
             if(!response.success) return
 
             /* if the profile is a scammer, change the background row color */
-            if (response.scammer) {
+            if (response.scammer && !response.verified) {
                 $(info.element).css('background-color', '#6f1b1b');
                 $(info.element).find('.playerAvatar, .playerAvatar img').css('background', 'red')
 
@@ -115,14 +115,15 @@ var sortAsc = true;
             var personTwo = $(b).data('st-' + filter);
 
             if(filter === 'value'){
-              /* if the attribute is -1 it means we have no inventory value yet, so adjust the metadata
-               for the inv value to ensure that these profiles with no information yet always sink to the bottom */
+                /* if the attribute is -1 it means we have no inventory value yet, so adjust the metadata
+                 for the inv value to ensure that these profiles with no information yet always sink to the bottom */
                 if(personOne === -1) personOne = sortAsc ? -1 : 9999999;
                 if(personTwo === -1) personTwo = sortAsc ? -1 : 9999999;
             }
 
-            if($(a).data('st-verified')) personOne = sortAsc ? 9999999 : -1;
-            if($(b).data('st-verified')) personTwo = sortAsc ? 9999999 : -1;
+            /* (TODO) commented due to bugs, will sort out some time in the future */
+            //if($(a).data('st-verified')) personOne = sortAsc ? 9999999 : -1;
+            //if($(b).data('st-verified')) personTwo = sortAsc ? 9999999 : -1;
 
             return sortAsc ? personTwo - personOne : personOne - personTwo;
         }).appendTo('#BG_bottom');
@@ -131,12 +132,12 @@ var sortAsc = true;
 })
 
 function getPlayerInfo(steamID, callback){
-  /* implement fall back methods
-    https://steamrep.com/util.php?op=getSteamBanInfo&id=steamID&tm=timeStamp
-    ^ first method was nuked
+    /* implement fall back methods
+     https://steamrep.com/util.php?op=getSteamBanInfo&id=steamID&tm=timeStamp
+     ^ first method was nuked
 
-    http://steamrep.com/api/beta4/reputation/76561198073590377
-    http://steamrep.com/id2rep.php?steamID32=STEAM_0:1:56662324 */
+     http://steamrep.com/api/beta4/reputation/76561198073590377
+     http://steamrep.com/id2rep.php?steamID32=STEAM_0:1:56662324 */
     $.ajax({
         url: 'https://steamrep.com/api/beta4/reputation/' + steamID,
         success: function(response) {

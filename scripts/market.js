@@ -51,7 +51,7 @@ injectScriptWithEvent(null, function(){
         }));
     };
 
-  /* set max page size to 50 and reload */
+    /* set max page size to 50 and reload */
     g_oSearchResults.m_cPageSize = 50;
     g_oSearchResults.GoToPage(1);
     setTimeout(function(){g_oSearchResults.GoToPage(0)}, 1000)

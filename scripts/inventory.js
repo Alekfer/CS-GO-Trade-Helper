@@ -1,5 +1,6 @@
 var inventory = {
     infoPairs: {},
+    details: {},
     sortAsc: false,
     total: 0,
     loaded: false
@@ -27,7 +28,7 @@ getSteamID(false, function(steamID){
 })
 
 function inventoryProcess(){
-    /* to stop this function from repeatedely being called */
+    /* to stop this function from repeatedly being called */
     inventory.loaded = true;
 
     $('#active_inventory_page').before(
@@ -54,7 +55,6 @@ function inventoryProcess(){
                 window.dispatchEvent(new CustomEvent('%%event%%', {}));
             }
         }, function(){
-            getInventoryDetails(steamID, getInventoryDetailsCallback, 0)
             getActiveInventory(getActiveInventoryCallback)
         })
 
@@ -62,6 +62,13 @@ function inventoryProcess(){
             parseInventory(data.steamID, replicateSteamResponse(data), function(infoPairs, idPairs){
                 inventory.infoPairs = infoPairs;
                 setupItems(infoPairs, idPairs, data.totalItems)
+
+                /* needs to be called after setting inventory.infoPairs */
+                if(Object.keys(inventory.details).length == 0) {
+                    getInventoryDetails(steamID, getInventoryDetailsCallback, 0)
+                } else {
+                    populateDetails()
+                }
             })
         }
 
@@ -71,42 +78,49 @@ function inventoryProcess(){
             }
 
             $('#st-load-floats').text('Loaded Floats Successfully').hide().fadeIn();
+            inventory.details = details;
             populateDetails();
+        }
+
+        function populateDetails(){
             /* we want to populate our items with details but only when we get infoPairs information */
-            function populateDetails(){
-                if(Object.keys(inventory.infoPairs).length == 0 || $('#pending_inventory_page').css('display') != 'none') {
-                    return setTimeout(populateDetails, 500);
+            if(Object.keys(inventory.infoPairs).length == 0 || $('#pending_inventory_page').css('display') != 'none') {
+                return setTimeout(populateDetails, 500);
+            }
+
+            $('.itemHolder:not(.disabled)').each(function(){
+                if($(this).data('st-float-loaded') || !$(this).find('.item.app730.context2:not(.pendingItem)').attr('id')) return;
+                var id = $(this).find('.item.app730.context2:not(.pendingItem)').attr('id').split('730_2_')[1];
+
+                /* if we have no details for this item, set the float to max (will not be displayed)*/
+                if(!inventory.details[id]) return $(this).children().eq(0).data('st-float', -1);
+
+                var text = inventory.details[id].float;
+
+                /* add the float to the metadata for this element */
+                $(this).children().eq(0).data('st-float', text);
+
+                /* add pattern information (e.g. fade percentage) */
+                if(inventory.details[id].phase){
+                    text += ' ' + inventory.details[id].phase;
                 }
 
-                $('.itemHolder:not(.disabled)').each(function(){
-                    if(!$(this).find('.item.app730.context2:not(.pendingItem)').attr('id')) return;
-                    var id = $(this).find('.item.app730.context2:not(.pendingItem)').attr('id').split('730_2_')[1];
+                if(inventory.details[id].seed){
+                    text += formatPattern(inventory.infoPairs[id].name, inventory.details[id].seed);
+                }
 
-                    /* if we have no details for this item, set the float to max (will not be displayed)*/
-                    if(!details[id]) return $(this).children().eq(0).data('st-float', -1);
+                /* pull the fraud warning icon down a bit to make space for our overlay */
+                $(this).find('.slot_app_fraudwarning').css('margin-top', '15px');
 
-                    var text = details[id].float;
+                $(this).append('<span style="font-size: ' + settings.fontsizetop + 'px" class="st-item-float">' + text + '</span>');
+                $(this).data('st-float-loaded', true);
+            });
 
-                    /* add the float to the metadata for this element */
-                    $(this).children().eq(0).data('st-float', text);
+            $('.st-item-float').hide().fadeIn();
 
-                    /* add pattern information (e.g. fade percentage) */
-                    if(details[id].phase){
-                        text += ' ' + details[id].phase;
-                    }
-
-                    if(details[id].seed){
-                        text += formatPattern(inventory.infoPairs[id].name, details[id].seed);
-                    }
-
-                    /* pull the fraud warning icon down a bit to make space for our overlay */
-                    $(this).find('.slot_app_fraudwarning').css('margin-top', '15px');
-
-                    $(this).append('<span style="font-size: ' + settings.fontsizetop + 'px" class="st-item-float">' + text + '</span>');
-                });
-
-                $('.st-item-float').hide().fadeIn();
-
+            /* populateDetails is called every time new items load into the inventory, so we need to only add the sort
+             button if it's not already there */
+            if($('#st-sort-inventory-float')[0] == undefined){
                 $('#st-sort-inventory-price').after(
                     '<a id="st-sort-inventory-float" class="btn_darkblue_white_innerfade btn_medium new_trade_offer_btn"' +
                     'style="margin-left: 5px">' +
@@ -209,9 +223,9 @@ function setupItems(infoPairs, idPairs, totalItems){
         }
 
         /* add stickers, each sticker element _needs_ to be inside a DIV element, I'm not 100% sure but I believe
-           when Steam initialises each element it uses a generic img tag identifier to set the source of the image
-           so if we load our content in before Steam intialises the element it will set all images inside the item element
-           to the image of the gun it's initialising... wrapping our image element in a div stops it from being identified */
+         when Steam initialises each element it uses a generic img tag identifier to set the source of the image
+         so if we load our content in before Steam intialises the element it will set all images inside the item element
+         to the image of the gun it's initialising... wrapping our image element in a div stops it from being identified */
         for(var i = 0; i < item.stickers.length; i++){
             $(this).append(
                 '<div><img class="st-item-sticker" src="' + item.stickers[i] + '" style="margin-left: ' + (i * 25) + '%"></div>'

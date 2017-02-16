@@ -46,7 +46,7 @@ getSteamID(true, function(steamID){
         myInventory.details = details;
 
         showFloats();
-      /* we want to populate our items with details but only when we get infoPairs information */
+        /* we want to populate our items with details but only when we get infoPairs information */
         function showFloats(){
             if(Object.keys(myInventory.infoPairs).length == 0) return setTimeout(showFloats, 500);
 
@@ -57,8 +57,8 @@ getSteamID(true, function(steamID){
                     populateDetails(true, this);
                 });
 
-              /* this class is added inside populateDetails, so we make the appended
-               overlays fade in now */
+                /* this class is added inside populateDetails, so we make the appended
+                 overlays fade in now */
                 $('.st-item-float').hide().fadeIn();
             })
         }
@@ -70,12 +70,12 @@ function populateDetails(loadingMyItems, e){
 
     var id = $(e).data('economy-item').split('/')[2];
 
-  /* if we don't have any information no this item, skip the overlay */
+    /* if we don't have any information no this item, skip the overlay */
     if(!inventory.details[id]) return;
 
     var text = inventory.details[id].float;
 
-  /* add pattern information (e.g. fade percentage) */
+    /* add pattern information (e.g. fade percentage) */
     if(inventory.details[id].phase){
         text += ' ' + inventory.details[id].phase;
     }
@@ -84,7 +84,7 @@ function populateDetails(loadingMyItems, e){
         text += formatPattern(inventory.infoPairs[id].name, inventory.details[id].seed);
     }
 
-  /* pull the fraud warning icon down a bit to make space for our overlay */
+    /* pull the fraud warning icon down a bit to make space for our overlay */
     $(e).find('.slot_app_fraudwarning').css('margin-top', '15px');
 
     $(e).append('<span style="font-size: ' + settings.fontsizetop + 'px" class="st-item-float">' + text + '</span>');
@@ -99,7 +99,7 @@ function setupOffers(){
         $(this).data('st-loaded-prices', false);
 
         $('#st-check-offer-' + index).click(function(){
-          /* if we've already loaded info for this offer, skip */
+            /* if we've already loaded info for this offer, skip */
             if($('.tradeoffer_items_ctn').eq(index).data('st-loaded-prices')) return;
 
             loadPricesForOffer(index);
@@ -113,8 +113,8 @@ function setupOffers(){
 function loadPricesForOffer(index){
     var offer = $('.tradeoffer_items_ctn:eq(' + index + ')');
 
-  /* if we're on the sent screen, change the colour of the background
-   of the offers to make everything easier to see and read */
+    /* if we're on the sent screen, change the colour of the background
+     of the offers to make everything easier to see and read */
     if(sentScreen){
         offer.css({
             '-webkit-transition': 'background 1s',
@@ -125,13 +125,13 @@ function loadPricesForOffer(index){
         })
     }
 
-  /* set the base 'attempt 0' for loading the floats */
+    /* set the base 'attempt 0' for loading the floats */
     $('#st-check-offer-' + index).html('Loading Floats: attempt #<span id="st-load-floats-' + index + '">0</span>').hide().fadeIn();
 
-  /* get the steamid and call the function that loads the floats */
+    /* get the steamid and call the function that loads the floats */
     var steamID = toSteam64(offer.find('.tradeoffer_items.' + theirOfferClass + ' .tradeoffer_avatar').data('miniprofile'))
 
-  /* check if this profile has verification */
+    /* check if this profile has verification */
     checkVerification(steamID, function(response){
         if(response.success && response.verified){
             if(sentScreen){
@@ -147,7 +147,7 @@ function loadPricesForOffer(index){
     })
 
     getInventoryDetails(steamID, function(details, attempt){
-      /* if we haven't got the details, update the attempt count */
+        /* if we haven't got the details, update the attempt count */
         if(!details){
             return $('#st-load-floats-' + index).text(attempt).hide().fadeIn(250);
         }
@@ -156,7 +156,7 @@ function loadPricesForOffer(index){
 
         theirInventory.details = details;
 
-      /* add all the floats to the items */
+        /* add all the floats to the items */
         $('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items.' + theirOfferClass + ' .tradeoffer_item_list .trade_item').each(function(){
             populateDetails(false, this);
         })
@@ -164,7 +164,7 @@ function loadPricesForOffer(index){
 
     var url = offer.parent().find('.tradeoffer_partner a').attr('href');
     getInventory(steamID, function(error, infoPairs, idPairs){
-      /* if we couldn't get the inventory, display an error message */
+        /* if we couldn't get the inventory, display an error message */
         if(error){
             return offer.find('.tradeoffer_items.' + theirOfferClass + ' .tradeoffer_item_list').after(
                 '<div class="st-trade-offer-prices"><div class="st-trade-offer-items-warning">Warning! Unable to load either our inventory or our partner\'s inventory.</div></div>'
@@ -179,40 +179,40 @@ function loadPricesForOffer(index){
         }, possiblyGlitched = false;
 
         $('.tradeoffer_items_ctn:eq(' + index + ') .tradeoffer_items .tradeoffer_item_list .trade_item').each(function(){
-          /* add an aesthetically pleasing box shadow */
+            /* add an aesthetically pleasing box shadow */
             $(this).css('box-shadow', 'inset 0px 0px 10px -1px black');
 
-          /* the data-economy-item attr stores information about the item */
+            /* the data-economy-item attr stores information about the item */
             var economyItem = $(this).data('economy-item').split('/');
-          /* it's the assetid if the first id is '730', else class id if the
-           first id is 'classid' */
+            /* it's the assetid if the first id is '730', else class id if the
+             first id is 'classid' */
             var id = economyItem[2];
 
             var item = economyItem[0] == '730' ? infoPairs[id] : idPairs[id + '_' + economyItem[3]];
 
             if(!item && economyItem[0] === 'classinfo'){
                 possiblyGlitched = true;
-              /* if we still don't have the item, let's check against id pairs,
-               this assumes that the id is a class id so we just check for
-               a matching class id */
+                /* if we still don't have the item, let's check against id pairs,
+                 this assumes that the id is a class id so we just check for
+                 a matching class id */
                 for(var pair in idPairs){
                     if(pair.split('_')[0] == id) item = idPairs[pair]
                 }
             }
 
-          /* if item is not defined, it probably means we're trying
-           to load data for our own items which is stored in myInventory */
+            /* if item is not defined, it probably means we're trying
+             to load data for our own items which is stored in myInventory */
             if(!item){
-              /* if we still don't have the item and the first id is 'classinfo' it
-               means the item is incredibly glitched out, we have no information for it */
+                /* if we still don't have the item and the first id is 'classinfo' it
+                 means the item is incredibly glitched out, we have no information for it */
                 if(economyItem[0] === 'classinfo') return
 
                 item = myInventory.infoPairs[id];
 
-              /* if we still have no item, we can't do anything */
+                /* if we still have no item, we can't do anything */
                 if(!item) return
 
-              /* build up a summary */
+                /* build up a summary */
                 summary.mine.items += 1;
                 summary.mine.total += item.price ? item.price : 0;
 
@@ -234,18 +234,18 @@ function loadPricesForOffer(index){
             }
 
             if($(this).parent().parent().hasClass('secondary')){
-              /* change the height/width of the secondary items in the offer to match the
-               size of the primary items, also makes the text easier to read */
+                /* change the height/width of the secondary items in the offer to match the
+                 size of the primary items, also makes the text easier to read */
                 $(this).css('height', '96px');
                 $(this).css('width', '96px');
                 $(this).find('img').remove();
-              /* and now replace the image with a more suitably sized image */
+                /* and now replace the image with a more suitably sized image */
                 $(this).prepend('<img src="https://steamcommunity-a.akamaihd.net/economy/image/' + item.img + '/96fx96f"/>').hide().fadeIn();
             }
 
             $(this).data('st-price', item.price || 0);
 
-          /* if we have a price, append the price else append a red element to the item */
+            /* if we have a price, append the price else append a red element to the item */
             if(item.price){
                 $(this).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-price">' + formatPrice(item.price) + '</span>');
             } else {
@@ -254,7 +254,7 @@ function loadPricesForOffer(index){
 
             $(this).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-wear">' + item.wear + '</span>');
 
-          /* add stickers */
+            /* add stickers */
             for(var i = 0; i < item.stickers.length; i++){
                 $(this).append(
                     '<img class="st-item-sticker" src="' + item.stickers[i] + '" style="margin-left: ' + (i * 25) + '%">'
@@ -262,17 +262,17 @@ function loadPricesForOffer(index){
             }
         })
 
-      /* sort their items by price*/
+        /* sort their items by price*/
         offer.find('.tradeoffer_items.' + theirOfferClass + ' .tradeoffer_item_list .trade_item').sort(function(a, b) {
             return $(b).data('st-price') - $(a).data('st-price');
         }).prependTo(offer.find('.tradeoffer_items.' + theirOfferClass + ' .tradeoffer_item_list'));
 
-      /* sort my items by price */
+        /* sort my items by price */
         offer.find('.tradeoffer_items.' + myOfferClass + ' .tradeoffer_item_list .trade_item').sort(function(a, b) {
             return $(b).data('st-price') - $(a).data('st-price');
         }).prependTo(offer.find('.tradeoffer_items.' + myOfferClass + ' .tradeoffer_item_list'));
 
-      /* add the summary of their items to the bottom of the offer */
+        /* add the summary of their items to the bottom of the offer */
         offer.find('.tradeoffer_items.' + theirOfferClass + ' .tradeoffer_item_list').after(
             '<div class="st-trade-offer-prices">' + formatPrice(summary.partner.total) +
             '<div class="st-display-right">' + summary.partner.items + ' ' +
@@ -280,14 +280,14 @@ function loadPricesForOffer(index){
         );
 
 
-      /* add a summary of our items to the bottom of the offer */
+        /* add a summary of our items to the bottom of the offer */
         offer.find('.tradeoffer_items.' + myOfferClass + ' .tradeoffer_item_list').after(
             '<div class="st-trade-offer-prices">' + formatPrice(summary.mine.total) +
             '<div class="st-display-right">' + summary.mine.items + ' ' +
             (summary.mine.items == 1 ? 'item' : 'items') + '</div>' + buildItemSummary(summary.mine.types) + '</div>'
         );
 
-      /* if it may be glitched, double check, else add messages if necessary */
+        /* if it may be glitched, double check, else add messages if necessary */
         if(possiblyGlitched || (summary.partner.items == 0 && summary.mine.items == 0)){
             isOfferGlitched(offer.parent().attr('id').split('_')[1], function(glitched){
                 if(!glitched) return;
@@ -296,14 +296,14 @@ function loadPricesForOffer(index){
                 );
             })
         } else {
-          /* if they have no items in the offer, set up a warning */
+            /* if they have no items in the offer, set up a warning */
             if(summary.partner.items == 0){
                 offer.find('.tradeoffer_items.' + theirOfferClass + ' .st-trade-offer-prices').append(
                     '<hr class="st-trade-offer-divider"><div class="st-trade-offer-items-warning">Warning! You will not receive any items in this trade.</div>'
                 );
             }
 
-          /* if we have no items in the offer, that's awesome! */
+            /* if we have no items in the offer, that's awesome! */
             if(summary.mine.items == 0){
                 offer.find('.tradeoffer_items.' + myOfferClass + ' .st-trade-offer-prices').append(
                     '<hr class="st-trade-offer-divider"><div class="st-trade-offer-items-awesome">Awesome! You\'re getting free items!</div>'
@@ -312,13 +312,13 @@ function loadPricesForOffer(index){
         }
 
         if(Object.keys(myInventory.details).length > 0){
-          /* add all the floats to the items */
+            /* add all the floats to the items */
             offer.find('.tradeoffer_items.' + myOfferClass + ' .tradeoffer_item_list .trade_item').each(function(){
                 populateDetails(true, this);
             });
         }
 
-      /* make everything fade in */
+        /* make everything fade in */
         offer.find('.st-trade-offer-prices, .st-item-price, .st-item-no-price, .st-item-float').hide().fadeIn();
     });
 }
