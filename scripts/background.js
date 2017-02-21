@@ -31,7 +31,7 @@ function getAllCookies(){
 }
 
 function getAPIKey(callback){
-  /* if no API key is stored locally, create one */
+    /* if no API key is stored locally, create one */
     chrome.storage.sync.get('apikey', function(setting){
         if(Object.keys(setting).length == 0){
             console.log('Getting Steam API Key.');
@@ -86,12 +86,12 @@ function getNotifications(){
 
             var notifs = response.notifications
             for(var n in notifs){
-              /* x > undefined is false, which means this can only be true for the
-               notifications defined in mappings.notifications */
+                /* x > undefined is false, which means this can only be true for the
+                 notifications defined in mappings.notifications */
                 if(notifs[n] > mappings.notifications[n]){
                     var count = notifs[n] - mappings.notifications[n];
 
-                  /* set the volume of the sound before playing it */
+                    /* set the volume of the sound before playing it */
                     chrome.storage.sync.get('volume', function(setting){
                         notificationSound.volume = setting.volume / 100
                         notificationSound.play();
@@ -106,7 +106,7 @@ function getNotifications(){
                 }
             }
 
-          /* only keep track of the notifications we want */
+            /* only keep track of the notifications we want */
             mappings.notifications = { 4: notifs[4], 5: notifs[5], 6: notifs[6], 7: notifs[7] }
             setTimeout(getNotifications, 15 * 1000)
         },
@@ -117,7 +117,10 @@ function getNotifications(){
 }
 
 var knownOffers = [], itemsInTrade = {};
-var notificationSound = new Audio('../lib/offer.mp3');
+var notificationSound = new Audio('../assets/chime.mp3');
+chrome.storage.sync.get('sound', function(setting){
+    if(setting.hasOwnProperty('sound')) notificationSound = new Audio('../assets/' + setting.sound + '.mp3')
+})
 getOffers();
 function getOffers(){
     makeAPICall('https://api.steampowered.com/IEconService/GetTradeOffers/v1', {
@@ -130,13 +133,16 @@ function getOffers(){
         if(data.err) return;
         data = data.data;
 
+        /* no offers */
+        if(Object.keys(data.response).length == 0) return;
+
         var offers = {}, players = [], tempItemsInTrade = {};
         data.response.trade_offers_received.forEach(function(offer){
-          /* we only want active trade offers, even though we imply this with
-           'active_only' in the request we sometimes get cancelled offers */
+            /* we only want active trade offers, even though we imply this with
+             'active_only' in the request we sometimes get cancelled offers */
             if(offer.trade_offer_state != 2) return;
 
-          /* convert steam id 3 to 64 bit */
+            /* convert steam id 3 to 64 bit */
             var steamid = toSteam64(offer.accountid_other);
 
             if(offer.items_to_receive){
@@ -155,10 +161,9 @@ function getOffers(){
                 } else {
                     tempItemsInTrade['me'] = tempItemsInTrade['me'].concat(myItemsInTrade)
                 }
-              /* if we're getting free items, automatically accept */
             }
 
-          /* accept offers giving us free items */
+            /* accept offers giving us free items */
             chrome.storage.sync.get('autoaccept', function(setting){
                 if(setting.autoaccept && (!offer.items_to_give || offer.items_to_give.length == 0) ){
                     getAllCookies()
@@ -166,13 +171,13 @@ function getOffers(){
                 }
             })
 
-          /* only get incoming trade offers */
+            /* only get incoming trade offers */
             if(!offer.is_our_offer){
-              /* if we already know about this offer, skip */
+                /* if we already know about this offer, skip */
                 if(knownOffers.indexOf(offer.tradeofferid) > -1) return;
                 knownOffers.push(offer.tradeofferid);
 
-              /* keep track of steam ids so we can get player info */
+                /* keep track of steam ids so we can get player info */
                 players.push(steamid);
 
                 offers[steamid] = {
@@ -185,27 +190,27 @@ function getOffers(){
             }
         })
 
-      /* we make a temp store of the items
-       so on every poll we keep the list updated */
+        /* we make a temp store of the items
+         so on every poll we keep the list updated */
         itemsInTrade = tempItemsInTrade;
 
-      /* players will be empty if we have no new offers */
+        /* players will be empty if we have no new offers */
         if(players.length == 0) return setTimeout(getOffers, 1000 * 15);
 
-      /* get all the player informations */
+        /* get all the player information */
         makeAPICall('https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2', {
             steamids: players.join(',')
         }, function(data){
             if(data.err) return;
             data = data.data;
 
-          /* loop over every player, get the blob for their profile picture and
-           then display the notification */
+            /* loop over every player, get the blob for their profile picture and
+             then display the notification */
             data.response.players.forEach(function(player){
                 getBlob(player.avatarfull, function(data){
                     var offer = offers[player.steamid];
 
-                  /* set the volume of the sound before playing it */
+                    /* set the volume of the sound before playing it */
                     chrome.storage.sync.get('volume', function(setting){
                         notificationSound.volume = setting.volume / 100
                         notificationSound.play();
@@ -222,28 +227,28 @@ function getOffers(){
 
             setTimeout(getOffers, 1000 * 30);
 
-          /*var notifications = [];
-           for(var offer in offers){
-           var offer = offers[offer];
-           var message = '';
-           if(offer.give == 0) message = 'is giving you ' + offer.receive + ' item' + (offer.receive == 1 ? '' : 's')
-           if(offer.give > 0) message = 'wants ' + offer.give + ' item' + (offer.give == 1 ? '' : 's')
+            /*var notifications = [];
+             for(var offer in offers){
+             var offer = offers[offer];
+             var message = '';
+             if(offer.give == 0) message = 'is giving you ' + offer.receive + ' item' + (offer.receive == 1 ? '' : 's')
+             if(offer.give > 0) message = 'wants ' + offer.give + ' item' + (offer.give == 1 ? '' : 's')
 
-           notifications.push({
-           title: players[offer.steamid],
-           message: message
-           });
-           }
+             notifications.push({
+             title: players[offer.steamid],
+             message: message
+             });
+             }
 
-           chrome.notifications.create({
-           type: 'list',
-           title: 'You have new trade offers!',
-           message: 'You have new trade offers!',
-           iconUrl: 'some random blob',
-           items: notifications
-           }, function(id){
+             chrome.notifications.create({
+             type: 'list',
+             title: 'You have new trade offers!',
+             message: 'You have new trade offers!',
+             iconUrl: 'some random blob',
+             items: notifications
+             }, function(id){
 
-           });*/
+             });*/
 
         })
     })
@@ -251,8 +256,8 @@ function getOffers(){
 
 function acceptOffer(id, partner){
     chrome.cookies.get({url: 'https://steamcommunity.com', name: 'sessionid'}, function(cookie) {
-      /* we post with 'st-accept' so we can identify this call on 'onBeforeSendHeaders'
-       so we only modify headers for this call */
+        /* we post with 'st-accept' so we can identify this call on 'onBeforeSendHeaders'
+         so we only modify headers for this call */
         $.ajax({
             type: 'POST',
             url: 'https://steamcommunity.com/tradeoffer/' + id + '/accept/st-accept',
@@ -294,7 +299,7 @@ chrome.notifications.onClicked.addListener(function(id){
 });
 
 function getBlob(url, callback) {
-  /* can't fetch blobs with jQuery Ajax so we use native functions */
+    /* can't fetch blobs with jQuery Ajax so we use native functions */
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.responseType = 'blob';
@@ -360,17 +365,17 @@ function getRates(callback){
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  /* requestPrices is sent by tools.js to get the price list */
+    /* requestPrices is sent by tools.js to get the price list */
     if(request.action === 'requestPrices'){
-      /* if we haven't got the prices yet, request them and cache them */
+        /* if we haven't got the prices yet, request them and cache them */
         if(Object.keys(prices).length == 0){
             getPrices(sendResponse);
         } else {
-          /* if we do already have them, send the cached version */
+            /* if we do already have them, send the cached version */
             sendResponse(prices);
         }
     } else if(request.action === 'updatePrices'){
-      /* force update the prices */
+        /* force update the prices */
         getPrices(console.log);
     } else if(request.action === 'getAPIKey'){
         getAPIKey(function(key){
@@ -391,15 +396,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 fontsizebottom: settings.hasOwnProperty('fontsizebottom') ? settings.fontsizebottom : 14,
                 volume: settings.hasOwnProperty('volume') ? settings.volume : 100,
                 prices: settings.hasOwnProperty('prices') ? settings.prices : 'fast',
-                autoignore: settings.hasOwnProperty('autoignore') ? settings.autoignore : true
+                autoignore: settings.hasOwnProperty('autoignore') ? settings.autoignore : true,
+                sound: settings.hasOwnProperty('sound') ? settings.sound : 'chime'
             })
         })
     } else if(request.action === 'getRates'){
         if(Object.keys(rates).length == 0){
             getRates(function(response){
                 if(response && response.rates){
-                  /* the base is not included
-                   in the response, so we set it */
+                    /* the base is not included
+                     in the response, so we set it */
                     response.rates.USD = 1;
                     rates = response.rates;
                 }
@@ -407,12 +413,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 sendResponse(rates)
             })
         } else {
-          /* if we already have the rates, send the cached version */
+            /* if we already have the rates, send the cached version */
             sendResponse(rates)
         }
     }
 
-  /* this is necessary or the function becomes invalidated */
+    /* this is necessary or the function becomes invalidated */
     return true;
 });
 

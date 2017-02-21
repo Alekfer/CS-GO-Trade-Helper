@@ -196,6 +196,18 @@
                   <label for="exchange-CHF">CHF</label>
                 </p>
               </div>
+              <div class="col s6">
+                <p>
+                  <input name="exchange" class="with-gap" type="radio" data-currency="BRL" data-symbol="R$" id="exchange-BRL"/>
+                  <label for="exchange-BRL">BRL</label>
+                </p>
+              </div>
+              <div class="col s6">
+                <p>
+                  <input name="exchange" class="with-gap" type="radio" data-currency="SEK" data-symbol="kr" id="exchange-SEK"/>
+                  <label for="exchange-SEK">SEK</label>
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -205,7 +217,7 @@
             <p>Automatically accept empty trade offers where you are not giving any items away.</p>
             <p>
               <input type="checkbox" id="autoAccept" />
-              <label for="autoAccept">Auto Accept</label>
+              <label for="autoAccept">Auto Accept (buggy)</label>
             </p>
 
             <span class="card-title">Notification Volume</span>
@@ -213,6 +225,18 @@
             <p style="margin-bottom: 10px" class="range-field">
               <input type="range" id="volume" min="0" max="100" value="100"/>
             </p>
+
+            <a id="sounds-trigger" class='dropdown-button btn' data-sound="chime" href='#' data-activates='sounds'>choose a sound</a>
+
+            <ul id='sounds' class='dropdown-content'>
+              <li><a href="#!">chime</a></li>
+              <li><a href="#!">solemn</a></li>
+              <li><a href="#!">dash</a></li>
+              <li><a href="#!">droplet</a></li>
+              <li><a href="#!">hiccup</a></li>
+              <li><a href="#!">wood</a></li>
+              <li><a href="#!">musical</a></li>
+            </ul>
           </div>
         </div>
         <div class="col s12 m6 l4">
@@ -459,7 +483,17 @@
 
       <ul class="collapsible" data-collapsible="accordion">
         <li>
-          <div class="collapsible-header active">v 1.6.8</div>
+          <div class="collapsible-header active">v 1.7.0</div>
+          <div class="collapsible-body">
+            <p>
+              <span>- added SEK (Swedish krona) and BRL (Brazilian real) currencies</span>
+              <br><span>- added the ability to choose a new notification sound</span>
+              <br><span class="indent">- added new notification sounds</span>
+            </p>
+          </div>
+        </li>
+        <li>
+          <div class="collapsible-header">v 1.6.8</div>
           <div class="collapsible-body">
             <p>
               <span>- fixed a bug that stopped floats from loading in trade offer windows</span>
