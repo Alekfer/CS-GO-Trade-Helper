@@ -324,14 +324,14 @@ function getActiveInventory(callback){
 injectScript({}, function(){
     window.PopulateMarketActions = function(elActions, item){
         elActions.update('');
-        if(!item.marketable || (item.is_currency && CurrencyIsWalletFunds(item))){
+        if(!item.description.marketable || (item.is_currency && CurrencyIsWalletFunds(item))){
             return elActions.hide()
         }
 
         var bIsTrading = typeof(g_bIsTrading) != 'undefined' && g_bIsTrading;
 
         if((typeof(g_bViewingOwnProfile) != 'undefined' && g_bViewingOwnProfile) || bIsTrading){
-            var strMarketName = GetMarketHashName(item);
+            var strMarketName = GetMarketHashName(item.description);
 
             var elPriceInfo = new Element('div');
             var elPriceInfoHeader = new Element('div', { 'style': 'height: 24px;' });
@@ -392,7 +392,7 @@ injectScript({}, function(){
                                             sessionid: g_sessionID,
                                             appid: g_ActiveInventory.selectedItem.appid,
                                             contextid: g_ActiveInventory.selectedItem.contextid,
-                                            assetid: g_ActiveInventory.selectedItem.id,
+                                            assetid: g_ActiveInventory.selectedItem.assetid,
                                             amount: 1,
                                             price: buyerPays
                                         },

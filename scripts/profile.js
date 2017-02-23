@@ -59,7 +59,7 @@ injectScriptWithEvent(null, function(){
 }, function(detail){
     /* here we add the upvote box to the profile */
     $('.profile_header_badgeinfo').append(
-        '<div onclick="upvoteUser()" class="persona_name st-upvote-box" data-community-tooltip="Profile Upvotes<br>Click the thumbs up icon to upvote this profile!">' +
+        '<div onclick="upvoteUser()" class="persona_name st-upvote-box" data-community-tooltip="CS:GO Trade Helper<br>Click the thumbs up icon to upvote this profile!">' +
             '<span ' + (detail.upvoted ? 'class="active"' : '') + ' id="st-upvote">' +
                 '<i class="ico16 thumb_up"></i>' +
             '</span>' +
