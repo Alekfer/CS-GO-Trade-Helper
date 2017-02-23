@@ -296,3 +296,17 @@
   opacity: 0 !important;
   display: none !important;
 }
+
+.st-upvote-box {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin-top: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  padding-left: 20px;
+}
+
+.st-upvote-box span i {
+  margin: 8px 8px 0px 0px;
+}
