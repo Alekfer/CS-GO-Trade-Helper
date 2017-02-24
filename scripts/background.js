@@ -1,7 +1,34 @@
 chrome.webRequest.onHeadersReceived.addListener(function(details){
-    details.responseHeaders.push({ name: 'Access-Control-Allow-Origin', value: '*' });
+    /* define the headers we want to inject */
+    var injectHeaders = {
+        'Access-Control-Allow-Origin': { value: '*', injected: false }/*,
+        'Access-Control-Allow-Headers': { value: 'Content-Type', injected: false },
+        'Access-Control-Allow-Methods': { value: 'GET,PUT,POST,DELETE,OPTIONS', injected: false }*/
+    }
+
+    /* loop over the current headers, if the header
+     we want to inject is found, change the value */
+    details.responseHeaders.forEach(function(e, i){
+        if(Object.keys(injectHeaders).indexOf(e.name) == -1) return
+
+        /* change the value of the existing header and set the injected
+         status to true to stop adding the header later */
+        details.responseHeaders[i].value = injectHeaders[e.name].value
+        injectHeaders[e.name].injected = true
+    })
+
+    /* loop over our headers and check for any headers that haven't been injected */
+    for(var header in injectHeaders){
+        if(injectHeaders[header].injected) return
+
+        /* if we haven't injected it yet, the header doesn't exist so let's add it */
+        details.responseHeaders.push({
+            name: header, value: injectHeaders[header].value
+        })
+    }
+
     return { responseHeaders: details.responseHeaders };
-}, {urls: ['*://api.steampowered.com/*', '*://steamrep.com/*']}, ['blocking', 'responseHeaders']);
+}, {urls: ['*://steamcommunity.com/*', '*://api.steampowered.com/*', '*://steamrep.com/*']}, ['blocking', 'responseHeaders']);
 
 chrome.webRequest.onBeforeSendHeaders.addListener(function(details){
     return { requestHeaders: [
@@ -80,7 +107,7 @@ var mappings = {
 getNotifications()
 function getNotifications(){
     $.ajax({
-        url: 'http://steamcommunity.com/actions/GetNotificationCounts',
+        url: 'https://steamcommunity.com/actions/GetNotificationCounts',
         success: function(response){
             if(!response || !response.hasOwnProperty('notifications')) return setTimeout(getNotifications, 15 * 1000);
 
@@ -121,6 +148,7 @@ var notificationSound = new Audio('../assets/chime.mp3');
 chrome.storage.sync.get('sound', function(setting){
     if(setting.hasOwnProperty('sound')) notificationSound = new Audio('../assets/' + setting.sound + '.mp3')
 })
+
 getOffers();
 function getOffers(){
     makeAPICall('https://api.steampowered.com/IEconService/GetTradeOffers/v1', {
@@ -319,8 +347,7 @@ var prices = {}, rates = {};
 
 function getPrices(callback){
     var urls = {
-        fast: 'https://api.csgofast.com/sih/all',
-        expert: 'https://steam.expert/api/items/all/730'
+        fast: 'https://api.csgofast.com/sih/all'
     };
 
     chrome.storage.sync.get('prices', function(setting){
@@ -329,12 +356,6 @@ function getPrices(callback){
             url: urls[source],
             success: function(response){
                 var temp = {}
-
-                if(source === 'expert'){
-                    response.data.forEach(function(item){
-                        temp[item.market_hash_name] = item.average_median_week;
-                    })
-                }
 
                 if(source === 'fast'){
                     for(var item in response.prices){
@@ -353,7 +374,7 @@ function getPrices(callback){
 
 function getRates(callback){
     $.ajax({
-        url: 'http://api.fixer.io/latest?base=USD',
+        url: 'https://api.fixer.io/latest?base=USD',
         success: function(response){
             /* parse it if  hasn't been parsed yet */
             callback(typeof(response) == 'string' ? JSON.parse(response) : response);

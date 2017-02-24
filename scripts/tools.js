@@ -228,7 +228,9 @@ var phases = {
     'Phase 1': 'P1',
     'Phase 2': 'P2',
     'Phase 3': 'P3',
-    'Phase 4': 'P4'
+    'Phase 4': 'P4',
+    'Emerald': 'Emrl',
+    'Black Pearl': 'BP'
 }
 
 function getInventoryDetails(steamID, callback, attempt){

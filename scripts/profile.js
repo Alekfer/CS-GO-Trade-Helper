@@ -30,7 +30,7 @@ getProfileData(function(data){
 function getProfileData(callback){
     injectScriptWithEvent(null, function(){
         window.dispatchEvent(new CustomEvent('%%event%%', {
-            detail: g_rgProfileData ? g_rgProfileData : null
+            detail: typeof(g_rgProfileData) != 'undefined' ? g_rgProfileData : null
         }));
     }, callback)
 }
