@@ -34,6 +34,7 @@
   .tabs .tab a.active { color: rgba(0, 0, 0, 0.8) }
   .tabs .tab a:hover { color: rgb(41, 164, 214) }
   .tabs { margin-bottom: 10px }
+  .card-panel { margin: 0 }
   .card-content p { font-size: 15px }
   .card-content { height: 110px }
   .card-title { font-size: 18px; font-family: Roboto }
@@ -46,6 +47,9 @@
   .indent { margin-left: 15px }
   .col.s6 .range-field { margin-top: 0px }
   .collab-title { font-family: Roboto; font-weight: 300 }
+  .flex { display: flex; flex-direction: row; flex-wrap: wrap }
+  .flex-item { flex-grow: 1; flex-basis: 0 }
+  .flex-item, .row .col .m6 { padding: 5px; }
 </style>
 
 <div class="row">
@@ -64,8 +68,8 @@
       <h4 class="header left-align">Settings</h4>
       <hr class="header-sep">
 
-      <div class="row">
-        <div class="col s12 m6 l4">
+      <div class="flex">
+        <div class="flex-item">
           <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
             <span class="card-title">Float Decimals</span>
             <p>The number of decimals to display for float value.</p>
@@ -73,8 +77,8 @@
               <input type="range" id="floatDecimals" min="1" max="11" />
             </p>
 
-            <div class="row">
-              <div class="col s6 m12 l6">
+            <div class="flex">
+              <div class="flex-item">
                 <div class="z-depth-1 example-item-holder">
                   <span id="exampleFloatLeft" class="example-item-float"></span>
                   <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
@@ -82,7 +86,7 @@
                   <span class="example-item-wear">FN</span>
                 </div>
               </div>
-              <div class="col s6 m12 l6">
+              <div class="flex-item">
                 <div class="z-depth-1 example-item-holder">
                   <span id="exampleFloatRight" class="example-item-float"></span>
                   <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
@@ -93,7 +97,7 @@
             </div>
           </div>
         </div>
-        <div class="col s12 m6 l4">
+        <div class="flex-item">
           <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
             <span class="card-title">Items in Trade</span>
             <p>Appearance for items already in a trade.</p>
@@ -101,8 +105,8 @@
               <input type="range" id="itemsBackground" min="0" max="360" />
             </p>
 
-            <div class="row">
-              <div class="col s6 m12 l6">
+            <div class="flex">
+              <div class="flex-item">
                 <div id="exampleTradeLeft" class="z-depth-1 example-item-holder">
                   <span class="example-item-float"></span>
                   <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpou-6kejhjxszFJTwT09S5g4yCmfDLP7LWnn8f65Mli7DH9tXziQTgqUY4YmmnINSUJwQ-YVnT_wS7yOzngMW07ZrOmmwj5HeObpQQtA/96fx96f">
@@ -110,7 +114,7 @@
                   <span class="example-item-wear">FN</span>
                 </div>
               </div>
-              <div class="col s6 m12 l6">
+              <div class="flex-item">
                 <div id="exampleTradeRight" class="z-depth-1 example-item-holder">
                   <span class="example-item-float"></span>
                   <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17P7NdTRH-t26q4SZlvD7PYTQgXtu5Mx2gv2P9o6migzl_Us5ZmCmLYDDJgU9NA6B81S5yezvg8e-7cycnXJgvHZx5WGdwUJqz1Tl4g/96fx96f">
@@ -121,22 +125,24 @@
             </div>
           </div>
         </div>
-        <div class="col s12 m6 l4">
+        <div class="flex-item">
           <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
             <span class="card-title">Font Size</span>
             <p>The font size of the float value, price and wear.</p>
-            <div class="row">
-              <div class="col s6 m12 l6">
-                <p class="range-field">
+            <div class="flex">
+              <div class="flex-item" style="padding: 0px 5px 0px 5px;">
+                <p class="range-field" style="margin-top: 0px">
                   <input type="range" id="fontSizeTop" min="6" max="17" value="12"/>
                 </p>
               </div>
-              <div class="col s6 m12 l6">
-                <p class="range-field">
+              <div class="flex-item" style="padding: 0px 5px 0px 5px;">
+                <p class="range-field" style="margin-top: 0px">
                   <input type="range" id="fontSizeBottom" min="6" max="17" value="14"/>
                 </p>
               </div>
-              <div class="col s6">
+            </div>
+            <div class="flex">
+              <div class="flex-item">
                 <div class="z-depth-1 example-item-holder">
                   <span class="example-item-float"></span>
                   <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
@@ -144,7 +150,7 @@
                   <span class="example-item-wear">FN</span>
                 </div>
               </div>
-              <div class="col s6">
+              <div class="flex-item">
                 <div class="z-depth-1 example-item-holder">
                   <span class="example-item-float"></span>
                   <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
@@ -155,6 +161,8 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="row">
         <div class="col s12 m6 l4">
           <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
             <span class="card-title">Currency Conversion</span>
@@ -246,8 +254,26 @@
             <div class="row" style="margin-bottom: 5px">
               <div class="col s6">
                 <p>
+                  <input name="prices" class="with-gap" data-prices="backpack" type="radio" id="prices-backpack" />
+                  <label for="prices-backpack">CSGOBackpack</label>
+                </p>
+              </div>
+              <div class="col s6">
+                <p>
                   <input name="prices" class="with-gap" data-prices="fast" type="radio" id="prices-fast" />
                   <label for="prices-fast">Fast</label>
+                </p>
+              </div>
+              <div class="col s6">
+                <p>
+                  <input name="prices" class="with-steamlytics" data-prices="steamlytics" type="radio" id="prices-steamlytics" />
+                  <label for="prices-steamlytics" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="You have not set an API key for Steamlytics">Steamlytics</label>
+                </p>
+              </div>
+              <div class="col s6">
+                <p>
+                  <input name="prices" class="with-gap" data-prices="bitskins" type="radio" id="prices-bitskins" />
+                  <label for="prices-bitskins">Bitskins</label>
                 </p>
               </div>
             </div>
@@ -447,8 +473,8 @@
       <h4 class="header left-align">Special thanks to</h4>
       <hr class="header-sep">
 
-      <div class="row">
-        <div class="col s12 m12 l4">
+      <div class="flex">
+        <div class="flex-item">
           <a target="_blank" href="https://csgo.exchange">
             <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
               <div class="row valign-wrapper">
@@ -462,7 +488,21 @@
           </a>
         </div>
 
-        <div class="col s12 m12 l4">
+        <div class="flex-item">
+          <a target="_blank" href="http://csgobackpack.net/">
+            <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
+              <div class="row valign-wrapper">
+                <div class="col s2"><img src="http://i.imgur.com/29fDboq.png" width="50px" height="50px"></div>
+                <div class="col s8">
+                  <h5 class="collab-title">csgobackpack.net</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
+                  <span>for providing pricing information for items</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="flex-item">
           <a target="_blank" href="https://metjm.net">
             <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
               <div class="row valign-wrapper">
@@ -484,7 +524,19 @@
 
       <ul class="collapsible" data-collapsible="accordion">
         <li>
-          <div class="collapsible-header active">v 1.7.3</div>
+          <div class="collapsible-header active">v 1.7.4</div>
+          <div class="collapsible-body">
+            <p>
+              <span>- added new pricing source: <a href="http://csgobackpack.net/">csgobackpack.net</a></span>
+              <br><span class="indent">- with thanks to <a href="https://steamcommunity.com/profiles/76561198059556519">Only</a></span>
+              <br><span>- added new pricing source: <a href="http://csgo.steamlytics.xyz/api">csgo.steamlytics.xyz</a>, by <a href="https://steamcommunity.com/profiles/76561198045552709">King</a></span>
+              <br><span class="indent">- requires an API key to use (I have no affiliation with Steamlytics)</span>
+              <br>- added new pricing source: <a href="https://bitskins.com/">bitskins.com</a>
+            </p>
+          </div>
+        </li>
+        <li>
+          <div class="collapsible-header">v 1.7.3</div>
           <div class="collapsible-body">
             <p>
               <span>- fixed a bug where notifications weren't showing for new invites/comments</span>

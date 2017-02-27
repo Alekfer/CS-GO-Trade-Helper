@@ -8,10 +8,10 @@
      "default_title": "CS:GO Trade Helper"
   },
   "background": {
-    "scripts": ["lib/jquery.min.js", "lib/uint64.min.js", "scripts/background.js"]
+    "scripts": ["lib/lz-string.min.js", "lib/jquery.min.js", "lib/uint64.min.js", "scripts/background.js"]
   },
   "permissions": ["cookies", "tabs", "storage", "notifications", "webRequest", "webRequestBlocking",
-                  "*://steamcommunity.com/*", "*://api.steampowered.com/*", "*://steamrep.com/*", "*://steamcdn-a.akamaihd.net/*"],
+                  "*://steamcommunity.com/*", "*://api.steampowered.com/*", "*://steamrep.com/*", "*://steamcdn-a.akamaihd.net/*", "*://api.fixer.io/*"],
   "content_scripts": [
     {
       "matches": ["*://steamcommunity.com/*"],

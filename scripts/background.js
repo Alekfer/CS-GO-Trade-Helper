@@ -28,7 +28,7 @@ chrome.webRequest.onHeadersReceived.addListener(function(details){
     }
 
     return { responseHeaders: details.responseHeaders };
-}, {urls: ['*://steamcommunity.com/*', '*://api.steampowered.com/*', '*://steamrep.com/*']}, ['blocking', 'responseHeaders']);
+}, {urls: ['*://steamcommunity.com/*', '*://api.steampowered.com/*', '*://steamrep.com/*', '*://api.fixer.io/*']}, ['blocking', 'responseHeaders']);
 
 chrome.webRequest.onBeforeSendHeaders.addListener(function(details){
     return { requestHeaders: [
@@ -344,29 +344,40 @@ function getBlob(url, callback) {
 }
 
 var prices = {}, rates = {};
-
 function getPrices(callback){
     var urls = {
-        fast: 'https://api.csgofast.com/sih/all'
+        fast: 'https://api.csgofast.com/sih/all',
+        backpack: 'https://i7xx.xyz/api/1/prices?source=backpack',
+        steamlytics: 'http://api.csgo.steamlytics.xyz/v2/pricelist/compact?key=',
+        bitskins: 'https://i7xx.xyz/api/1/prices?source=bitskins'
     };
 
-    chrome.storage.sync.get('prices', function(setting){
-        var source = setting.hasOwnProperty('prices') ? setting.prices : 'fast'
-        $.ajax({
-            url: urls[source],
-            success: function(response){
-                var temp = {}
+    /* get settings, 'prices' is the pricing source, 'steamlytics' is the Steamlytics api key */
+    chrome.storage.sync.get(['prices', 'steamlytics'], function(settings){
+        var source = settings.hasOwnProperty('prices') ? settings.prices : 'backpack'
+        var url = urls[source]
 
-                if(source === 'fast'){
-                    for(var item in response.prices){
-                        temp[item] = response.prices[item]
-                    }
+        if(settings.hasOwnProperty('steamlytics') && source == 'steamlytics'){
+            url += settings.steamlytics
+        }
+
+        /* if we don't have an api key for steamlytics, default to backpack */
+        $.ajax({
+            url: url,
+            success: function(response){
+                if((source === 'backpack' || source == 'bitskins') && !response.success){
+                    return setTimeout(getPrices.bind(null, callback), 1000)
                 }
 
-                callback(prices = temp)
+                if(source === 'steamlytics'){
+                    if(!response.success) return setTimeout(getPrices.bind(null, callback), 1000 * 60 * 10)
+                    else response['prices'] = response.items
+                }
+
+                callback(prices = response.prices)
             },
             error: function(){
-                setTimeout(getPrices.bind(null, callback), 500)
+                setTimeout(getPrices.bind(null, callback), 1000)
             }
         })
     })
@@ -409,14 +420,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         chrome.storage.sync.get(function(settings){
             sendResponse({
                 fvdecimals: settings.hasOwnProperty('fvdecimals') ? settings.fvdecimals : 6,
-                autoaccept: settings.hasOwnProperty('autoaccept') ? settings.autoaccept : false,
+                autoaccept: settings.hasOwnProperty('autoaccept') ? settings.autoaccept : true,
                 intradebg: settings.hasOwnProperty('intradebg') ? settings.intradebg : 188,
                 exchangeabbr: settings.hasOwnProperty('exchangeabbr') ? settings.exchangeabbr : 'USD',
                 exchangesymb: settings.hasOwnProperty('exchangesymb') ? settings.exchangesymb : '$',
                 fontsizetop: settings.hasOwnProperty('fontsizetop') ? settings.fontsizetop : 12,
                 fontsizebottom: settings.hasOwnProperty('fontsizebottom') ? settings.fontsizebottom : 14,
                 volume: settings.hasOwnProperty('volume') ? settings.volume : 100,
-                prices: settings.hasOwnProperty('prices') ? settings.prices : 'fast',
+                prices: settings.hasOwnProperty('prices') ? settings.prices : 'backpack',
                 autoignore: settings.hasOwnProperty('autoignore') ? settings.autoignore : true,
                 sound: settings.hasOwnProperty('sound') ? settings.sound : 'chime'
             })

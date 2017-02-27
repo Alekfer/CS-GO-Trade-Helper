@@ -27,15 +27,21 @@ function updateSettings(){
         $('#itemsBackground').val(settings.hasOwnProperty('intradebg') ? settings.intradebg : 180)
         $('#fontSizeTop').val(settings.hasOwnProperty('fontsizetop') ? settings.fontsizetop : 12)
         $('#fontSizeBottom').val(settings.hasOwnProperty('fontsizebottom') ? settings.fontsizebottom : 14)
-        $('#autoAccept').prop('checked', settings.hasOwnProperty('autoaccept') ? settings.autoaccept : false)
+        $('#autoAccept').prop('checked', settings.hasOwnProperty('autoaccept') ? settings.autoaccept : true)
         $('#exchange-' + (settings.hasOwnProperty('exchangeabbr') ? settings.exchangeabbr : 'USD')).prop('checked', true).change()
         $('#volume').val(settings.hasOwnProperty('volume') ? settings.volume : 100)
-        $('#prices-' + (settings.hasOwnProperty('prices') ? settings.prices : 'fast')).prop('checked', true).change()
+        $('#prices-' + (settings.hasOwnProperty('prices') ? settings.prices : 'backpack')).prop('checked', true).change()
         $('#autoIgnore').prop('checked', settings.hasOwnProperty('autoignore') ? settings.autoignore : true)
         $('#sounds-trigger').data('sound', settings.hasOwnProperty('sound') ? settings.sound : 'chime')
         updateFloat();
         updateBackground();
         updateFontSize();
+
+        if(settings.hasOwnProperty('steamlytics')){
+            $('label[for=prices-steamlytics]').attr('data-tooltip', 'API Key: ' + settings.steamlytics)
+            $('.tooltipped').tooltip('remove');
+            $('.tooltipped').tooltip({delay: 50})
+        }
     })
 }
 
@@ -101,19 +107,54 @@ $('.default-btn').click(function(){
     saveSettings(true)
 })
 
+$('#prices-steamlytics').click(function(){
+    chrome.storage.sync.get(function(settings) {
+        var key = ""
+        if(settings.hasOwnProperty('steamlytics')){
+            key = settings.steamlytics
+        }
+
+        var key = prompt("Use of Steamlytics requires an API key that can be obtained from http://csgo.steamlytics.xyz/api\n\nIf you already have a key, enter it below:", key)
+        if(key == null || key.length != 32){
+            Materialize.toast("Invalid Steamlytics API key!")
+            return $('input:radio[id=prices-backpack]').prop('checked', true)
+        }
+
+        $.ajax({
+            url: 'http://api.steamlytics.xyz/v1/account?key=' + key,
+            success: function(res){
+                if(res && res.success && res.api_plan == 2){
+                    chrome.storage.sync.set({
+                        steamlytics: key
+                    })
+
+                    $('label[for=prices-steamlytics]').attr('data-tooltip', 'API Key: ' + key)
+                    $('.tooltipped').tooltip('remove');
+                    $('.tooltipped').tooltip({delay: 50})
+                } else {
+                    $('input:radio[id=prices-backpack]').prop('checked', true);
+                    Materialize.toast("Invalid Steamlytics API key!")
+                }
+            }
+        })
+    })
+})
+
+
+
 function saveSettings(reset){
     Materialize.toast("Settings saved!", 2000);
     /* edit settings to default if requested, else save them */
     chrome.storage.sync.set({
         fvdecimals: reset ? 6 : Number($('#floatDecimals').val()),
-        autoaccept: reset ? false : $('#autoAccept').is(':checked'),
+        autoaccept: reset ? true : $('#autoAccept').is(':checked'),
         intradebg: reset ? 180 : Number($('#itemsBackground').val()),
         exchangeabbr: reset ? 'USD' : $('input:checked').data('currency'),
         exchangesymb: reset ? '$' : $('input:checked').data('symbol'),
         fontsizetop: reset ? 12 : $('#fontSizeTop').val(),
         fontsizebottom: reset ? 14 : $('#fontSizeBottom').val(),
         volume: reset ? 100 : $('#volume').val(),
-        prices: reset ? 'fast' : $('input:radio[name="prices"]:checked').data('prices'),
+        prices: reset ? 'backpack' : $('input:radio[name="prices"]:checked').data('prices'),
         autoignore: reset ? true : $('#autoIgnore').is(':checked'),
         sound: reset ? 'chime' : $('#sounds-trigger').data('sound')
     });
