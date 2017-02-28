@@ -123,7 +123,7 @@ $('#prices-steamlytics').click(function(){
         $.ajax({
             url: 'http://api.steamlytics.xyz/v1/account?key=' + key,
             success: function(res){
-                if(res && res.success && res.api_plan == 2){
+                if(res && res.success && res.api_plan >= 2){
                     chrome.storage.sync.set({
                         steamlytics: key
                     })
