@@ -135,6 +135,10 @@ $('#prices-steamlytics').click(function(){
                     $('input:radio[id=prices-backpack]').prop('checked', true);
                     Materialize.toast("Invalid Steamlytics API key!")
                 }
+            },
+            error: function(){
+                $('input:radio[id=prices-backpack]').prop('checked', true);
+                Materialize.toast("Error whilst verifying Steamlytics API key.")
             }
         })
     })

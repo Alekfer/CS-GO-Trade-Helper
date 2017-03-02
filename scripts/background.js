@@ -120,6 +120,7 @@ function getNotifications(){
 
                     /* set the volume of the sound before playing it */
                     chrome.storage.sync.get('volume', function(setting){
+                        if(!setting.hasOwnProperty('volume')) setting.volume = 80
                         notificationSound.volume = setting.volume / 100
                         notificationSound.play();
                     })
@@ -240,6 +241,7 @@ function getOffers(){
 
                     /* set the volume of the sound before playing it */
                     chrome.storage.sync.get('volume', function(setting){
+                        if(!setting.hasOwnProperty('volume')) setting.volume = 80
                         notificationSound.volume = setting.volume / 100
                         notificationSound.play();
                     })

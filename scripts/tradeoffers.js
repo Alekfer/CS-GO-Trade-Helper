@@ -322,3 +322,18 @@ function loadPricesForOffer(index){
         offer.find('.st-trade-offer-prices, .st-item-price, .st-item-no-price, .st-item-float').hide().fadeIn();
     });
 }
+
+/* injection required to load sticker prices */
+injectScriptWithEvent({}, function(){
+    /* convert the function to a string, this includes the function declaration */
+    var func = BuildHover.toString()
+
+    /* remove the declaration and only return the content of the function */
+    func = func.slice(func.indexOf("{") + 1, func.lastIndexOf("}"))
+
+    /* add our event emitter to emit the info we need */
+    func += "window.dispatchEvent(new CustomEvent('%%event%%', {detail: elDescriptors.id}));"
+
+    /* recreate our function with the event emitter inside */
+    BuildHover = new Function('prefix', 'item', 'owner', func)
+}, stickerPriceCallback)

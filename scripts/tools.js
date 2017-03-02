@@ -30,7 +30,7 @@ chrome.runtime.sendMessage({action: 'getRates'}, function(response){
 
 function formatPrice(price){
     /* convert price based on settings */
-    return settings.exchangesymb + (price * rates[settings.exchangeabbr]).toFixed(2)
+    return settings.exchangesymb + (Number(price) * rates[settings.exchangeabbr]).toFixed(2)
 }
 
 function getAPIKey(callback){
@@ -398,6 +398,34 @@ function injectScriptWithEvent(args, source, callback){
     script.parentNode.removeChild(script)
 }
 
+/* this function is used as a callback for injectScriptWithEvent - a script is injected
+   to insert an event emitter into certain functions (functions that build the item hovers,
+   item info element on inventory page) and when the emit emits this callback will
+   look for the 'sticker_info' element, get sticker prices and replace the html */
+function stickerPriceCallback(id){
+    if(!id) return
+    var stickerElement = $('#' + id).find('#sticker_info')
+
+    /* the #sticker_info element will not exist if the item has no stickers */
+    if(stickerElement.html() == undefined) return
+
+    /* stickerElement.text() will return something like the line below:
+     "Sticker: NBK- | Cologne 2016, dennis | MLG Columbus 2016"
+     the manipulation seen below for newStickerInfo will return an array with the sticker names:
+     ['NBK- | Cologne 2016', 'dennis | MLG Columbus 2016']
+     we then loop over each sticker, build up the pricing html and replace the existing html */
+
+    var total = 0
+    var newStickerInfo = stickerElement.text().split(': ')[1].split(', ').map(function(name){
+        var price = prices["Sticker | " + name]
+        total += Number(price)
+        /* will return: '<br>Cerberus $1.05' */
+        return "<br>" + name + " " + formatPrice(price)
+    })
+    newStickerInfo.push('<hr>Total: ' + formatPrice(total))
+    stickerElement.html(stickerElement.html().replace(stickerElement.text(), newStickerInfo.join("")))
+
+}
 
 function getCookie(name) {
     var parts = ('; ' + document.cookie).split('; ' + name + '=');
