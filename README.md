@@ -17,6 +17,8 @@ Screenshots can be seen at [i7xx.xyz/helper](https://i7xx.xyz/helper) and a vide
 
 ### Features
 
+- utilised a hidden Steam feature to enable upvoting on user profiles
+
 - improved aesthetics on Steam Community
 
 - ability to see fade percentages, case hardened tiers and Doppler phases for items quickly inside a trade offer or on an inventory page
