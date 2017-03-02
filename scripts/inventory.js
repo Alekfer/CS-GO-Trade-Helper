@@ -320,21 +320,10 @@ function getActiveInventory(callback){
     }, callback)
 }
 
-/* add an event emitter to PopulateDescriptions (which is called to insert descriptors such as stickers, the parameters
-   sent with the event will allow us to inject sticker prices */
-injectScriptWithEvent({}, function(){
-    /* convert the function to a string, this includes the function declaration */
-    var func = PopulateDescriptions.toString()
-
-    /* remove the declaration and only return the content of the function */
-    func = func.slice(func.indexOf("{") + 1, func.lastIndexOf("}"))
-
-    /* add our event emitter to emit the info we need */
-    func += "window.dispatchEvent(new CustomEvent('%%event%%', {detail: elDescriptions.id}));"
-
-    /* recreate our function with the event emitter inside */
-    PopulateDescriptions = new Function('elDescriptions', 'rgDescriptions', func)
-}, stickerPriceCallback)
+/* add an event emitter to PopulateDescriptions (which is called to insert descriptors such as stickers),
+   the event inside this function will emit the id of the element in which the sticker information can
+   be found - we manipulate this element and replace the html with pricing info */
+injectScriptWithEvent({}, stickerPriceInjection, stickerPriceCallback)
 
 /* injects quick sell button */
 injectScript({}, function(){

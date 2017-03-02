@@ -424,7 +424,22 @@ function stickerPriceCallback(id){
     })
     newStickerInfo.push('<hr>Total: ' + formatPrice(total))
     stickerElement.html(stickerElement.html().replace(stickerElement.text(), newStickerInfo.join("")))
+}
 
+/* this function is called and when the emit that we inject is emitted, the function
+   above is called to insert sticker prices */
+function stickerPriceInjection(){
+    /* convert the function to a string, this includes the function declaration */
+    var func = BuildHover.toString()
+
+    /* remove the declaration and only return the content of the function */
+    func = func.slice(func.indexOf("{") + 1, func.lastIndexOf("}"))
+
+    /* add our event emitter to emit the info we need */
+    func += "window.dispatchEvent(new CustomEvent('%%event%%', {detail: elDescriptors.id}));"
+
+    /* recreate our function with the event emitter inside */
+    BuildHover = new Function('prefix', 'item', 'owner', func)
 }
 
 function getCookie(name) {
