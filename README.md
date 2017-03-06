@@ -1,4 +1,5 @@
 # CS:GO Trade Helper
+
 Implements a variety of features to improve both the Steam Community and trading for CS:GO.
 CS:GO Trade Helper improves the appearance of Steam pages and, in various ways, assists trading in CS:GO through the Steam Community website.
 
@@ -9,13 +10,13 @@ For more information, add me on [Steam](https://steamcommunity.com/id/i7xx) or v
 
 ---
 
-### Screenshots
+## Screenshots
 
 Screenshots can be seen at [i7xx.xyz/helper](https://i7xx.xyz/helper) and a video is [available here](https://www.youtube.com/watch?v=oVqyQOmdZCE).
 
 ---
 
-### Features
+## Features
 
 - utilised a hidden Steam feature to enable upvoting on user profiles
 
@@ -47,7 +48,7 @@ Screenshots can be seen at [i7xx.xyz/helper](https://i7xx.xyz/helper) and a vide
 
 ---
 
-### Permissions:
+## Permissions
 
 - cookies: to allow the extension to automatically accept empty trade offers (when the setting is enabled)
 
@@ -58,3 +59,21 @@ Screenshots can be seen at [i7xx.xyz/helper](https://i7xx.xyz/helper) and a vide
 - notifications: to provide notifications for comments/invites/items/trade offers
 
 - webRequest/webRequestBlocking: to alter headers to enable CORS
+
+---
+
+## Installation - Developer
+
+Refer to [Getting Started: Building a Chrome Extension](https://developer.chrome.com/extensions/getstarted) Guide.
+
+1. Fork the repository and clone it. You can also just clone it if you just want to install it.
+
+```bash
+git clone https://github.com/Rob--/CS-GO-Trade-Helper.git
+```
+
+2. Go into chrome and [open extension](chrome://extensions/) page.
+
+3. Enable Developer Mode
+
+4. Click on 'Load unpacked extension'. The Chrome Add-on is now loaded and ready to use.

@@ -42,7 +42,7 @@ function getItem(listingID, callback){
 
 /* the injection below will fire 'populateWithLinks' when the user
  changes the page of the items they're on */
-
+preventScrollIntoView()
 injectScriptWithEvent(null, function(){
     g_oSearchResults.OnAJAXComplete = function () {
         g_oSearchResults.m_bLoading = false;
@@ -53,6 +53,6 @@ injectScriptWithEvent(null, function(){
 
     /* set max page size to 50 and reload */
     g_oSearchResults.m_cPageSize = 50;
-    g_oSearchResults.GoToPage(1);
-    setTimeout(function(){g_oSearchResults.GoToPage(0)}, 1000)
+    g_oSearchResults.m_iCurrentPage = -1;
+    g_oSearchResults.GoToPage(0);
 }, populateWithLinks)

@@ -116,19 +116,34 @@ function parseInventory(steamID, response, callback){
 
         /* search the tags for the wear */
         var wear = 'V', type = 'Unknown';
-        item.tags.forEach(function(tag){
-            /* sometimes that tag is `name` and sometimes it's `localized_tag_name` depending on the context from where
-             the information came (e.g. from g_ActiveInventory or /inventory/json) */
-            if(tag.category == 'Exterior'){
-                if(tag.localized_tag_name) wear = tag.localized_tag_name.replace(/[-a-z ]/g, '');
-                if(tag.name) wear = tag.name.replace(/[-a-z ]/g, '');
-            }
 
-            if(tag.category == 'Type'){
-                if(tag.localized_tag_name) type = tag.localized_tag_name;
-                if(tag.name) type = tag.name;
-            }
-        })
+        /* have to ensure tags is defined, sometimes it's not (for example data from
+           the inventory history page has no tags property */
+        if(item.hasOwnProperty('tags')){
+            item.tags.forEach(function(tag){
+                /* sometimes that tag is `name` and sometimes it's `localized_tag_name` depending on the context from where
+                 the information came (e.g. from g_ActiveInventory or /inventory/json) */
+                if(tag.category == 'Exterior'){
+                    if(tag.localized_tag_name) wear = tag.localized_tag_name.replace(/[-a-z ]/g, '');
+                    if(tag.name) wear = tag.name.replace(/[-a-z ]/g, '');
+                }
+
+                if(tag.category == 'Type'){
+                    if(tag.localized_tag_name) type = tag.localized_tag_name;
+                    if(tag.name) type = tag.name;
+                }
+            })
+        } else {
+            /* we go into this branch if there are no tags which means the item is probably
+               from the inventory history page (objects from this page have not tag property),
+               but we can try and extract it from the data given */
+            if(item.hasOwnProperty('type')) type = item.type
+            item.descriptions.forEach(function(desc){
+                if(desc.value.indexOf('Exterior') > -1){
+                    wear = desc.value.split(" ")[1].replace(/[-a-z ]/g, '')
+                }
+            })
+        }
 
         /* if it's not painted, change it to vanilla */
         if(wear === 'NP') wear = 'V';
@@ -440,6 +455,26 @@ function stickerPriceInjection(){
 
     /* recreate our function with the event emitter inside */
     BuildHover = new Function('prefix', 'item', 'owner', func)
+}
+
+/* prevent scrolling */
+function preventScrollIntoView(){
+    injectScript(null, function(){
+        /* set this to prevent scrolling via our newly created function */
+        shouldScroll = false;
+
+        /* convert the function to a string, this includes the function declaration */
+        var func = ScrollToIfNotInView.toString()
+
+        /* remove the declaration and only return the content of the function */
+        func = func.slice(func.indexOf("{") + 1, func.lastIndexOf("}"))
+
+        /* add our code to prevent scrolling after we call GoToPage (which forces a scroll into view) */
+        func = "if(!shouldScroll) return shouldScroll = true;" + func
+
+        /* recreate our function with the new code */
+        ScrollToIfNotInView = new Function('elem', 'nRequiredPixelsToShow', 'nSpacingBefore', 'nAnimationSpeed', func)
+    })
 }
 
 function getCookie(name) {
