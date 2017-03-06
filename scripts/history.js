@@ -34,6 +34,7 @@ injectScriptWithEvent({'%%lastId%%': $('.history_item.economy_item_hoverable').l
         }
     }
 
+    /* fire the event again so we can run the HistoryPageCreateItemHover functions again */
     Event.fire(document, 'dom:loaded');
 }, parseHistoryData)
 
@@ -152,10 +153,13 @@ function setupHistorySummaries(newIdMappings){
             /* and finally append our actual summary box */
             element.after(
                 '<div class="st-trade-offer-prices st-trade-offer-prices-history">' + formatPrice(summary[key].total) +
-                '<div class="st-display-right">' + summary[key].items + ' items</div>' +
+                '<div class="st-display-right">' + summary[key].items + ' ' + (summary[key].items > 1 ? 'items' : 'item') + '</div>' +
                 buildItemSummary(summary[key].types)
             )
 
         })
     })
 }
+
+/* injection required to load sticker prices */
+injectScriptWithEvent({}, stickerPriceInjection, stickerPriceCallback)
