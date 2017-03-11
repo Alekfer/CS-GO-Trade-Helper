@@ -149,14 +149,7 @@ function parseInventory(steamID, response, callback){
         if(wear === 'NP') wear = 'V';
 
         /* find the stickers */
-        var stickers = [];
-        item.descriptions.forEach(function(desc){
-            if(desc.value.indexOf('Sticker Details') == -1) return;
-
-            $(desc.value).find('img').each(function(){
-                stickers.push($(this).attr('src'));
-            })
-        })
+        var stickers = getStickersFromDescriptions(item.descriptions);
 
         idPairs[item.classid + '_' + item.instanceid] = {
             /* clear out the stattrak part so we can match it to the name in patterns.js */
@@ -201,6 +194,18 @@ function parseInventory(steamID, response, callback){
     }
 
     callback(infoPairs, idPairs)
+}
+
+function getStickersFromDescriptions(descriptions){
+    var stickers = []
+    descriptions.forEach(function(desc){
+        if(desc.value.indexOf('Sticker Details') == -1) return;
+
+        $(desc.value).find('img').each(function(){
+            stickers.push($(this).attr('src'));
+        })
+    })
+    return stickers;
 }
 
 /* formats the percentage/pattern for the overlay */
@@ -360,7 +365,8 @@ function editActionMenu(inTradeOffer, steamID){
                 $J(this)[0].rgItem.actions.push({link: 'https://csgo.exchange/item/' + item.id, name: 'View on Exchange...'});
 
                 var inspect = item.actions[0].link.replace('%owner_steamid%', '%%steamID%%').replace('%assetid%', item.id)
-                $J(this)[0].rgItem.actions.push({link: 'https://metjm.net/extensionLink.php?inspectlink=' + inspect, name: 'View on Metjm...'})
+                if(inspect.indexOf('%20') > -1) inspect = inspect.split('%20')[1]
+                $J(this)[0].rgItem.actions.push({link: 'https://metjm.net/csgo/#' + inspect, name: 'View on Metjm...'})
             }
         })
 
@@ -371,7 +377,8 @@ function editActionMenu(inTradeOffer, steamID){
                 $J(this)[0].rgItem.actions.push({link: 'https://csgo.exchange/item/' + item.id, name: 'View on Exchange...'});
 
                 var inspect = item.actions[0].link.replace('%owner_steamid%', '%%steamID%%').replace('%assetid%', item.id)
-                $J(this)[0].rgItem.actions.push({link: 'https://metjm.net/extensionLink.php?inspectlink=' + inspect, name: 'View on Metjm...'})
+                if(inspect.indexOf('%20') > -1) inspect = inspect.split('%20')[1]
+                $J(this)[0].rgItem.actions.push({link: 'https://metjm.net//csgo/#' + inspect, name: 'View on Metjm...'})
             }
         })
     })

@@ -41,22 +41,6 @@ function inventoryProcess(){
         getInventoryDetails(steamID, getInventoryDetailsCallback, 0)
         getActiveInventory(getActiveInventoryCallback)
 
-        /* due to the new loading mechanism for inventories (only load when the page needs to be loaded, i.e. user is
-         scrolling through pages) I need to create a listener event for when the new items are loaded - to do this
-         I hijack their 'HideLoadingIndicator' function (as it's only called when the items are loaded) and use it
-         to then retrieve the newly loaded items */
-        injectScriptWithEvent(null, function(){
-            g_ActiveInventory.m_owner.HideLoadingIndicator = function(){
-                this.cLoadsInFlight--;
-                if(!this.cLoadsInFlight){
-                    $J(document.body).removeClass('inventory_loading');
-                }
-                window.dispatchEvent(new CustomEvent('%%event%%', {}));
-            }
-        }, function(){
-            getActiveInventory(getActiveInventoryCallback)
-        })
-
         function getActiveInventoryCallback(data){
             parseInventory(data.steamID, replicateSteamResponse(data), function(infoPairs, idPairs){
                 inventory.infoPairs = infoPairs;
@@ -326,20 +310,26 @@ function getActiveInventory(callback){
         }
 
         /* this function is called on the page start and whenever the user turns pages, Steam has (for
-           the second time) changed the way items are loaded on the inventory page. Now, only as the user
-           scrolls through the inventory do the elements load */
+         the second time) changed the way items are loaded on the inventory page. Now, only as the user
+         scrolls through the inventory do the elements load */
         window.getInventory = function(start, end){
             var inventory = {};
             var ids = {}
-            for(var i = 0; i < g_ActiveInventory.m_rgItemElements.length && i < end; i++){
+            for(var i = start; i < g_ActiveInventory.m_rgItemElements.length && i < end; i++){
                 var item = g_ActiveInventory.m_rgItemElements[i];
 
                 /* all the elements are in the rgItemElements array, but the ones that haven't
                  loaded will be undefined, so we break and return the elements that have been loaded so far */
                 if(item == undefined) continue;
 
-                /* ensure we have the item element and skin information associated with it */
-                if(typeof(item[0]) == 'undefined' || !item[0].hasOwnProperty('rgItem')) continue;
+                /* ensure we have the item element and skin information associated with it, if any of these
+                   are null it means Steam is currently retrieving the item. This getInventory function
+                   is called every time a new inventory page comes into view and we only iterate over the items
+                   currently in view, this means that these should not be null and if they are just wait
+                   until Steam loads them */
+                if(typeof(item[0]) == 'undefined' || !item[0].hasOwnProperty('rgItem')){
+                    return setTimeout(window.getInventory.bind(null, start, end), 200);
+                }
 
                 item = item[0].rgItem;
 
@@ -356,17 +346,18 @@ function getActiveInventory(callback){
             }));
         }
 
+        /* wait until the first few pages have loaded and then set the up */
         var _interval = setInterval(function(){
             if(g_ActiveInventory.rgItemElements !== null){
                 clearInterval(_interval);
-                /* 50 is 2 pages, 2 pages are loaded during the initial page load */
-                window.getInventory(0, 50)
+                /* 75 is 3 pages, 3 pages are loaded during the initial page load */
+                window.getInventory(0, 75)
             }
         }, 50)
 
         /* code below will rewrite the function that is called when the user changes
-           inventory pages, so every time new items are rendered we ensure have loaded
-           them with prices etc */
+         inventory pages, so every time new items are rendered we ensure have loaded
+         them with prices etc */
         /* convert the function to a string, this includes the function declaration */
         var func = CInventory.prototype.EnsurePageItemsCreated.toString()
 
@@ -383,8 +374,8 @@ function getActiveInventory(callback){
 }
 
 /* add an event emitter to PopulateDescriptions (which is called to insert descriptors such as stickers),
-   the event inside this function will emit the id of the element in which the sticker information can
-   be found - we manipulate this element and replace the html with pricing info */
+ the event inside this function will emit the id of the element in which the sticker information can
+ be found - we manipulate this element and replace the html with pricing info */
 injectScriptWithEvent({}, stickerPriceInjection, stickerPriceCallback)
 
 /* injects quick sell button */
