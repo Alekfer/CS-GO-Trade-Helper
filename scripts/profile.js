@@ -75,6 +75,9 @@ function doInjections(){
         })
     })
 
+    /* when we call GoToPage it forces a 'scroll into view' of the content, we recreate the function
+       forcing it to not scroll into view for when the GoToPage callback is fired */
+    preventScrollIntoView()
     injectScript({ '%%pageSize%%': 15 }, function(){
         /* if this variable has no property, it means due to privacy settings or the state of the account
          that people are unable to comment and therefore we cannot access the variables we need */
@@ -84,41 +87,6 @@ function doInjections(){
         /* iCurrentPage is 0 when the page loads, to reload the comments we need to set it
          to -1 (GoToPage will return if iCurrentPage == pageToGoTo) and then go to page 0 */
         g_rgCommentThreads[Object.keys(g_rgCommentThreads)[0]].m_iCurrentPage = -1;
-
-        /* when we call GoToPage(0) after delcaring this function (to reload the comments with the number
-         of comments we want) it will scroll down to the bottom, to stop this we redefine the function
-         and set a shouldScroll variable */
-        var shouldScroll = false;
-        ScrollToIfNotInView = function(elem, nRequiredPixelsToShow, nSpacingBefore, nAnimationSpeed){
-            if(!shouldScroll) return shouldScroll = true;
-
-            var $Elem = $JFromIDOrElement(elem);
-
-            if(typeof(nSpacingBefore) == 'undefined') nSpacingBefore = 0;
-
-            // for responsive pages - we need to adjust for the menu
-            nSpacingBefore += GetResponsiveHeaderFixedOffsetAdjustment();
-
-            var elemTop = $Elem.offset().top;
-            var nViewportOffsetTop = elemTop - $J(window).scrollTop();
-            var bNeedToScroll = false;
-            if(nViewportOffsetTop < 0){
-                bNeedToScroll = true;
-            } else {
-                if(!nRequiredPixelsToShow) nRequiredPixelsToShow = $Elem.outerHeight();
-                var nViewportOffsetBottom = nViewportOffsetTop + nRequiredPixelsToShow;
-                if(nViewportOffsetBottom > $J(window).height()) bNeedToScroll = true;
-            }
-
-            if(bNeedToScroll){
-                if(nSpacingBefore) nViewportOffsetTop -= nSpacingBefore;
-                if(typeof(nAnimationSpeed) != 'undefined'){
-                    $J('html, body').animate({scrollTop: nViewportOffsetTop}, nAnimationSpeed);
-                } else {
-                    window.scrollBy( 0, nViewportOffsetTop );
-                }
-            }
-        }
 
         g_rgCommentThreads[Object.keys(g_rgCommentThreads)[0]].GoToPage(0);
 

@@ -96,6 +96,14 @@
   overflow: auto;
 }
 
+/* in our history, we inherit the class above and use it but
+   add custom stylings to fit the page */
+.st-trade-offer-prices-history {
+  margin-right: 20px;
+  background-color: rgb(27, 40, 56) !important;
+  box-shadow: 0px 0px 0px 0px black !important;
+}
+
 .st-display-right {
   display: inline;
   float: right;
@@ -309,4 +317,38 @@
 
 .st-upvote-box span i {
   margin: 8px 8px 0px 0px;
+}
+
+
+/* adjust scroll bars for items on the inventory history page */
+a.history_item::-webkit-scrollbar {
+  width: 6px;
+  height: 5px;
+}
+
+a.history_item::-webkit-scrollbar-button {
+  width: 1px;
+  height: 1px;
+}
+
+a.history_item::-webkit-scrollbar-thumb {
+  background: #264260;
+  border-radius: 50px;
+}
+
+a.history_item::-webkit-scrollbar-thumb:hover {
+  background: #38618e;
+}
+
+a.history_item::-webkit-scrollbar-thumb:active {
+  background: #18283a;
+}
+
+a.history_item::-webkit-scrollbar-track {
+  background: #263450;
+  border-radius: 50px;
+}
+
+a.history_item::-webkit-scrollbar-corner {
+  background: transparent;
 }

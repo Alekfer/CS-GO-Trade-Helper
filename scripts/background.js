@@ -285,6 +285,10 @@ function getOffers(){
 }
 
 function acceptOffer(id, partner){
+    /* this will be an interesting statistic to see as this is only
+       called when the extension auto accepts an empty trade */
+    _gaq.push(['_trackEvent', 'acceptOffer', 'clicked']);
+
     chrome.cookies.get({url: 'https://steamcommunity.com', name: 'sessionid'}, function(cookie) {
         /* we post with 'st-accept' so we can identify this call on 'onBeforeSendHeaders'
          so we only modify headers for this call */
@@ -347,6 +351,8 @@ function getBlob(url, callback) {
 
 var prices = {}, rates = {};
 function getPrices(callback){
+    _gaq.push(['_trackEvent', 'getPrices', 'clicked']);
+
     var urls = {
         fast: 'https://api.csgofast.com/sih/all',
         backpack: 'https://i7xx.xyz/api/1/prices?source=backpack',

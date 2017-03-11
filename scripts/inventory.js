@@ -41,27 +41,10 @@ function inventoryProcess(){
         getInventoryDetails(steamID, getInventoryDetailsCallback, 0)
         getActiveInventory(getActiveInventoryCallback)
 
-        /* due to the new loading mechanism for inventories (only load when the page needs to be loaded, i.e. user is
-         scrolling through pages) I need to create a listener event for when the new items are loaded - to do this
-         I hijack their 'HideLoadingIndicator' function (as it's only called when the items are loaded) and use it
-         to then retrieve the newly loaded items */
-        injectScriptWithEvent(null, function(){
-            g_ActiveInventory.m_owner.HideLoadingIndicator = function(){
-                this.cLoadsInFlight--;
-                if(!this.cLoadsInFlight){
-                    $J(document.body).removeClass('inventory_loading');
-                }
-
-                window.dispatchEvent(new CustomEvent('%%event%%', {}));
-            }
-        }, function(){
-            getActiveInventory(getActiveInventoryCallback)
-        })
-
         function getActiveInventoryCallback(data){
             parseInventory(data.steamID, replicateSteamResponse(data), function(infoPairs, idPairs){
                 inventory.infoPairs = infoPairs;
-                setupItems(infoPairs, idPairs, data.totalItems)
+                setupItems(data.ids, infoPairs, idPairs, data.totalItems)
 
                 /* needs to be called after setting inventory.infoPairs */
                 if(Object.keys(inventory.details).length == 0) {
@@ -195,31 +178,28 @@ function expandInventory(){
 }
 
 /* load the prices into the items in the inventory */
-function setupItems(infoPairs, idPairs, totalItems){
+function setupItems(ids, infoPairs, idPairs, totalItems){
     /* if we don't have the prices yet or if the loading inventory element cover is still in place, do not
      load the overlay on the items, check again after a delay */
     if(Object.keys(prices).length == 0 || $("#pending_inventory_page").css("display") == 'block'){
         return setTimeout(setupItems.bind(null, infoPairs, idPairs), 500);
     }
 
-    /* for each inventory item, add the price element */
-    $('.item.app730.context2:not(.pendingItem)').each(function(){
-        var id = $(this).attr('id').split('730_2_')[1];
-
+    for(var id in ids){
+        var e = '#' + ids[id];
         var item = infoPairs[id];
-
-        if($(this).data('st-loaded')) return;
+        if($(e).data('st-loaded')) continue;
 
         if(item.price){
             inventory.total += item.price;
-            $(this).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-price">' + formatPrice(item.price) + '</span>');
+            $(e).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-price">' + formatPrice(item.price) + '</span>');
         }
 
-        $(this).data('st-price', item.price || -1);
+        $(e).data('st-price', item.price || -1);
 
-        $(this).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-wear">' + item.wear + '</span>');
+        $(e).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-wear">' + item.wear + '</span>');
         if(!item.tradable){
-            $(this).append('<div class="st-item-not-tradable"></div>')
+            $(e).append('<div class="st-item-not-tradable"></div>')
         }
 
         /* add stickers, each sticker element _needs_ to be inside a DIV element, I'm not 100% sure but I believe
@@ -227,13 +207,47 @@ function setupItems(infoPairs, idPairs, totalItems){
          so if we load our content in before Steam intialises the element it will set all images inside the item element
          to the image of the gun it's initialising... wrapping our image element in a div stops it from being identified */
         for(var i = 0; i < item.stickers.length; i++){
-            $(this).append(
+            $(e).append(
                 '<div><img class="st-item-sticker" src="' + item.stickers[i] + '" style="margin-left: ' + (i * 25) + '%"></div>'
             )
         }
 
-        $(this).data('st-loaded', true);
-    })
+        $(e).data('st-loaded', true);
+        $(e).attr('st-loaded', true);
+    }
+
+    // /* for each inventory item, add the price element */
+    // $('.item.app730.context2:not(.pendingItem)').each(function(){
+    //     var id = $(this).attr('id').split('730_2_')[1];
+    //     console.log(id)
+    //     var item = infoPairs[id];
+    //
+    //     if($(this).data('st-loaded')) return;
+    //
+    //     if(item.price){
+    //         inventory.total += item.price;
+    //         $(this).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-price">' + formatPrice(item.price) + '</span>');
+    //     }
+    //
+    //     $(this).data('st-price', item.price || -1);
+    //
+    //     $(this).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-wear">' + item.wear + '</span>');
+    //     if(!item.tradable){
+    //         $(this).append('<div class="st-item-not-tradable"></div>')
+    //     }
+    //
+    //     /* add stickers, each sticker element _needs_ to be inside a DIV element, I'm not 100% sure but I believe
+    //      when Steam initialises each element it uses a generic img tag identifier to set the source of the image
+    //      so if we load our content in before Steam intialises the element it will set all images inside the item element
+    //      to the image of the gun it's initialising... wrapping our image element in a div stops it from being identified */
+    //     for(var i = 0; i < item.stickers.length; i++){
+    //         $(this).append(
+    //             '<div><img class="st-item-sticker" src="' + item.stickers[i] + '" style="margin-left: ' + (i * 25) + '%"></div>'
+    //         )
+    //     }
+    //
+    //     $(this).data('st-loaded', true);
+    // })
 
     $('#st-load-prices').fadeOut(function(){
         $(this).text('Inventory: ' + Object.keys(infoPairs).length + ' items worth ' + formatPrice(inventory.total) + '!').fadeIn();
@@ -295,34 +309,73 @@ function getActiveInventory(callback){
             return o;
         }
 
+        /* this function is called on the page start and whenever the user turns pages, Steam has (for
+         the second time) changed the way items are loaded on the inventory page. Now, only as the user
+         scrolls through the inventory do the elements load */
+        window.getInventory = function(start, end){
+            var inventory = {};
+            var ids = {}
+            for(var i = start; i < g_ActiveInventory.m_rgItemElements.length && i < end; i++){
+                var item = g_ActiveInventory.m_rgItemElements[i];
+
+                /* all the elements are in the rgItemElements array, but the ones that haven't
+                 loaded will be undefined, so we break and return the elements that have been loaded so far */
+                if(item == undefined) continue;
+
+                /* ensure we have the item element and skin information associated with it, if any of these
+                   are null it means Steam is currently retrieving the item. This getInventory function
+                   is called every time a new inventory page comes into view and we only iterate over the items
+                   currently in view, this means that these should not be null and if they are just wait
+                   until Steam loads them */
+                if(typeof(item[0]) == 'undefined' || !item[0].hasOwnProperty('rgItem')){
+                    return setTimeout(window.getInventory.bind(null, start, end), 200);
+                }
+
+                item = item[0].rgItem;
+
+                /* if we've already loaded the data on this elementt, skip it */
+                if($J(item.element.id).attr('st-loaded')) continue;
+
+                /* we've not loaded it yet, send it with the event emitter */
+                inventory[item.assetid] = item.description;
+                ids[item.assetid] = item.element.id;
+            }
+
+            window.dispatchEvent(new CustomEvent('%%event%%', {
+                detail: { ids: ids, inventory: inventory, steamID: g_ActiveInventory.m_owner.strSteamId, totalItems: g_ActiveInventory.m_rgItemElements.length }
+            }));
+        }
+
+        /* wait until the first few pages have loaded and then set the up */
         var _interval = setInterval(function(){
             if(g_ActiveInventory.rgItemElements !== null){
                 clearInterval(_interval);
-
-                var inventory = {};
-
-                for(var i = 0; i < g_ActiveInventory.m_rgItemElements.length; i++){
-                    var item = g_ActiveInventory.m_rgItemElements[i][0].rgItem;
-
-                    /* all the elements are in the rgItemElements array, but the ones that haven't
-                     loaded will be undefined, so we break and return the elements that have been loaded so far */
-                    if(item == undefined) break;
-
-                    inventory[item.assetid] = item.description;
-                }
-
-                window.dispatchEvent(new CustomEvent('%%event%%', {
-                    detail: { inventory: inventory, steamID: g_ActiveInventory.m_owner.strSteamId, totalItems: g_ActiveInventory.m_rgItemElements.length }
-                }));
+                /* 75 is 3 pages, 3 pages are loaded during the initial page load */
+                window.getInventory(0, 75)
             }
         }, 50)
+
+        /* code below will rewrite the function that is called when the user changes
+         inventory pages, so every time new items are rendered we ensure have loaded
+         them with prices etc */
+        /* convert the function to a string, this includes the function declaration */
+        var func = CInventory.prototype.EnsurePageItemsCreated.toString()
+
+        /* remove the declaration and only return the content of the function */
+        func = func.slice(func.indexOf("{") + 1, func.lastIndexOf("}"))
+
+        /* add our event emitter to emit the info we need */
+        func += ";window.getInventory(iStart, iEnd);"
+
+        /* recreate our function with the event emitter inside */
+        CInventory.prototype.EnsurePageItemsCreated = new Function('iPage', func)
 
     }, callback)
 }
 
 /* add an event emitter to PopulateDescriptions (which is called to insert descriptors such as stickers),
-   the event inside this function will emit the id of the element in which the sticker information can
-   be found - we manipulate this element and replace the html with pricing info */
+ the event inside this function will emit the id of the element in which the sticker information can
+ be found - we manipulate this element and replace the html with pricing info */
 injectScriptWithEvent({}, stickerPriceInjection, stickerPriceCallback)
 
 /* injects quick sell button */
