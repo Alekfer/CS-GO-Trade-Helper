@@ -1,11 +1,11 @@
-$('.invite_row').sort(function(a, b){
+$('.invite_row').sort(function(a, b) {
     var personOne = $(a).find('.friendPlayerLevelNum').text();
     var personTwo = $(b).find('.friendPlayerLevelNum').text();
     return personTwo - personOne;
 }).appendTo('#BG_bottom');
 
 var queue = [];
-$('.invite_row').each(function(){
+$('.invite_row').each(function() {
     $(this).data('st-level', Number($(this).find('.friendPlayerLevelNum').text()))
     $(this).data('st-value', -1)
     var steamID = $(this).find('.acceptDeclineBlock').children()[0].href.split('\'')[1];
@@ -16,8 +16,8 @@ $('.invite_row').each(function(){
  else it will only process verification checks */
 processQueue(true, 0)
 processQueue(false, 0)
-function processQueue(inventoryOnly, index){
-    if(index > queue.length - 1) return
+function processQueue(inventoryOnly, index) {
+    if (index > queue.length - 1) return
     var info = queue[index];
 
     $(info.element).find('.inviterBlock').prepend(
@@ -25,27 +25,27 @@ function processQueue(inventoryOnly, index){
         '<a id="st-profile-rep-' + info.steamID + '" href="https://steamrep.com/profiles/' + info.steamID + '" class="whiteLink st-banned"></a>'
     );
 
-    if(inventoryOnly){
-        getInventory(info.steamID, function(error, infoPairs, idPairs){
-            setTimeout(function(){
+    if (inventoryOnly) {
+        getInventory(info.steamID, function(error, infoPairs, idPairs) {
+            setTimeout(function() {
                 processQueue(inventoryOnly, index + 1)
             }, 2000);
 
             var invValue = 0;
-            for(var item in infoPairs){
-                if(infoPairs[item] && infoPairs[item].price) invValue += infoPairs[item].price
+            for (var item in infoPairs) {
+                if (infoPairs[item] && infoPairs[item].price) invValue += infoPairs[item].price
             }
 
             /* if there was an error loading the inventory, set the inv value to -1
              so these profiles sink to the bottom when sorting */
-            if(error) invValue = -1
+            if (error) invValue = -1
             $(info.element).data('st-value', invValue);
 
             $('#st-profile-value-' + info.steamID).text(error ? '' : formatPrice(invValue))
         })
     } else {
-        checkVerification(info.steamID, function(response){
-            if(!response.success) return
+        checkVerification(info.steamID, function(response) {
+            if (!response.success) return
 
             /* if the profile is a scammer, change the background row color */
             if (response.scammer && !response.verified) {
@@ -53,13 +53,13 @@ function processQueue(inventoryOnly, index){
                 $(info.element).find('.playerAvatar, .playerAvatar img').css('background', 'red')
 
                 if (settings.autoignore) {
-                    injectScript({'%%steamID%%': info.steamID}, function () {
+                    injectScript({'%%steamID%%': info.steamID}, function() {
                         FriendAccept('%%steamID%%', 'ignore');
                     })
                 }
             }
 
-            if(response.verified && response.name){
+            if (response.verified && response.name) {
                 $(info.element).addClass('st-verified')
                 $(info.element).find('.acceptDeclineBlock').before(
                     '<div class="st-verified-profile st-verified-invites ' + (response.scammer ? 'st-verified-scammer' : '') + '">' + response.name + '</div>'
@@ -69,12 +69,12 @@ function processQueue(inventoryOnly, index){
             $(info.element).data('st-verified', true)
         })
 
-        getPlayerInfo(info.steamID, function(err, summary){
+        getPlayerInfo(info.steamID, function(err, summary) {
             processQueue(inventoryOnly, index + 1);
             /* error with api call, ignore this profile */
-            if(err || !summary) return;
+            if (err || !summary) return;
 
-            if(summary != 'none') $(info.element).addClass('st-scammer')
+            if (summary != 'none') $(info.element).addClass('st-scammer')
             $('#st-profile-rep-' + info.steamID).text(summary == 'none' ? 'clean steamrep' : summary);
         })
     }
@@ -86,8 +86,8 @@ var fInvites = $('#pinvites_singular').css("display") == 'none' ? $('#pinvites_c
 var gInvites = $('#ginvites_singular').css("display") == 'none' ? $('#ginvites_count').text() : 1;
 
 /* if we have no invites, or there is no group invite element, set the text to 'no' */
-if($('.sectionText:not(.groups)').text().indexOf('You have no pending invites.') > -1) fInvites = 'no';
-if($('.sectionText.groups').length == 0) gInvites = 'no';
+if ($('.sectionText:not(.groups)').text().indexOf('You have no pending invites.') > -1) fInvites = 'no';
+if ($('.sectionText.groups').length == 0) gInvites = 'no';
 
 /* the buttons for the friend and group invites */
 var fInviteButtons = '<a style="margin-top: 5px" class="btn_small btnv6_blue_hoverfade" href="' + window.location.pathname.split('home/invites/')[0] + 'home_process?action=ignoreAll&amp;type=friends&amp;sessionID=' + getCookie('sessionid') + '"><span>Ignore All</span></a>'
@@ -108,17 +108,17 @@ $('#errorText').after(
 $('.sectionText').remove()
 
 var sortAsc = true;
-['level', 'value'].forEach(function(filter){
-    $('#st-sort-' + filter).click(function(){
-        $('.invite_row').sort(function(a, b){
+['level', 'value'].forEach(function(filter) {
+    $('#st-sort-' + filter).click(function() {
+        $('.invite_row').sort(function(a, b) {
             var personOne = $(a).data('st-' + filter);
             var personTwo = $(b).data('st-' + filter);
 
-            if(filter === 'value'){
+            if (filter === 'value') {
                 /* if the attribute is -1 it means we have no inventory value yet, so adjust the metadata
                  for the inv value to ensure that these profiles with no information yet always sink to the bottom */
-                if(personOne === -1) personOne = sortAsc ? -1 : 9999999;
-                if(personTwo === -1) personTwo = sortAsc ? -1 : 9999999;
+                if (personOne === -1) personOne = sortAsc ? -1 : 9999999;
+                if (personTwo === -1) personTwo = sortAsc ? -1 : 9999999;
             }
 
             /* (TODO) commented due to bugs, will sort out some time in the future */
@@ -131,7 +131,7 @@ var sortAsc = true;
     })
 })
 
-function getPlayerInfo(steamID, callback){
+function getPlayerInfo(steamID, callback) {
     /* implement fall back methods
      https://steamrep.com/util.php?op=getSteamBanInfo&id=steamID&tm=timeStamp
      ^ first method was nuked
@@ -142,7 +142,7 @@ function getPlayerInfo(steamID, callback){
         url: 'https://steamrep.com/api/beta4/reputation/' + steamID,
         success: function(response) {
             callback(null, $(response).find('reputation summary').text())
-        }, error: function(){
+        }, error: function() {
             callback(true);
         }
     })

@@ -1,17 +1,17 @@
 populateWithLinks();
 
-function populateWithLinks(){
-    $('.market_recent_listing_row').each(function(){
+function populateWithLinks() {
+    $('.market_recent_listing_row').each(function() {
         var id = $(this).attr('id').split('_')[1], e = this;
 
-        getItem(id, function(item){
-            if($(e).data('st-loaded-info')) return;
+        getItem(id, function(item) {
+            if ($(e).data('st-loaded-info')) return;
             $(e).data('st-loaded-info', true);
 
             var stickers = [];
-            item.descriptions.forEach(function(desc){
-                if(desc.type != 'html' || desc.value.indexOf('Sticker Details') == -1) return;
-                $(desc.value).find('img').each(function(){
+            item.descriptions.forEach(function(desc) {
+                if (desc.type != 'html' || desc.value.indexOf('Sticker Details') == -1) return;
+                $(desc.value).find('img').each(function() {
                     stickers.push($(this).attr('src'));
                 })
             })
@@ -22,7 +22,7 @@ function populateWithLinks(){
                 ' / <a class="market_listing_game_name" id="st-metjm" target="_blank" href="https://metjm.net/extensionLink.php?inspectlink=' + inspect + '">metjm.net</a>'
             );
 
-            for(var i = 0; i < stickers.length; i++){
+            for (var i = 0; i < stickers.length; i++) {
                 $('.listing_' + id).find('#st-metjm').after(
                     '<img width="48" height="36" style="position: absolute; margin-top: -20px; margin-left: ' + (i * 48 /* width of sticker */) + 'px" src="' + stickers[i] + '">'
                 );
@@ -32,8 +32,8 @@ function populateWithLinks(){
 }
 
 /* return asset information for the item */
-function getItem(listingID, callback){
-    injectScriptWithEvent({ '%%listingID%%': listingID }, function(){
+function getItem(listingID, callback) {
+    injectScriptWithEvent({'%%listingID%%': listingID}, function() {
         window.dispatchEvent(new CustomEvent('%%event%%', {
             detail: g_rgAssets[730][2][g_rgListingInfo['%%listingID%%'].asset.id]
         }))
@@ -43,8 +43,8 @@ function getItem(listingID, callback){
 /* the injection below will fire 'populateWithLinks' when the user
  changes the page of the items they're on */
 preventScrollIntoView()
-injectScriptWithEvent(null, function(){
-    g_oSearchResults.OnAJAXComplete = function () {
+injectScriptWithEvent(null, function() {
+    g_oSearchResults.OnAJAXComplete = function() {
         g_oSearchResults.m_bLoading = false;
         window.dispatchEvent(new CustomEvent('%%event%%', {
             detail: ''

@@ -18,20 +18,20 @@ $('#trade_theirs .offerheader').after(
     '<div class="st-trade-offer-totals"><span id="st-their-price">' + formatPrice(0) + '</span><span id="st-their-items" class="st-display-right">0 items</span><span style="font-size: 16px" id="st-their-types"></span></div>'
 );
 
-setInterval(function(){
+setInterval(function() {
     var total = {
-        mine:   { items: 0, price: 0, types: {} },
-        theirs: { items: 0, price: 0, types: {} }
+        mine: {items: 0, price: 0, types: {}},
+        theirs: {items: 0, price: 0, types: {}}
     };
 
-    $('#your_slots .item.app730.context2:not(.pendingItem)').each(function(){
+    $('#your_slots .item.app730.context2:not(.pendingItem)').each(function() {
         total.mine.items += 1;
-        if($(this).data('st-price')){
+        if ($(this).data('st-price')) {
             total.mine.price += $(this).data('st-price');
         }
 
-        if(!$(this).data('st-type')) return;
-        if(!total.mine.types[$(this).data('st-type')]){
+        if (!$(this).data('st-type')) return;
+        if (!total.mine.types[$(this).data('st-type')]) {
             total.mine.types[$(this).data('st-type')] = 1;
         } else {
             total.mine.types[$(this).data('st-type')] += 1;
@@ -42,16 +42,16 @@ setInterval(function(){
     $('#st-my-price').text(formatPrice(total.mine.price));
     $('#st-my-items').text(total.mine.items + (total.mine.items == 1 ? ' item' : ' items'));
 
-  /* */
+    /* */
 
-    $('#their_slots .item.app730.context2:not(.pendingItem)').each(function(){
+    $('#their_slots .item.app730.context2:not(.pendingItem)').each(function() {
         total.theirs.items += 1;
-        if($(this).data('st-price')){
+        if ($(this).data('st-price')) {
             total.theirs.price += $(this).data('st-price');
         }
 
-        if(!$(this).data('st-type')) return;
-        if(!total.theirs.types[$(this).data('st-type')]){
+        if (!$(this).data('st-type')) return;
+        if (!total.theirs.types[$(this).data('st-type')]) {
             total.theirs.types[$(this).data('st-type')] = 1;
         } else {
             total.theirs.types[$(this).data('st-type')] += 1;
@@ -72,21 +72,21 @@ var inventories = {
 
 /* true = me (user), false = partner, use iteration this way to reduce code
  repetition, get SteamID, inventory, parse, prices, float etc for each user */
-[true, false].forEach(function(mine){
-    getSteamID(mine, function(steamID){
-        chrome.runtime.sendMessage({action: 'getTradeItems', steamID: mine ? 'me' : steamID}, function(response){
+[true, false].forEach(function(mine) {
+    getSteamID(mine, function(steamID) {
+        chrome.runtime.sendMessage({action: 'getTradeItems', steamID: mine ? 'me' : steamID}, function(response) {
             inventories.itemsInTrade[mine ? 'me' : steamID] = response.items;
         });
 
-        getInventoryFromOffer(mine ? 'You' : 'Them', function(data){
-            parseInventory(data.steamID, replicateSteamResponse(data), function(infoPairs, idPairs){
+        getInventoryFromOffer(mine ? 'You' : 'Them', function(data) {
+            parseInventory(data.steamID, replicateSteamResponse(data), function(infoPairs, idPairs) {
                 inventories.infoPairs[data.steamID] = infoPairs;
                 loadPricesFor(steamID, mine);
             })
         })
 
-        getInventoryDetails(steamID, function(details, attempt){
-            if(!details){
+        getInventoryDetails(steamID, function(details, attempt) {
+            if (!details) {
                 return $('#st-load-' + (mine ? 'my' : 'partner') + '-floats').text('Loading ' + (mine ? 'my' : 'partner') + ' floats: attempt #' + attempt);
             }
 
@@ -97,55 +97,55 @@ var inventories = {
     }, true)
 })
 
-function populateDetails(steamID, isMyItems){
-  /* if we haven't loaded this inventory yet, just wait */
-    if(!inventories.infoPairs.hasOwnProperty(steamID)) return setTimeout(populateDetails.bind(null, steamID, isMyItems), 750);
+function populateDetails(steamID, isMyItems) {
+    /* if we haven't loaded this inventory yet, just wait */
+    if (!inventories.infoPairs.hasOwnProperty(steamID)) return setTimeout(populateDetails.bind(null, steamID, isMyItems), 750);
 
-  /* if we've not already done so, add details to the items inside the trade offer
-   and then set the meta data property to stop repeatingly adding them as this
-   function (populateDetails) is recursively called */
+    /* if we've not already done so, add details to the items inside the trade offer
+     and then set the meta data property to stop repeatingly adding them as this
+     function (populateDetails) is recursively called */
     var itemsInOffer = '#' + (isMyItems ? 'your_slots' : 'their_slots');
-  /*  make sure that the items have loaded in, and there are no loading items in the trade offer */
-    if(!$(itemsInOffer).data('st-loaded-floats') &&
-        $(itemsInOffer + ' .item.app730.context2:not(.pendingItem)').length > 0 && $(itemsInOffer + '.item.unknownItem').length == 0){
+    /*  make sure that the items have loaded in, and there are no loading items in the trade offer */
+    if (!$(itemsInOffer).data('st-loaded-floats') &&
+        $(itemsInOffer + ' .item.app730.context2:not(.pendingItem)').length > 0 && $(itemsInOffer + '.item.unknownItem').length == 0) {
 
         $(itemsInOffer + ' .item.app730.context2:not(.pendingItem)').each(addItemDetails);
         $(itemsInOffer).data('st-loaded-floats', true);
     }
 
-    whenInventoryLoads(steamID, function(){
-        if(Object.keys(inventories.infoPairs[steamID]).length == 0) return setTimeout(populateDetails.bind(null, steamID, isMyItems), 100)
+    whenInventoryLoads(steamID, function() {
+        if (Object.keys(inventories.infoPairs[steamID]).length == 0) return setTimeout(populateDetails.bind(null, steamID, isMyItems), 100)
 
-      /* populate each item and then animate them to fade in when the inventory loads */
+        /* populate each item and then animate them to fade in when the inventory loads */
         $('.item.app730.context2:not(.pendingItem)').each(addItemDetails)
         $('.st-item-float').hide().fadeIn();
     })
 
 
-    function addItemDetails(){
-        if(!$(this).attr('id') || $(this).data('st-loaded-floats')) return;
+    function addItemDetails() {
+        if (!$(this).attr('id') || $(this).data('st-loaded-floats')) return;
 
         var id = $(this).attr('id').split('730_2_')[1];
 
-      /* if we have no details for this item, set the float to max (will not be displayed)*/
-        if(!inventories.details[steamID][id]) return $(this).data('st-float', -1);
+        /* if we have no details for this item, set the float to max (will not be displayed)*/
+        if (!inventories.details[steamID][id]) return $(this).data('st-float', -1);
 
-      /* round the float to 5 decimal places */
+        /* round the float to 5 decimal places */
         var text = inventories.details[steamID][id].float;
 
-      /* add the float to the metadata for this element */
+        /* add the float to the metadata for this element */
         $(this).data('st-float', text);
 
-      /* add pattern information (e.g. fade percentage) */
-        if(inventories.details[steamID][id].phase){
+        /* add pattern information (e.g. fade percentage) */
+        if (inventories.details[steamID][id].phase) {
             text += ' ' + inventories.details[steamID][id].phase;
         }
 
-        if(inventories.details[steamID][id].seed && inventories.infoPairs[steamID][id]){
+        if (inventories.details[steamID][id].seed && inventories.infoPairs[steamID][id]) {
             text += formatPattern(inventories.infoPairs[steamID][id].name, inventories.details[steamID][id].seed);
         }
 
-      /* pull the fraud warning icon down a bit to make space for our overlay */
+        /* pull the fraud warning icon down a bit to make space for our overlay */
         $(this).find('.slot_app_fraudwarning').css('margin-top', '15px');
 
         $(this).append('<span style="font-size: ' + settings.fontsizetop + 'px" class="st-item-float">' + text + '</span>');
@@ -158,22 +158,22 @@ var sort = {
     byPrice: true
 }
 
-function sortItems(a, b){
+function sortItems(a, b) {
     var attrOne = $(a).find('.item.app730.context2:not(.pendingItem)').eq(0).data(sort.byPrice ? 'st-price' : 'st-float');
     var attrTwo = $(b).find('.item.app730.context2:not(.pendingItem)').eq(0).data(sort.byPrice ? 'st-price' : 'st-float');
 
-  /* if the attribute is -1 it means we have no float value, so adjust the metadata
-   float value to ensure that these items with no value always sink to the bottom */
-    if(attrOne == -1) sort.asc ? attrOne = 1 : attrOne = 0;
-    if(attrTwo == -1) sort.asc ? attrTwo = 1 : attrTwo = 0;
+    /* if the attribute is -1 it means we have no float value, so adjust the metadata
+     float value to ensure that these items with no value always sink to the bottom */
+    if (attrOne == -1) sort.asc ? attrOne = 1 : attrOne = 0;
+    if (attrTwo == -1) sort.asc ? attrTwo = 1 : attrTwo = 0;
 
     return sort.asc ? attrOne - attrTwo : attrTwo - attrOne;
 }
 
-function loadPricesFor(steamID, isMyItems){
-  /* if we have loaded both our inventories and it says we're still loading the prices,
-   set up the buttons inside the trade offer and say we've loaded the prices */
-    if(Object.keys(inventories.infoPairs).length == 2 && $('#st-load-prices').text() == 'Loading prices...'){
+function loadPricesFor(steamID, isMyItems) {
+    /* if we have loaded both our inventories and it says we're still loading the prices,
+     set up the buttons inside the trade offer and say we've loaded the prices */
+    if (Object.keys(inventories.infoPairs).length == 2 && $('#st-load-prices').text() == 'Loading prices...') {
         $('#st-load-prices').text('Successfully loaded prices!');
 
         $('#nonresponsivetrade_itemfilters').before(
@@ -182,53 +182,53 @@ function loadPricesFor(steamID, isMyItems){
             '<div class="st-trade-offer-input"><input class="filter_search_box" type="text" id="st-key-count" value="" placeholder="# of Keys" name="filter" autocomplete="off" onkeypress="return event.charCode >= 48 && event.charCode <= 57"></div>'
         );
 
-        $('#st-take-all').click(function(){
-            $('.inventory_page').each(function(){
-                if($(this).css('display') === 'none' || $(this).parent().css('display') === 'none') return;
+        $('#st-take-all').click(function() {
+            $('.inventory_page').each(function() {
+                if ($(this).css('display') === 'none' || $(this).parent().css('display') === 'none') return;
 
-                $(this).find('.item.app730.context2:not(.pendingItem)').each(function(){
-                  /* we check if it's visible, if it's not it means the user is filtering items */
-                    if($(this).parent().css('display') !== 'none') addItemToTrade($(this).attr('id'));
+                $(this).find('.item.app730.context2:not(.pendingItem)').each(function() {
+                    /* we check if it's visible, if it's not it means the user is filtering items */
+                    if ($(this).parent().css('display') !== 'none') addItemToTrade($(this).attr('id'));
                 })
             })
         });
 
-        $('#st-take-keys').click(function(){
-          /* get the number of keys the user wants, if it's not a number set it to
-           -1 which means take all the keys on the page */
+        $('#st-take-keys').click(function() {
+            /* get the number of keys the user wants, if it's not a number set it to
+             -1 which means take all the keys on the page */
             var keysLeft = $('#st-key-count').val();
-            if(isNaN(keysLeft) || !keysLeft) keysLeft = -1;
+            if (isNaN(keysLeft) || !keysLeft) keysLeft = -1;
 
-            $('.inventory_page').each(function(){
-              /* if we want to take all the keys on the page, only take the keys that
-               are on the displayed page, we also make sure that the inventory_page
-               and the parent (the player's entire inventory) is visible to ensure
-               we are taking items from the correct inventory */
-                if((keysLeft == -1 && $(this).css('display') === 'none' || $(this).parent().css('display') === 'none') ||
+            $('.inventory_page').each(function() {
+                /* if we want to take all the keys on the page, only take the keys that
+                 are on the displayed page, we also make sure that the inventory_page
+                 and the parent (the player's entire inventory) is visible to ensure
+                 we are taking items from the correct inventory */
+                if ((keysLeft == -1 && $(this).css('display') === 'none' || $(this).parent().css('display') === 'none') ||
                     (keysLeft != -1 && $(this).parent().css('display') === 'none')) return;
 
                 var steamID = $(this).parent().attr('id').split('_')[1];
 
-                $(this).find('.item.app730.context2:not(.pendingItem)').each(function(){
-                  /* id is stored as 730_2_6378488731, so we split to get assetid and
-                   check if it's a key, if it is we add it to the trade */
+                $(this).find('.item.app730.context2:not(.pendingItem)').each(function() {
+                    /* id is stored as 730_2_6378488731, so we split to get assetid and
+                     check if it's a key, if it is we add it to the trade */
                     var id = $(this).attr('id');
-                    if(inventories.infoPairs[steamID][id.split('_')[2]].type !== 'Key') return;
+                    if (inventories.infoPairs[steamID][id.split('_')[2]].type !== 'Key') return;
 
-                  /* if we want to get all the keys on the page, or we still have keys
-                   to get, then add them and take one away from the keys to get if
-                   we want to get a certain amount */
-                    if(keysLeft == -1 || keysLeft > 0){
-                      /* we check if it's visible, if it's not it means the user is filtering items */
-                        if($(this).parent().css('display') !== 'none') addItemToTrade(id);
-                        if(keysLeft != -1) keysLeft--;
+                    /* if we want to get all the keys on the page, or we still have keys
+                     to get, then add them and take one away from the keys to get if
+                     we want to get a certain amount */
+                    if (keysLeft == -1 || keysLeft > 0) {
+                        /* we check if it's visible, if it's not it means the user is filtering items */
+                        if ($(this).parent().css('display') !== 'none') addItemToTrade(id);
+                        if (keysLeft != -1) keysLeft--;
                     }
                 })
             })
         })
 
 
-        $('#st-sort-price').click(function(){
+        $('#st-sort-price').click(function() {
             sort.byPrice = true;
             $('#your_slots .itemHolder.has_item').sort(sortItems).prependTo('#your_slots');
             $('#their_slots .itemHolder.has_item').sort(sortItems).prependTo('#their_slots');
@@ -236,7 +236,7 @@ function loadPricesFor(steamID, isMyItems){
             sort.asc = !sort.asc;
         })
 
-        $('#st-sort-float').click(function(){
+        $('#st-sort-float').click(function() {
             sort.byPrice = false;
             $('#your_slots .itemHolder.has_item').sort(sortItems).prependTo('#your_slots');
             $('#their_slots .itemHolder.has_item').sort(sortItems).prependTo('#their_slots');
@@ -245,72 +245,74 @@ function loadPricesFor(steamID, isMyItems){
         })
     }
 
-  /* if we've not already done so, add details to the items inside the trade offer
-   and then set the meta data property to stop repeatingly adding them as this
-   function (loadPricesFor) is recursively called */
+    /* if we've not already done so, add details to the items inside the trade offer
+     and then set the meta data property to stop repeatingly adding them as this
+     function (loadPricesFor) is recursively called */
     var itemsInOffer = '#' + (isMyItems ? 'your_slots' : 'their_slots');
-  /*  make sure that the items have loaded in, and there are no loading items in the trade offer */
-    if(!$(itemsInOffer).data('st-loaded-prices') &&
-        $(itemsInOffer + ' .item.app730.context2:not(.pendingItem)').length > 0 && $(itemsInOffer + '.item.unknownItem').length == 0){
+    /*  make sure that the items have loaded in, and there are no loading items in the trade offer */
+    if (!$(itemsInOffer).data('st-loaded-prices') &&
+        $(itemsInOffer + ' .item.app730.context2:not(.pendingItem)').length > 0 && $(itemsInOffer + '.item.unknownItem').length == 0) {
 
         $(itemsInOffer + ' .item.app730.context2:not(.pendingItem)').each(addItemDetails);
         $(itemsInOffer).data('st-loaded-prices', true);
     }
 
-    if($('#inventory_' + steamID + '_730_2').css('display') == 'block'){
-      /* inventory has loaded, let's put in the prices */
+    if ($('#inventory_' + steamID + '_730_2').css('display') == 'block') {
+        /* inventory has loaded, let's put in the prices */
         $('#inventory_' + steamID + '_730_2 .item.app730.context2:not(.pendingItem)').each(addItemDetails)
 
         editActionMenu(true, steamID);
 
-      /* make everything fade in */
+        /* make everything fade in */
         $('.st-trade-offer-prices, .st-item-price, .st-item-no-price, .st-item-float').hide().fadeIn();
     } else {
-      /* if the display isn't block, they haven't loaded yet */
-        setTimeout(function(){ loadPricesFor(steamID, isMyItems); }, 750)
+        /* if the display isn't block, they haven't loaded yet */
+        setTimeout(function() {
+            loadPricesFor(steamID, isMyItems);
+        }, 750)
     }
 
-    function addItemDetails(){
-      /* remove the cs-go icon that takes up space */
+    function addItemDetails() {
+        /* remove the cs-go icon that takes up space */
         //$(this).parent().parent().find('.slot_applogo').remove()
-      /* ^ for some reason, you can't remove items from a trade offer because
-       it relies on the app logo */
+        /* ^ for some reason, you can't remove items from a trade offer because
+         it relies on the app logo */
 
         var id = $(this).attr('id').split('730_2_')[1];
 
-      /* only indicate the item is in a trade for items that aren't in the trade offer */
+        /* only indicate the item is in a trade for items that aren't in the trade offer */
         var itemAlreadyInTrade = inventories.itemsInTrade[isMyItems ? 'me' : steamID].indexOf(id) > -1
-        if(!$(this).parent().hasClass('slot_inner') && itemAlreadyInTrade) $(this).css('background-color', 'hsla(' + settings.intradebg + ', 35%, 21%, 0.74902)')
+        if (!$(this).parent().hasClass('slot_inner') && itemAlreadyInTrade) $(this).css('background-color', 'hsla(' + settings.intradebg + ', 35%, 21%, 0.74902)')
 
         var item = inventories.infoPairs[steamID][id];
 
-      /* sometimes, for some reason, we won't be able to match the item asset id
-       to an item in the inventory we've loaded. this may be because the inventory
-       didn't load as expected, but I'm not sure yet. so in the case this happens
-       and we can't match the id to an item in the inventory, just log and skip the
-       item (we have no class id to match as a back up either...) */
-        if(!item){
+        /* sometimes, for some reason, we won't be able to match the item asset id
+         to an item in the inventory we've loaded. this may be because the inventory
+         didn't load as expected, but I'm not sure yet. so in the case this happens
+         and we can't match the id to an item in the inventory, just log and skip the
+         item (we have no class id to match as a back up either...) */
+        if (!item) {
             return console.log('item glitched', steamID, item);
         }
 
         $(this).data('st-price', Number(item.price) || 0);
         $(this).data('st-type', item.type);
 
-        if(item.price){
+        if (item.price) {
             $(this).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-price">' + formatPrice(item.price) + '</span>');
         } else {
-          /* only in trade offers we want to get rid of
-           the box shadow to make everything clearer */
+            /* only in trade offers we want to get rid of
+             the box shadow to make everything clearer */
             $(this).append('<div class="st-item-no-price" style="box-shadow: 0px 0px black"></div>');
-          /* only if this is just a normal item do we want to add the red
-           outline so we can identify stattrak/souvenir */
-            if(['rgb(210, 210, 210)', 'rgb(134, 80, 172)'].indexOf($(this).css('border-color')) > -1) $(this).css('border-color', 'red')
+            /* only if this is just a normal item do we want to add the red
+             outline so we can identify stattrak/souvenir */
+            if (['rgb(210, 210, 210)', 'rgb(134, 80, 172)'].indexOf($(this).css('border-color')) > -1) $(this).css('border-color', 'red')
         }
 
         $(this).append('<span style="font-size: ' + settings.fontsizebottom + 'px" class="st-item-wear">' + item.wear + '</span>');
 
-      /* add stickers */
-        for(var i = 0; i < item.stickers.length; i++){
+        /* add stickers */
+        for (var i = 0; i < item.stickers.length; i++) {
             $(this).append(
                 '<img class="st-item-sticker" src="' + item.stickers[i] + '" style="margin-left: ' + (i * 25) + '%">'
             )
@@ -319,10 +321,10 @@ function loadPricesFor(steamID, isMyItems){
 }
 
 /* calls the callback when the inventory for the given steamID loads */
-function whenInventoryLoads(steamID, callback){
-    injectScriptWithEvent({ '%%steamID%%': steamID }, function(){
-        var _interval = setInterval(function(){
-            if(g_ActiveInventory.owner.strSteamId == '%%steamID%%' && !g_ActiveInventory.BIsPendingInventory()){
+function whenInventoryLoads(steamID, callback) {
+    injectScriptWithEvent({'%%steamID%%': steamID}, function() {
+        var _interval = setInterval(function() {
+            if (g_ActiveInventory.owner.strSteamId == '%%steamID%%' && !g_ActiveInventory.BIsPendingInventory()) {
                 window.dispatchEvent(new CustomEvent('%%event%%', {
                     detail: true
                 }));
@@ -333,28 +335,31 @@ function whenInventoryLoads(steamID, callback){
 }
 
 /* retrieves a given inventory without needing to make a request */
-function getInventoryFromOffer(who, callback){
-    injectScriptWithEvent({ '%%who%%': who, '%%who1%%': who }, function(){
-      /* the 'who' parameter determines if we want our inventory or our partner's,
-       we evaluate this to get UserYou or UserThem respectively */
-        var _interval = setInterval(function(){
+function getInventoryFromOffer(who, callback) {
+    injectScriptWithEvent({'%%who%%': who, '%%who1%%': who}, function() {
+        /* the 'who' parameter determines if we want our inventory or our partner's,
+         we evaluate this to get UserYou or UserThem respectively */
+        var _interval = setInterval(function() {
             var user = '%%who%%' === 'You' ? UserYou : UserThem;
-            if(user.getInventory(730, 2).rgInventory !== null){
+            if (user.getInventory(730, 2).rgInventory !== null) {
                 clearInterval(_interval);
 
                 var duplicateInventory = {}, inventory = user.getInventory(730, 2).rgInventory;
-                for(var item in inventory){
+                for (var item in inventory) {
                     duplicateInventory[item] = jQuery.extend({}, inventory[item])
 
-                  /* remove circular structure by removing both 'element' and 'homeElement',
-                   a deep copy doesn't work due to the nature of the process and invokes similar
-                   issues to simply passing along the circular structure, I've also tried
-                   Object.assign which doesn't work */
+                    /* remove circular structure by removing both 'element' and 'homeElement',
+                     a deep copy doesn't work due to the nature of the process and invokes similar
+                     issues to simply passing along the circular structure, I've also tried
+                     Object.assign which doesn't work */
                     duplicateInventory[item].element = duplicateInventory[item].homeElement = undefined
                 }
 
                 window.dispatchEvent(new CustomEvent('%%event%%', {
-                    detail: { inventory: duplicateInventory, steamID: ('%%who1%%' === 'You' ? UserYou : UserThem).strSteamId }
+                    detail: {
+                        inventory: duplicateInventory,
+                        steamID: ('%%who1%%' === 'You' ? UserYou : UserThem).strSteamId
+                    }
                 }));
             }
         }, 50)
