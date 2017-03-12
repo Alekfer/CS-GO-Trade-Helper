@@ -1,827 +1,862 @@
 <html>
 <head>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
-  <script src="../lib/jquery.min.js"></script>
-  <script src="../lib/materialize.min.js"></script>
-  <link href="https://steamcommunity-a.akamaihd.net/public/shared/css/motiva_sans.css?v=F3z3QpekjE2f" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css">
+    <script src="../lib/jquery.min.js"></script>
+    <script src="../lib/materialize.min.js"></script>
+    <link href="https://steamcommunity-a.akamaihd.net/public/shared/css/motiva_sans.css?v=F3z3QpekjE2f" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400" rel="stylesheet">
 </head>
 
 <body>
 <div class="section" style="background-image: linear-gradient(120deg, #155799, #159957); box-shadow: 0px 0px 10px 0px black">
-  <div class="row">
-    <div class="col s8 offset-s2">
-      <h1 class="center-align" style="text-shadow: 0px 0px 11px rgba(0, 0, 0, 0.29); color: white; font-size: 100px; margin-top: 140px; border-bottom: 1px solid rgba(255, 255, 255, 0); font-family: Roboto">CS:GO Trade Helper</h1>
-      <h6 class="center-align" style="margin-top:-30px; color: rgba(255, 255, 255, 0.6); font-style: italic">developed by <a href="https://steamcommunity.com/id/i7xx" target="_blank">i7xx</a></h6>
-      <hr style="border: solid 1px rgba(255, 255, 255, 0.28);">
+    <div class="row">
+        <div class="col s8 offset-s2">
+            <h1 class="center-align" style="text-shadow: 0px 0px 11px rgba(0, 0, 0, 0.29); color: white; font-size: 100px; margin-top: 140px; border-bottom: 1px solid rgba(255, 255, 255, 0); font-family: Roboto">CS:GO Trade Helper</h1>
+            <h6 class="center-align" style="margin-top:-30px; color: rgba(255, 255, 255, 0.6); font-style: italic">developed by <a href="https://steamcommunity.com/id/i7xx" target="_blank">i7xx</a></h6>
+            <hr style="border: solid 1px rgba(255, 255, 255, 0.28);">
+        </div>
     </div>
-  </div>
 </div>
 
 <style>
-  .header { color: rgba(0, 0, 0, 0.62); font-family: Roboto }
-  .header-sep { border: solid 1px rgba(0, 0, 0, 0.22) }
-  a h5 { color: #484848 }
-  a span { color: #696969 }
-  .waves-effect { display: block }
-  .table-of-contents a { font-size: 20px }
-  .table-of-contents a.active { border-left: 3px solid #29a4d6 }
-  .table-of-contents a:hover:not(.active) { border-left: 1px solid #29a4d6 }
-  .collapsible-header { font-family: Roboto; font-size: 18px }
-  .collapsible-body p { font-family: Roboto; font-weight: 300; font-size: 15px; padding: 1rem }
-  .tabs .indicator { background-color: #29a4d6 }
-  .tabs .tab a { font-size: 15px; font-family: Roboto; color: rgba(0, 0, 0, 0.5) }
-  .tabs .tab a.active { color: rgba(0, 0, 0, 0.8) }
-  .tabs .tab a:hover { color: rgb(41, 164, 214) }
-  .tabs { margin-bottom: 10px }
-  .card-panel { margin: 0 }
-  .card-content p { font-size: 15px }
-  .card-content { height: 110px }
-  .card-title { font-size: 18px; font-family: Roboto }
-  .example-item-float { font-family: "Motiva Sans"; font-weight: 300; position: absolute; display: block; top: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.5); background-color: rgba(117, 117, 117, 0.2);  font-size: 12px; text-align: right; padding: 2px 5px 0px 0px }
-  .example-item-holder { position: relative; height:98px; width: 98px; background-color: #292929; margin: auto }
-  .example-item-price { display: block; font-size: 14px; position: absolute; bottom: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.498039); background-color: rgba(117, 117, 117, 0.2); padding: 0px 0px 2px 5px; font-family: "Motiva Sans"; font-weight: 300 }
-  .example-item-wear { position: absolute; bottom: 0px; right: 0px; color: rgba(255, 255, 255, 0.6); font-family: "Motiva Sans"; font-weight: 300; padding: 0px 5px 2px 0px; font-size: 14px }
-  .save-btn { font-size: 14px; width: 20%; float: right }
-  .default-btn { font-size: 14px; width: 20%; float: right; margin-right: 10px }
-  .indent { margin-left: 15px }
-  .col.s6 .range-field { margin-top: 0px }
-  .collab-title { font-family: Roboto; font-weight: 300 }
-  .flex { display: flex; flex-direction: row; flex-wrap: wrap }
-  .flex-item { flex-grow: 1; flex-basis: 0 }
-  .flex-item, .row .col .m6 { padding: 5px; }
+    .header { color: rgba(0, 0, 0, 0.62); font-family: Roboto }
+    .header-sep { border: solid 1px rgba(0, 0, 0, 0.22) }
+    a h5 { color: #484848 }
+    a span { color: #696969 }
+    .waves-effect { display: block }
+    .table-of-contents a { font-size: 20px }
+    .table-of-contents a.active { border-left: 3px solid #29a4d6 }
+    .table-of-contents a:hover:not(.active) { border-left: 1px solid #29a4d6 }
+    .collapsible-header { font-family: Roboto; font-size: 18px }
+    .collapsible-body p { font-family: Roboto; font-weight: 300; font-size: 15px; padding: 1rem }
+    .tabs .indicator { background-color: #29a4d6 }
+    .tabs .tab a { font-size: 15px; font-family: Roboto; color: rgba(0, 0, 0, 0.5) }
+    .tabs .tab a.active { color: rgba(0, 0, 0, 0.8) }
+    .tabs .tab a:hover { color: rgb(41, 164, 214) }
+    .tabs { margin-bottom: 10px }
+    .card-panel { margin: 0 }
+    .card-content p { font-size: 15px }
+    .card-content { height: 110px }
+    .card-title { font-size: 18px; font-family: Roboto }
+    .example-item-float { font-family: "Motiva Sans"; font-weight: 300; position: absolute; display: block; top: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.5); background-color: rgba(117, 117, 117, 0.2);  font-size: 12px; text-align: right; padding: 2px 5px 0px 0px }
+    .example-item-holder { position: relative; height:98px; width: 98px; background-color: #292929; margin: auto }
+    .example-item-price { display: block; font-size: 14px; position: absolute; bottom: 0px; right: 0px; left: 0px; color: rgba(255, 255, 255, 0.498039); background-color: rgba(117, 117, 117, 0.2); padding: 0px 0px 2px 5px; font-family: "Motiva Sans"; font-weight: 300 }
+    .example-item-wear { position: absolute; bottom: 0px; right: 0px; color: rgba(255, 255, 255, 0.6); font-family: "Motiva Sans"; font-weight: 300; padding: 0px 5px 2px 0px; font-size: 14px }
+    .save-btn { font-size: 14px; width: 20%; float: right }
+    .default-btn { font-size: 14px; width: 20%; float: right; margin-right: 10px }
+    .indent { margin-left: 15px }
+    .col.s6 .range-field { margin-top: 0px }
+    .collab-title { font-family: Roboto; font-weight: 300 }
+    .flex { display: flex; flex-direction: row; flex-wrap: wrap }
+    .flex-item { flex-grow: 1; flex-basis: 0 }
+    .flex-item, .row .col .m6 { padding: 5px; }
+    .price-item { flex-basis: 50% }
+    .price-item span { padding-left: 10px }
+    .price-item label { color: rgba(0, 0, 0, 0.87) }
+    .collapsible-body { padding: 1rem }
 </style>
 
 <a href="https://github.com/Rob--/CS-GO-Trade-Helper"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
 
 <div class="row">
-  <!-- below column needs to be 1px in height because when it's pinned
-       it becomes 0px in height and causes the main content to have no offset -->
-  <div class="col hide-on-small-only m3 l2" style="height: 1px">
-    <ul class="section table-of-contents" id="toc">
-      <li><a href="#settings">Settings</a></li>
-      <li><a href="#features">Features</a></li>
-      <li><a href="#contributions">Contributions</a></li>
-      <li><a href="#changelog">Change log</a></li>
-    </ul>
-  </div>
-  <div class="col m9 l8">
-    <div class="section scrollspy" id="settings">
-      <h4 class="header left-align">Settings</h4>
-      <hr class="header-sep">
-
-      <div class="flex">
-        <div class="flex-item">
-          <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
-            <span class="card-title">Float Decimals</span>
-            <p>The number of decimals to display for float value.</p>
-            <p class="range-field">
-              <input type="range" id="floatDecimals" min="1" max="11" />
-            </p>
+    <!-- below column needs to be 1px in height because when it's pinned
+         it becomes 0px in height and causes the main content to have no offset -->
+    <div class="col hide-on-small-only m3 l2" style="height: 1px">
+        <ul class="section table-of-contents" id="toc">
+            <li><a href="#settings">Settings</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#contributions">Contributions</a></li>
+            <li><a href="#changelog">Change log</a></li>
+        </ul>
+    </div>
+    <div class="col m9 l8">
+        <div class="section scrollspy" id="settings">
+            <h4 class="header left-align">Settings</h4>
+            <hr class="header-sep">
 
             <div class="flex">
-              <div class="flex-item">
-                <div class="z-depth-1 example-item-holder">
-                  <span id="exampleFloatLeft" class="example-item-float"></span>
-                  <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
-                  <span class="example-item-price" data-price="397.42">$397.42</span>
-                  <span class="example-item-wear">FN</span>
-                </div>
-              </div>
-              <div class="flex-item">
-                <div class="z-depth-1 example-item-holder">
-                  <span id="exampleFloatRight" class="example-item-float"></span>
-                  <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
-                  <span class="example-item-price" data-price="397.42">$397.42</span>
-                  <span class="example-item-wear">FN</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="flex-item">
-          <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
-            <span class="card-title">Items in Trade</span>
-            <p>Appearance for items already in a trade.</p>
-            <p class="range-field">
-              <input type="range" id="itemsBackground" min="0" max="360" />
-            </p>
+                <div class="flex-item">
+                    <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
+                        <span class="card-title">Float Decimals</span>
+                        <p>The number of decimals to display for float value.</p>
+                        <p class="range-field">
+                            <input type="range" id="floatDecimals" min="1" max="11" />
+                        </p>
 
-            <div class="flex">
-              <div class="flex-item">
-                <div id="exampleTradeLeft" class="z-depth-1 example-item-holder">
-                  <span class="example-item-float"></span>
-                  <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpou-6kejhjxszFJTwT09S5g4yCmfDLP7LWnn8f65Mli7DH9tXziQTgqUY4YmmnINSUJwQ-YVnT_wS7yOzngMW07ZrOmmwj5HeObpQQtA/96fx96f">
-                  <span class="example-item-price" data-price="397.42">$397.42</span>
-                  <span class="example-item-wear">FN</span>
+                        <div class="flex">
+                            <div class="flex-item">
+                                <div class="z-depth-1 example-item-holder">
+                                    <span id="exampleFloatLeft" class="example-item-float"></span>
+                                    <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
+                                    <span class="example-item-price" data-price="397.42">$397.42</span>
+                                    <span class="example-item-wear">FN</span>
+                                </div>
+                            </div>
+                            <div class="flex-item">
+                                <div class="z-depth-1 example-item-holder">
+                                    <span id="exampleFloatRight" class="example-item-float"></span>
+                                    <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
+                                    <span class="example-item-price" data-price="397.42">$397.42</span>
+                                    <span class="example-item-wear">FN</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <div class="flex-item">
-                <div id="exampleTradeRight" class="z-depth-1 example-item-holder">
-                  <span class="example-item-float"></span>
-                  <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17P7NdTRH-t26q4SZlvD7PYTQgXtu5Mx2gv2P9o6migzl_Us5ZmCmLYDDJgU9NA6B81S5yezvg8e-7cycnXJgvHZx5WGdwUJqz1Tl4g/96fx96f">
-                  <span class="example-item-price" data-price="397.42">$397.42</span>
-                  <span class="example-item-wear">FN</span>
+                <div class="flex-item">
+                    <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
+                        <span class="card-title">Items in Trade</span>
+                        <p>Appearance for items already in a trade.</p>
+                        <p class="range-field">
+                            <input type="range" id="itemsBackground" min="0" max="360" />
+                        </p>
+
+                        <div class="flex">
+                            <div class="flex-item">
+                                <div id="exampleTradeLeft" class="z-depth-1 example-item-holder">
+                                    <span class="example-item-float"></span>
+                                    <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpou-6kejhjxszFJTwT09S5g4yCmfDLP7LWnn8f65Mli7DH9tXziQTgqUY4YmmnINSUJwQ-YVnT_wS7yOzngMW07ZrOmmwj5HeObpQQtA/96fx96f">
+                                    <span class="example-item-price" data-price="397.42">$397.42</span>
+                                    <span class="example-item-wear">FN</span>
+                                </div>
+                            </div>
+                            <div class="flex-item">
+                                <div id="exampleTradeRight" class="z-depth-1 example-item-holder">
+                                    <span class="example-item-float"></span>
+                                    <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17P7NdTRH-t26q4SZlvD7PYTQgXtu5Mx2gv2P9o6migzl_Us5ZmCmLYDDJgU9NA6B81S5yezvg8e-7cycnXJgvHZx5WGdwUJqz1Tl4g/96fx96f">
+                                    <span class="example-item-price" data-price="397.42">$397.42</span>
+                                    <span class="example-item-wear">FN</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
+                <div class="flex-item">
+                    <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
+                        <span class="card-title">Font Size</span>
+                        <p>The font size of the float value, price and wear.</p>
+                        <div class="flex">
+                            <div class="flex-item" style="padding: 0px 5px 0px 5px;">
+                                <p class="range-field" style="margin-top: 0px">
+                                    <input type="range" id="fontSizeTop" min="6" max="17" value="12"/>
+                                </p>
+                            </div>
+                            <div class="flex-item" style="padding: 0px 5px 0px 5px;">
+                                <p class="range-field" style="margin-top: 0px">
+                                    <input type="range" id="fontSizeBottom" min="6" max="17" value="14"/>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <div class="flex-item">
+                                <div class="z-depth-1 example-item-holder">
+                                    <span class="example-item-float"></span>
+                                    <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
+                                    <span class="example-item-price" data-price="397.42">$397.42</span>
+                                    <span class="example-item-wear">FN</span>
+                                </div>
+                            </div>
+                            <div class="flex-item">
+                                <div class="z-depth-1 example-item-holder">
+                                    <span class="example-item-float"></span>
+                                    <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
+                                    <span class="example-item-price" data-price="397.42">$397.42</span>
+                                    <span class="example-item-wear">FN</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-        <div class="flex-item">
-          <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
-            <span class="card-title">Font Size</span>
-            <p>The font size of the float value, price and wear.</p>
-            <div class="flex">
-              <div class="flex-item" style="padding: 0px 5px 0px 5px;">
-                <p class="range-field" style="margin-top: 0px">
-                  <input type="range" id="fontSizeTop" min="6" max="17" value="12"/>
-                </p>
-              </div>
-              <div class="flex-item" style="padding: 0px 5px 0px 5px;">
-                <p class="range-field" style="margin-top: 0px">
-                  <input type="range" id="fontSizeBottom" min="6" max="17" value="14"/>
-                </p>
-              </div>
-            </div>
-            <div class="flex">
-              <div class="flex-item">
-                <div class="z-depth-1 example-item-holder">
-                  <span class="example-item-float"></span>
-                  <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
-                  <span class="example-item-price" data-price="397.42">$397.42</span>
-                  <span class="example-item-wear">FN</span>
-                </div>
-              </div>
-              <div class="flex-item">
-                <div class="z-depth-1 example-item-holder">
-                  <span class="example-item-float"></span>
-                  <img src="https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpovbSsLQJf2PLacDBA5ciJlYG0kfbwNoTdn2xZ_Ity07iXrdzx3wHnqhc_YT-gd4PAJgRrZV2Eqwe2wOu5g8K47c_MySBkpGB8si99cQGQ/96fx96f">
-                  <span class="example-item-price" data-price="397.42">$397.42</span>
-                  <span class="example-item-wear">FN</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col s12 m6 l4">
-          <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
-            <span class="card-title">Currency Conversion</span>
-            <p>1 USD = <span id="exchange">1 USD</span></p>
             <div class="row">
-              <div class="col s6">
-                <p>
-                  <input name="exchange" class="with-gap" type="radio" data-currency="USD" data-symbol="$" id="exchange-USD" />
-                  <label for="exchange-USD">USD</label>
-                </p>
-              </div>
-              <div class="col s6">
-                <p>
-                  <input name="exchange" class="with-gap" type="radio" data-currency="GBP" data-symbol="&#163;" id="exchange-GBP"/>
-                  <label for="exchange-GBP">GBP</label>
-                </p>
-              </div>
-              <div class="col s6">
-                <p>
-                  <input name="exchange" class="with-gap" type="radio" data-currency="EUR" data-symbol="&#8364;" id="exchange-EUR"/>
-                  <label for="exchange-EUR">EUR</label>
-                </p>
-              </div>
-              <div class="col s6">
-                <p>
-                  <input name="exchange" class="with-gap" type="radio" data-currency="AUD" data-symbol="A$" id="exchange-AUD"/>
-                  <label for="exchange-AUD">AUD</label>
-                </p>
-              </div>
-              <div class="col s6">
-                <p>
-                  <input name="exchange" class="with-gap" type="radio" data-currency="CAD" data-symbol="C$" id="exchange-CAD"/>
-                  <label for="exchange-CAD">CAD</label>
-                </p>
-              </div>
-              <div class="col s6">
-                <p>
-                  <input name="exchange" class="with-gap" type="radio" data-currency="CHF" data-symbol="Fr." id="exchange-CHF"/>
-                  <label for="exchange-CHF">CHF</label>
-                </p>
-              </div>
-              <div class="col s6">
-                <p>
-                  <input name="exchange" class="with-gap" type="radio" data-currency="BRL" data-symbol="R$" id="exchange-BRL"/>
-                  <label for="exchange-BRL">BRL</label>
-                </p>
-              </div>
-              <div class="col s6">
-                <p>
-                  <input name="exchange" class="with-gap" type="radio" data-currency="SEK" data-symbol="kr" id="exchange-SEK"/>
-                  <label for="exchange-SEK">SEK</label>
-                </p>
-              </div>
+                <div class="col s12 m6 l4">
+                    <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
+                        <span class="card-title">Currency Conversion</span>
+                        <p>1 USD = <span id="exchange">1 USD</span></p>
+                        <div class="row">
+                            <div class="col s6">
+                                <p>
+                                    <input name="exchange" class="with-gap" type="radio" data-currency="USD" data-symbol="$" id="exchange-USD" />
+                                    <label for="exchange-USD">USD</label>
+                                </p>
+                            </div>
+                            <div class="col s6">
+                                <p>
+                                    <input name="exchange" class="with-gap" type="radio" data-currency="GBP" data-symbol="&#163;" id="exchange-GBP"/>
+                                    <label for="exchange-GBP">GBP</label>
+                                </p>
+                            </div>
+                            <div class="col s6">
+                                <p>
+                                    <input name="exchange" class="with-gap" type="radio" data-currency="EUR" data-symbol="&#8364;" id="exchange-EUR"/>
+                                    <label for="exchange-EUR">EUR</label>
+                                </p>
+                            </div>
+                            <div class="col s6">
+                                <p>
+                                    <input name="exchange" class="with-gap" type="radio" data-currency="AUD" data-symbol="A$" id="exchange-AUD"/>
+                                    <label for="exchange-AUD">AUD</label>
+                                </p>
+                            </div>
+                            <div class="col s6">
+                                <p>
+                                    <input name="exchange" class="with-gap" type="radio" data-currency="CAD" data-symbol="C$" id="exchange-CAD"/>
+                                    <label for="exchange-CAD">CAD</label>
+                                </p>
+                            </div>
+                            <div class="col s6">
+                                <p>
+                                    <input name="exchange" class="with-gap" type="radio" data-currency="CHF" data-symbol="Fr." id="exchange-CHF"/>
+                                    <label for="exchange-CHF">CHF</label>
+                                </p>
+                            </div>
+                            <div class="col s6">
+                                <p>
+                                    <input name="exchange" class="with-gap" type="radio" data-currency="BRL" data-symbol="R$" id="exchange-BRL"/>
+                                    <label for="exchange-BRL">BRL</label>
+                                </p>
+                            </div>
+                            <div class="col s6">
+                                <p>
+                                    <input name="exchange" class="with-gap" type="radio" data-currency="SEK" data-symbol="kr" id="exchange-SEK"/>
+                                    <label for="exchange-SEK">SEK</label>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col s12 m6 l4">
+                    <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
+                        <span class="card-title">Empty Trades</span>
+                        <p>Automatically accept empty trade offers where you are not giving any items away.</p>
+                        <p>
+                            <input type="checkbox" id="autoAccept" />
+                            <label for="autoAccept">Auto Accept (buggy)</label>
+                        </p>
+
+                        <span class="card-title">Notification Volume</span>
+                        <p>Volume for sounds when notifications occur.</p>
+                        <p style="margin-bottom: 10px" class="range-field">
+                            <input type="range" id="volume" min="0" max="100" value="100"/>
+                        </p>
+
+                        <a id="sounds-trigger" class='dropdown-button btn' data-sound="chime" href='#' data-activates='sounds'>choose a sound</a>
+
+                        <ul id='sounds' class='dropdown-content'>
+                            <li><a href="#!">chime</a></li>
+                            <li><a href="#!">solemn</a></li>
+                            <li><a href="#!">dash</a></li>
+                            <li><a href="#!">droplet</a></li>
+                            <li><a href="#!">hiccup</a></li>
+                            <li><a href="#!">wood</a></li>
+                            <li><a href="#!">musical</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col s12 m6 l4">
+                    <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
+                        <span class="card-title">Price Sources</span>
+                        <p>Choose a pricing source for CS:GO items.</p>
+                        <a style="margin-bottom: 10px" class="waves-effect waves-light btn" href="#pricingModal">choose a pricing source</a>
+
+                        <span class="card-title">Auto Ignore Scammers</span>
+                        <p>Automatically ignore friend invites from scammers.</p>
+                        <p style="margin-bottom: 20px">
+                            <input type="checkbox" id="autoIgnore" />
+                            <label for="autoIgnore">Auto Ignore</label>
+                        </p>
+                    </div>
+                </div>
             </div>
-          </div>
+            <a class="waves-effect waves-light btn save-btn">save settings</a><a class="waves-effect waves-light btn default-btn">default settings</a>
         </div>
-        <div class="col s12 m6 l4">
-          <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
-            <span class="card-title">Empty Trades</span>
-            <p>Automatically accept empty trade offers where you are not giving any items away.</p>
-            <p>
-              <input type="checkbox" id="autoAccept" />
-              <label for="autoAccept">Auto Accept (buggy)</label>
-            </p>
 
-            <span class="card-title">Notification Volume</span>
-            <p>Volume for sounds when notifications occur.</p>
-            <p style="margin-bottom: 10px" class="range-field">
-              <input type="range" id="volume" min="0" max="100" value="100"/>
-            </p>
+        <div id="pricingModal" class="modal">
+            <div class="modal-content">
+                <h4>Pricing Options</h4>
+                <hr>
+                <div class="flex">
+                    <div class="flex-item price-item">
+                        <input name="prices" class="with-gap" data-prices="backpack" type="radio" id="prices-backpack" />
+                        <label for="prices-backpack">CSGOBackpack</label>
+                        <span><a href="http://csgobackpack.net/">http://csgobackpack.net/</a></span>
+                        <hr>
+                        <p>CSGOBackpack was created by <a href="http://steamcommunity.com/profiles/76561198059556519">Only</a>, more information about their API can be found <a href="http://csgobackpack.net/api/">here</a>.</p>
+                        <p>Use of this API does not require an API key.</p>
+                        <p>Prices are the average of the past week (or more, up to 180 days if there was no market sale within the last 7 days.</p>
+                        <p>The price list refreshes every 8 hours.</p>
+                    </div>
 
-            <a id="sounds-trigger" class='dropdown-button btn' data-sound="chime" href='#' data-activates='sounds'>choose a sound</a>
+                    <div class="flex-item price-item">
+                        <input name="prices" class="with-steamlytics" data-prices="steamlytics" type="radio" id="prices-steamlytics" />
+                        <label for="prices-steamlytics" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="You have not set an API key for Steamlytics">Steamlytics</label>
+                        <span><a href="http://steamlytics.xyz/">http://steamlytics.xyz/</a></span>
+                        <hr>
+                        <p>Steamlytics was created by <a href="https://steamcommunity.com/profiles/76561198045552709">King</a>, more information about their API can be found <a href="http://csgo.steamlytics.xyz/api">here</a>.</p>
+                        <p>Use of this API requires an API key and can be obtained from their site for $10 per month (requires pro plan).</p>
+                        <p>Prices are based on analysis of data from the last 7 days, 30 days and all time history and take into account volume, trend and standard deviation of each timespan.</p>
+                        <p>The price list refreshed every 6 hours.</p>
+                    </div>
 
-            <ul id='sounds' class='dropdown-content'>
-              <li><a href="#!">chime</a></li>
-              <li><a href="#!">solemn</a></li>
-              <li><a href="#!">dash</a></li>
-              <li><a href="#!">droplet</a></li>
-              <li><a href="#!">hiccup</a></li>
-              <li><a href="#!">wood</a></li>
-              <li><a href="#!">musical</a></li>
+                    <div class="flex-item price-item">
+                        <input name="prices" class="with-gap" data-prices="fast" type="radio" id="prices-fast" />
+                        <label for="prices-fast">Fast</label>
+                        <span><a href="https://csgofast.com/">https://csgofast.com/</a></span>
+                        <hr>
+                        <p>This price list has no documentation but prices are fairly accurate (in comparison to Steam Analyst).</p>
+                    </div>
+
+                    <div class="flex-item price-item">
+                        <input name="prices" class="with-gap" data-prices="bitskins" type="radio" id="prices-bitskins" />
+                        <label for="prices-bitskins">BitSkins</label>
+                        <span><a href="https://bitskins.com/">https://bitskins.com/</a></span>
+                        <hr>
+                        <p>BitSkins is a site that allows users to sell their CS:GO items.</p>
+                        <p>This price list is the entire price database of BitSkins.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section scrollspy" id="features">
+            <h4 class="header left-align">Features</h4>
+            <hr class="header-sep">
+
+            <div class="row">
+                <div class="col s12">
+                    <ul class="tabs z-depth-1">
+                        <li class="tab col s3"><a class="active" href="#f-trades">Trades</a></li>
+                        <li class="tab col s3"><a href="#f-tradeoffers">Trade Offers</a></li>
+                        <li class="tab col s3"><a href="#f-inventory">Inventory</a></li>
+                        <li class="tab col s3"><a href="#f-misc">Misc</a></li>
+                    </ul>
+                </div>
+                <div id="f-trades" class="col s12">
+                    <div class="row">
+                        <div class="col s12 m6 l4">
+                            <div class="card hoverable">
+                                <div class="card-image"><img src="https://i.imgur.com/LYeraie.png" style="/*width:385px*/"></div>
+                                <div class="card-content" style="height: auto">
+                                    <p>Trades have a quick summary of item types and item quantities. Prices and float values are also displayed for each item.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col s12 m6 l4">
+                            <div class="card hoverable">
+                                <div class="card-image"><img src="https://i.imgur.com/ViYxJfn.png" style="/*width:385px*/"></div>
+                                <div class="card-content" style="height: auto">
+                                    <p>Quick shortcut links to view the item on <a target="_blank" href="https://csgo.exchange">csgo.exchange</a> and to easily screenshot the item on <a target="_blank" href="http://metjm.net">metjm.net</a>.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col s12 m6 l4">
+                            <div class="card hoverable">
+                                <div class="card-image"><img src="https://i.imgur.com/zzwfA9K.png" style="/*width:385px*/"></div>
+                                <div class="card-content" style="height: auto">
+                                    <p>Items that are already in a trade appear with a different colour background to prevent items becoming unavailable in trade offers.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col s12 m6 l4">
+                            <div class="card hoverable">
+                                <div class="card-image"><img src="https://i.imgur.com/5tnOqG3.png" style="/*width:385px*/"></div>
+                                <div class="card-content" style="height: auto">
+                                    <p>'Take All' will take all items on the page. 'Take Keys' button will take all the keys on the current page or a specified number of keys.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col s12 m6 l4">
+                            <div class="card hoverable">
+                                <div class="card-image"><img src="https://i.imgur.com/J5doUnz.png" style="/*width:385px*/"></div>
+                                <div class="card-content" style="height: auto">
+                                    <p>Sticker prices appear instantly on hover elements and on the inventory page with a total.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="f-tradeoffers" class="col s12">
+                    <div class="col s12 m12 l6">
+                        <div class="card hoverable">
+                            <div class="card-image"><img src="https://i.imgur.com/iE9M38p.png"></div>
+                            <div class="card-content" style="height: auto">
+                                <p>Trade offers have a quick summary of item types and item quantities. Each items displays its price and float value. Items are sorted in descending order by price.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m12 l6">
+                        <div class="card hoverable">
+                            <div class="card-image"><img src="https://i.imgur.com/AJ39Etm.png"></div>
+                            <div class="card-content" style="height: auto">
+                                <p>Items that have no price available appear vividly red to stand out (red overlay and red glowing shadow) and are not counted in the trade offer total.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m12 l6">
+                        <div class="card hoverable">
+                            <div class="card-image"><img src="https://i.imgur.com/cQpLXMI.png"></div>
+                            <div class="card-content" style="height: auto">
+                                <p>Reminders appear in offers where you either recieve no items or are not sending any items.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m12 l6">
+                        <div class="card hoverable">
+                            <div class="card-image"><img src="https://i.imgur.com/0z2DNT4.png"></div>
+                            <div class="card-content" style="height: auto">
+                                <p>Notifications appear for new items, new trade offers, new friend/group invites and new profile comments.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="f-inventory" class="col s12">
+                    <div class="col s12 m12 l6">
+                        <div class="card hoverable">
+                            <div class="card-image"><img src="https://i.imgur.com/JD050lo.png" style="/*width:589px*/"></div>
+                            <div class="card-content" style="height: auto">
+                                <p>Inventories can be sorted by both price and float value in ascending/descending order.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m12 l6">
+                        <div class="card hoverable">
+                            <div class="card-image"><img src="https://i.imgur.com/02auuRu.png" style="/*width:589px*/"></div>
+                            <div class="card-content" style="height: auto">
+                                <p>To make inventories easier to view, they can be expanded to become pageless and scrollable.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="f-misc" class="col s12">
+                    <div class="col s12 m12">
+                        <div class="card hoverable">
+                            <div class="card-image"><img src="http://i.imgur.com/AxlEfFV.png"></div>
+                            <div class="card-content" style="height: auto">
+                                <p>The profile header is tidied up and header backgrounds are replaced with a more aesthetically pleasing look.
+                                    CS:GO Trade Helper also allows you to upvote profiles!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m12 l6">
+                        <div class="card hoverable">
+                            <div class="card-image"><img src="https://i.imgur.com/jkPFbD5.png"></div>
+                            <div class="card-content" style="height: auto">
+                                <p>Important profiles (such as high tier traders and bots) will have verification above the profile picture.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m12 l6">
+                        <div class="card hoverable">
+                            <div class="card-image"><img src="https://i.imgur.com/lMKF5DL.png"></div>
+                            <div class="card-content" style="height: auto">
+                                <p>Verification for important profiles also appears on the trade offers page after clicking 'show prices'.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m12">
+                        <div class="card hoverable">
+                            <div class="card-image"><img src="https://i.imgur.com/oDWkGCY.png"></div>
+                            <div class="card-content" style="height: auto">
+                                <p>Invites now show inventory value that directly link to the user's inventory. A <a target="_blank" href="https://steamrep.com">SteamRep</a> status is also displayed by each invite.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m12 l6">
+                        <div class="card hoverable">
+                            <div class="card-image"><img src="https://i.imgur.com/9pH6ME2.png"></div>
+                            <div class="card-content" style="height: auto">
+                                <p>Profiles belonging to users that are marked as a scammer/impersonator will appear with a red flair and red background. It is recommended to avoid profiles belonging to scammers. To report a scammer/impersonator please contact <a href="https://steamcommunity.com/id/i7xx" target="_blank">i7xx</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m12 l6">
+                        <div class="card hoverable">
+                            <div class="card-image"><img src="https://i.imgur.com/r0ol8tV.png"></div>
+                            <div class="card-content" style="height: auto">
+                                <p>Users marked as a scammer/impersonator will appear with a red warning flair and red background. By default, the setting to automatically ignore invites from users marked as a scammer/impersonator is enabled.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m12">
+                        <div class="card hoverable">
+                            <div class="card-image"><img src="https://i.imgur.com/uqpH1EL.png"></div>
+                            <div class="card-content" style="height: auto">
+                                <p>Friends' inventories can be easily loaded and searched for any CS:GO item.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m12 l6">
+                        <div class="card hoverable">
+                            <div class="card-image"><img src="https://i.imgur.com/IDtzwOS.png"></div>
+                            <div class="card-content" style="height: auto">
+                                <p>Search anyone else's friend's inventory too.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m12 l6">
+                        <div class="card hoverable">
+                            <div class="card-image"><img src="https://i.imgur.com/KT1ifsF.png"></div>
+                            <div class="card-content" style="height: auto">
+                                <p>Filtering is simplistic and easy.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section scrollspy" id="contributions">
+            <h4 class="header left-align">Special thanks to</h4>
+            <hr class="header-sep">
+
+            <div class="flex">
+                <div class="flex-item">
+                    <a target="_blank" href="https://csgo.exchange">
+                        <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
+                            <div class="row valign-wrapper">
+                                <div class="col s2"><img src="https://csgo.exchange/images/logo.png" width="50px" height="50px" class="z-depth-1"></div>
+                                <div class="col s8">
+                                    <h5 class="collab-title">csgo.exchange</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
+                                    <span>for providing detailed info about items</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="flex-item">
+                    <a target="_blank" href="http://csgobackpack.net/">
+                        <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
+                            <div class="row valign-wrapper">
+                                <div class="col s2"><img src="http://i.imgur.com/29fDboq.png" width="50px" height="50px"></div>
+                                <div class="col s8">
+                                    <h5 class="collab-title">csgobackpack.net</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
+                                    <span>for providing pricing information for items</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="flex-item">
+                    <a target="_blank" href="https://metjm.net">
+                        <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
+                            <div class="row valign-wrapper">
+                                <div class="col s2"><img src="https://metjm.net/csgo/web/img/logo.svg" width="50px" height="50px"></div>
+                                <div class="col s8">
+                                    <h5 class="collab-title">metjm.net</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
+                                    <span>for providing a quick screenshot method</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section scrollspy" id="changelog">
+            <h4 class="header left-align">Change log</h4>
+            <hr class="header-sep">
+
+            <ul class="collapsible" data-collapsible="accordion">
+                <li>
+                    <div class="collapsible-header active">v 1.8.4</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- added dialog box when choosing a pricing source option</span>
+                            <br><span class="indent">- added website links, api links, and</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.8.3</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- updated Metjm inspect urls</span>
+                            <br><span class="indent">- items are now added to the queue instantly when clicking 'View on Metjm'</span>
+                            <br><span>- dramatically improved performance on inventory page due to a bug</span>
+                            <br><span>- added analytics</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.8.2</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- updated the inventory page to work with Steam's adjusted page rendering system</span>
+                            <br><span class="indent">- fixed bugs causing the item data to not load</span>
+                            <br><span class="indent">- slightly improved performance</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.8.1</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- fixed market page bug causing the page to scroll down as soon as the page loads</span>
+                            <br><span>- fixed market page bug causing listings to start on page 2</span>
+                            <br><span>- stylized items on the <a href="https://steamcommunity.com/my/inventoryhistory">inventory history</a> page</span>
+                            <br><span class="indent">- summary boxes appear now for each side of the trade</span>
+                            <br><span class="indent">- pricing total and item types are counted</span>
+                            <br><span class="indent">- items are aligned properly for easier readability</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.8.0</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- sticker prices now appear when hovering over items and on the inventory page</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.7.4</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- added new pricing source: <a href="http://csgobackpack.net/">csgobackpack.net</a></span>
+                            <br><span class="indent">- with thanks to <a href="https://steamcommunity.com/profiles/76561198059556519">Only</a></span>
+                            <br><span>- added new pricing source: <a href="http://csgo.steamlytics.xyz/api">csgo.steamlytics.xyz</a>, by <a href="https://steamcommunity.com/profiles/76561198045552709">King</a></span>
+                            <br><span class="indent">- requires an API key to use (I have no affiliation with Steamlytics)</span>
+                            <br>- added new pricing source: <a href="https://bitskins.com/">bitskins.com</a>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.7.3</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- fixed a bug where notifications weren't showing for new invites/comments</span>
+                            <br><span class="indent">- changed http requests to https</span>
+                            <br><span>- changed the way headers are added to requests to prevent duplicate headers</span>
+                            <br><span>- added naming support for emerald (gamma doppler) and black pearl (doppler) knives</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.7.2</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- fixed bugs on the inventory page due to a recent change in the Steam website</span>
+                            <br><span class="indent">- the sell and quick sell now appear and are functional</span>
+                            <br><span class="indent">- special thanks to <a href="http://steamcommunity.com/profiles/76561198336991218">Dino</a> for pointing the bug out</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.7.1</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- added the ability upvote a user's profile when on their profile page</span>
+                            <br><span class="indent">- Steam has had this feature for years but do not actually utilise it, so I've tried to revive it</span>
+                            <br><span class="indent">- only other users with the extension can upvote a profile or see how many upvotes a profile has</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.7.0</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- added SEK (Swedish krona) and BRL (Brazilian real) currencies</span>
+                            <br><span>- added the ability to choose a new notification sound</span>
+                            <br><span class="indent">- added new notification sounds</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.6.8</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- fixed a bug that stopped floats from loading in trade offer windows</span>
+                            <br><span>- fixed a bug where levels were not being sorted properly on the invites page</span>
+                            <br><span>- increased inventory loading intervals on invites page to prevent being rate limited by Steam</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.6.7</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- cached data to speed up inventory loading times</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.6.6</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- edited invites page</span>
+                            <br><span class="indent">- reworked an endpoint that was nuked</span>
+                            <br><span class="indent">- separated inventory and verification tasks to improve loading speeds</span>
+                            <br><span class="indent">- edited colours for verified users and scammers</span>
+                            <br><span>- edited inventory page</span>
+                            <br><span class="indent">- fixed a bug where floats wouldn't load when scrolling through the inventory</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.6.5</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- fixed issue where prices were not properly showing (due to a response not being interpreted correctly)</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.6.4</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- changed background gradient for settings page</span>
+                            <br><span>- fixed image glitch when loading inventory page</span>
+                            <br><span class="indent">- tracked already loaded elements to prevent duplicate elements</span>
+                            <br><span class="indent">- special thanks to <a href="https://steamcommunity.com/profiles/76561198104649119">Marxy</a> for pointing the bug out</span>
+                            <br><span>- removed `steam.expert` pricing source due to closure of the API</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.6.3</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- fixed tag name accession based on context</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.6.2</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- changed inventory retrieval due to Steam's new loading mechanism</span>
+                            <br><span class="indent">- inventory now progressively loads as the user scrolls through pages</span>
+                            <br><span class="indent">- inventory sorting and expansion options only appear when the entire inventory has been loaded</span>
+                            <br><span>- adjusted CSS tags to account for Steam's CSS changes</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.6.1</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- added loading icon when quick selling icons to determine whether or not the item is being listed or has been listed</span>
+                            <br><span class="indent">- when an item is being listed a loading icon will appear on top of it</span>
+                            <br><span class="indent">- when an item has been listed the loading icon will be replaced with a dark gray background</span>
+                            <br><span>- suppressed confirmation alerts when quick selling items</span>
+                            <br><span>- fixed font issue on settings page</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.6.0</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- fixed 'sell' button not working on inventory page</span>
+                            <br><span>- fixed bug causing interference with inventory item selection</span>
+                            <br><span>- added quick sell feature to inventory items</span>
+                            <br><span class="indent">- when clicking on an inventory item, a quick sell button appears near the 'Sell' button</span>
+                            <br><span>- edited changelog versioning</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.5.1</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- fixed font issues</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.5.0</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- added verified scammers feature</span>
+                            <br><span class="indent">- users marked as an impersonator/scammer will appear with a red flair on the invites page</span>
+                            <br><span class="indent">- users marked as an impersonator/scammer will appear with a red flair on their profile page</span>
+                            <br><span>- added feature to automatically ignore invites from marked impersonators/scammers</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.4.0</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- improved invites page, fixed incorrect sorting</span>
+                            <br><span>- added better error handling for loading inventories</span>
+                            <br><span>- fixed stickers not appearing when expanding inventory</span>
+                            <br><span>- near instant inventory loading times</span>
+                            <br><span class="indent">- improved loading times on trade offers pages and inventory pages</span>
+                            <br><span class="indent">- inventories are now loaded from window data rather than an making an external request</span>
+                            <br><span>- added a default settings button to settings page</span>
+                            <br><span>- added multiple price source options on the settings page</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.3.0</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- improved script interaction with the web page (DRY concept)</span>
+                            <br><span>- notification sounds now occur for friend/group invites, new comments and new items</span>
+                            <br><span>- fixed bug with auto accepting trade offers</span>
+                            <br><span class="indent">- cookies are now updated before every offer is accepted</span>
+                            <br><span>- fixed bugs with notification urls</span>
+                            <br><span>- added notification volume setting</span>
+                            <br><span>- added better error handling for retrieving inventories</span>
+                            <br><span>- added <a target="_blank" href="https://i7xx.xyz">floatr</a> to market listings</span>
+                            <br><span>- added basis for loading more comments on profile page, to be implemented soon</span>
+                            <br><span>- made the settings page more responsive</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.2.0</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- added steam id verification for important profiles (bots, high tier traders)</span>
+                            <br><span class="indent">- verification appears above the profile picture on profile pages</span>
+                            <br><span class="indent">- verification appears near the report button for trade offers (after clicking 'show prices')</span>
+                            <br><span>- added various currencies</span>
+                            <br><span class="indent">- added currency setting</span>
+                            <br><span>- added font size customisation</span>
+                            <br><span class="indent">- font size for float/wear/price can now be adjusted</span>
+                            <br><span>- faster loading times for inventories inside a trade offer</span>
+                            <br><span>- increased number of items shown on market page to 50</span>
+                            <br><span>- better error handling (fallback requests) for ajax requests</span>
+                            <br><span>- various bug fixes</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.1.0</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- added various visual changes to multiple pages</span>
+                            <br><span>- added settings page</span>
+                            <br><span class="indent">- implemented real time setting saves</span>
+                            <br><span class="indent">- added contributions</span>
+                            <br><span>- added settings</span>
+                            <br><span class="indent">- added float value setting</span>
+                            <br><span class="indent">- added auto accept setting</span>
+                            <br><span class="indent">- added in trade background setting</span>
+                            <br><span>- added auto accept for empty trades</span>
+                            <br><span>- added visual difference for items already in a trade offer</span>
+                            <br><span>- added and edited icons</span>
+                            <br><span>- added better support for when an inventory is changed</span>
+                            <br><span>- fixed bug causing duplicate action links</span>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">v 1.0.0</div>
+                    <div class="collapsible-body">
+                        <p>
+                            <span>- initial release</span>
+                        </p>
+                    </div>
+                </li>
             </ul>
-          </div>
         </div>
-        <div class="col s12 m6 l4">
-          <div style="height: auto/*height: 285px*/" class="card-panel hoverable lighten-5 z-depth-1">
-            <span class="card-title">Price Sources</span>
-            <p>Choose a pricing source.</p>
-            <div class="row" style="margin-bottom: 5px">
-              <div class="col s6">
-                <p>
-                  <input name="prices" class="with-gap" data-prices="backpack" type="radio" id="prices-backpack" />
-                  <label for="prices-backpack">CSGOBackpack</label>
-                </p>
-              </div>
-              <div class="col s6">
-                <p>
-                  <input name="prices" class="with-gap" data-prices="fast" type="radio" id="prices-fast" />
-                  <label for="prices-fast">Fast</label>
-                </p>
-              </div>
-              <div class="col s6">
-                <p>
-                  <input name="prices" class="with-steamlytics" data-prices="steamlytics" type="radio" id="prices-steamlytics" />
-                  <label for="prices-steamlytics" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="You have not set an API key for Steamlytics">Steamlytics</label>
-                </p>
-              </div>
-              <div class="col s6">
-                <p>
-                  <input name="prices" class="with-gap" data-prices="bitskins" type="radio" id="prices-bitskins" />
-                  <label for="prices-bitskins">Bitskins</label>
-                </p>
-              </div>
-            </div>
-
-            <span class="card-title">Auto Ignore Scammers</span>
-            <p>Automatically ignore friend invites from scammers.</p>
-            <p style="margin-bottom: 20px">
-              <input type="checkbox" id="autoIgnore" />
-              <label for="autoIgnore">Auto Ignore</label>
-            </p>
-          </div>
-        </div>
-      </div>
-      <a class="waves-effect waves-light btn save-btn">save settings</a><a class="waves-effect waves-light btn default-btn">default settings</a>
     </div>
-
-    <div class="section scrollspy" id="features">
-      <h4 class="header left-align">Features</h4>
-      <hr class="header-sep">
-
-      <div class="row">
-        <div class="col s12">
-          <ul class="tabs z-depth-1">
-            <li class="tab col s3"><a class="active" href="#f-trades">Trades</a></li>
-            <li class="tab col s3"><a href="#f-tradeoffers">Trade Offers</a></li>
-            <li class="tab col s3"><a href="#f-inventory">Inventory</a></li>
-            <li class="tab col s3"><a href="#f-misc">Misc</a></li>
-          </ul>
-        </div>
-        <div id="f-trades" class="col s12">
-          <div class="row">
-            <div class="col s12 m6 l4">
-              <div class="card hoverable">
-                <div class="card-image"><img src="https://i.imgur.com/LYeraie.png" style="/*width:385px*/"></div>
-                <div class="card-content" style="height: auto">
-                  <p>Trades have a quick summary of item types and item quantities. Prices and float values are also displayed for each item.</p>
-                </div>
-              </div>
-            </div>
-            <div class="col s12 m6 l4">
-              <div class="card hoverable">
-                <div class="card-image"><img src="https://i.imgur.com/ViYxJfn.png" style="/*width:385px*/"></div>
-                <div class="card-content" style="height: auto">
-                  <p>Quick shortcut links to view the item on <a target="_blank" href="https://csgo.exchange">csgo.exchange</a> and to easily screenshot the item on <a target="_blank" href="http://metjm.net">metjm.net</a>.</p>
-                </div>
-              </div>
-            </div>
-            <div class="col s12 m6 l4">
-              <div class="card hoverable">
-                <div class="card-image"><img src="https://i.imgur.com/zzwfA9K.png" style="/*width:385px*/"></div>
-                <div class="card-content" style="height: auto">
-                  <p>Items that are already in a trade appear with a different colour background to prevent items becoming unavailable in trade offers.</p>
-                </div>
-              </div>
-            </div>
-            <div class="col s12 m6 l4">
-              <div class="card hoverable">
-                <div class="card-image"><img src="https://i.imgur.com/5tnOqG3.png" style="/*width:385px*/"></div>
-                <div class="card-content" style="height: auto">
-                  <p>'Take All' will take all items on the page. 'Take Keys' button will take all the keys on the current page or a specified number of keys.</p>
-                </div>
-              </div>
-            </div>
-            <div class="col s12 m6 l4">
-              <div class="card hoverable">
-                <div class="card-image"><img src="https://i.imgur.com/J5doUnz.png" style="/*width:385px*/"></div>
-                <div class="card-content" style="height: auto">
-                  <p>Sticker prices appear instantly on hover elements and on the inventory page with a total.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="f-tradeoffers" class="col s12">
-          <div class="col s12 m12 l6">
-            <div class="card hoverable">
-              <div class="card-image"><img src="https://i.imgur.com/iE9M38p.png"></div>
-              <div class="card-content" style="height: auto">
-                <p>Trade offers have a quick summary of item types and item quantities. Each items displays its price and float value. Items are sorted in descending order by price.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col s12 m12 l6">
-            <div class="card hoverable">
-              <div class="card-image"><img src="https://i.imgur.com/AJ39Etm.png"></div>
-              <div class="card-content" style="height: auto">
-                <p>Items that have no price available appear vividly red to stand out (red overlay and red glowing shadow) and are not counted in the trade offer total.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col s12 m12 l6">
-            <div class="card hoverable">
-              <div class="card-image"><img src="https://i.imgur.com/cQpLXMI.png"></div>
-              <div class="card-content" style="height: auto">
-                <p>Reminders appear in offers where you either recieve no items or are not sending any items.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col s12 m12 l6">
-            <div class="card hoverable">
-              <div class="card-image"><img src="https://i.imgur.com/0z2DNT4.png"></div>
-              <div class="card-content" style="height: auto">
-                <p>Notifications appear for new items, new trade offers, new friend/group invites and new profile comments.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="f-inventory" class="col s12">
-          <div class="col s12 m12 l6">
-            <div class="card hoverable">
-              <div class="card-image"><img src="https://i.imgur.com/JD050lo.png" style="/*width:589px*/"></div>
-              <div class="card-content" style="height: auto">
-                <p>Inventories can be sorted by both price and float value in ascending/descending order.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col s12 m12 l6">
-            <div class="card hoverable">
-              <div class="card-image"><img src="https://i.imgur.com/02auuRu.png" style="/*width:589px*/"></div>
-              <div class="card-content" style="height: auto">
-                <p>To make inventories easier to view, they can be expanded to become pageless and scrollable.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="f-misc" class="col s12">
-          <div class="col s12 m12">
-            <div class="card hoverable">
-              <div class="card-image"><img src="http://i.imgur.com/AxlEfFV.png"></div>
-              <div class="card-content" style="height: auto">
-                <p>The profile header is tidied up and header backgrounds are replaced with a more aesthetically pleasing look.
-                  CS:GO Trade Helper also allows you to upvote profiles!</p>
-              </div>
-            </div>
-          </div>
-          <div class="col s12 m12 l6">
-            <div class="card hoverable">
-              <div class="card-image"><img src="https://i.imgur.com/jkPFbD5.png"></div>
-              <div class="card-content" style="height: auto">
-                <p>Important profiles (such as high tier traders and bots) will have verification above the profile picture.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col s12 m12 l6">
-            <div class="card hoverable">
-              <div class="card-image"><img src="https://i.imgur.com/lMKF5DL.png"></div>
-              <div class="card-content" style="height: auto">
-                <p>Verification for important profiles also appears on the trade offers page after clicking 'show prices'.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col s12 m12">
-            <div class="card hoverable">
-              <div class="card-image"><img src="https://i.imgur.com/oDWkGCY.png"></div>
-              <div class="card-content" style="height: auto">
-                <p>Invites now show inventory value that directly link to the user's inventory. A <a target="_blank" href="https://steamrep.com">SteamRep</a> status is also displayed by each invite.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col s12 m12 l6">
-            <div class="card hoverable">
-              <div class="card-image"><img src="https://i.imgur.com/9pH6ME2.png"></div>
-              <div class="card-content" style="height: auto">
-                <p>Profiles belonging to users that are marked as a scammer/impersonator will appear with a red flair and red background. It is recommended to avoid profiles belonging to scammers. To report a scammer/impersonator please contact <a href="https://steamcommunity.com/id/i7xx" target="_blank">i7xx</a>.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col s12 m12 l6">
-            <div class="card hoverable">
-              <div class="card-image"><img src="https://i.imgur.com/r0ol8tV.png"></div>
-              <div class="card-content" style="height: auto">
-                <p>Users marked as a scammer/impersonator will appear with a red warning flair and red background. By default, the setting to automatically ignore invites from users marked as a scammer/impersonator is enabled.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col s12 m12">
-            <div class="card hoverable">
-              <div class="card-image"><img src="https://i.imgur.com/uqpH1EL.png"></div>
-              <div class="card-content" style="height: auto">
-                <p>Friends' inventories can be easily loaded and searched for any CS:GO item.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col s12 m12 l6">
-            <div class="card hoverable">
-              <div class="card-image"><img src="https://i.imgur.com/IDtzwOS.png"></div>
-              <div class="card-content" style="height: auto">
-                <p>Search anyone else's friend's inventory too.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col s12 m12 l6">
-            <div class="card hoverable">
-              <div class="card-image"><img src="https://i.imgur.com/KT1ifsF.png"></div>
-              <div class="card-content" style="height: auto">
-                <p>Filtering is simplistic and easy.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section scrollspy" id="contributions">
-      <h4 class="header left-align">Special thanks to</h4>
-      <hr class="header-sep">
-
-      <div class="flex">
-        <div class="flex-item">
-          <a target="_blank" href="https://csgo.exchange">
-            <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
-              <div class="row valign-wrapper">
-                <div class="col s2"><img src="https://csgo.exchange/images/logo.png" width="50px" height="50px" class="z-depth-1"></div>
-                <div class="col s8">
-                  <h5 class="collab-title">csgo.exchange</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
-                  <span>for providing detailed info about items</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <div class="flex-item">
-          <a target="_blank" href="http://csgobackpack.net/">
-            <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
-              <div class="row valign-wrapper">
-                <div class="col s2"><img src="http://i.imgur.com/29fDboq.png" width="50px" height="50px"></div>
-                <div class="col s8">
-                  <h5 class="collab-title">csgobackpack.net</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
-                  <span>for providing pricing information for items</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <div class="flex-item">
-          <a target="_blank" href="https://metjm.net">
-            <div class="waves-effect card-panel hoverable grey lighten-5 z-depth-1">
-              <div class="row valign-wrapper">
-                <div class="col s2"><img src="https://metjm.net/csgo/web/img/logo.svg" width="50px" height="50px"></div>
-                <div class="col s8">
-                  <h5 class="collab-title">metjm.net</h5><hr style="border: 1px solid rgba(0, 0, 0, 0.25)">
-                  <span>for providing a quick screenshot method</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="section scrollspy" id="changelog">
-      <h4 class="header left-align">Change log</h4>
-      <hr class="header-sep">
-
-      <ul class="collapsible" data-collapsible="accordion">
-        <li>
-          <div class="collapsible-header active">v 1.8.3</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- updated Metjm inspect urls</span>
-              <br><span class="indent">- items are now added to the queue instantly when clicking 'View on Metjm'</span>
-              <br><span>- dramatically improved performance on inventory page due to a bug</span>
-              <br><span>- added analytics</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.8.2</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- updated the inventory page to work with Steam's adjusted page rendering system</span>
-              <br><span class="indent">- fixed bugs causing the item data to not load</span>
-              <br><span class="indent">- slightly improved performance</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.8.1</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- fixed market page bug causing the page to scroll down as soon as the page loads</span>
-              <br><span>- fixed market page bug causing listings to start on page 2</span>
-              <br><span>- stylized items on the <a href="https://steamcommunity.com/my/inventoryhistory">inventory history</a> page</span>
-              <br><span class="indent">- summary boxes appear now for each side of the trade</span>
-              <br><span class="indent">- pricing total and item types are counted</span>
-              <br><span class="indent">- items are aligned properly for easier readability</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.8.0</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- sticker prices now appear when hovering over items and on the inventory page</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.7.4</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- added new pricing source: <a href="http://csgobackpack.net/">csgobackpack.net</a></span>
-              <br><span class="indent">- with thanks to <a href="https://steamcommunity.com/profiles/76561198059556519">Only</a></span>
-              <br><span>- added new pricing source: <a href="http://csgo.steamlytics.xyz/api">csgo.steamlytics.xyz</a>, by <a href="https://steamcommunity.com/profiles/76561198045552709">King</a></span>
-              <br><span class="indent">- requires an API key to use (I have no affiliation with Steamlytics)</span>
-              <br>- added new pricing source: <a href="https://bitskins.com/">bitskins.com</a>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.7.3</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- fixed a bug where notifications weren't showing for new invites/comments</span>
-              <br><span class="indent">- changed http requests to https</span>
-              <br><span>- changed the way headers are added to requests to prevent duplicate headers</span>
-              <br><span>- added naming support for emerald (gamma doppler) and black pearl (doppler) knives</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.7.2</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- fixed bugs on the inventory page due to a recent change in the Steam website</span>
-              <br><span class="indent">- the sell and quick sell now appear and are functional</span>
-              <br><span class="indent">- special thanks to <a href="http://steamcommunity.com/profiles/76561198336991218">Dino</a> for pointing the bug out</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.7.1</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- added the ability upvote a user's profile when on their profile page</span>
-              <br><span class="indent">- Steam has had this feature for years but do not actually utilise it, so I've tried to revive it</span>
-              <br><span class="indent">- only other users with the extension can upvote a profile or see how many upvotes a profile has</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.7.0</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- added SEK (Swedish krona) and BRL (Brazilian real) currencies</span>
-              <br><span>- added the ability to choose a new notification sound</span>
-              <br><span class="indent">- added new notification sounds</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.6.8</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- fixed a bug that stopped floats from loading in trade offer windows</span>
-              <br><span>- fixed a bug where levels were not being sorted properly on the invites page</span>
-              <br><span>- increased inventory loading intervals on invites page to prevent being rate limited by Steam</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.6.7</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- cached data to speed up inventory loading times</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.6.6</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- edited invites page</span>
-              <br><span class="indent">- reworked an endpoint that was nuked</span>
-              <br><span class="indent">- separated inventory and verification tasks to improve loading speeds</span>
-              <br><span class="indent">- edited colours for verified users and scammers</span>
-              <br><span>- edited inventory page</span>
-              <br><span class="indent">- fixed a bug where floats wouldn't load when scrolling through the inventory</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.6.5</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- fixed issue where prices were not properly showing (due to a response not being interpreted correctly)</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.6.4</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- changed background gradient for settings page</span>
-              <br><span>- fixed image glitch when loading inventory page</span>
-              <br><span class="indent">- tracked already loaded elements to prevent duplicate elements</span>
-              <br><span class="indent">- special thanks to <a href="https://steamcommunity.com/profiles/76561198104649119">Marxy</a> for pointing the bug out</span>
-              <br><span>- removed `steam.expert` pricing source due to closure of the API</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.6.3</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- fixed tag name accession based on context</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.6.2</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- changed inventory retrieval due to Steam's new loading mechanism</span>
-              <br><span class="indent">- inventory now progressively loads as the user scrolls through pages</span>
-              <br><span class="indent">- inventory sorting and expansion options only appear when the entire inventory has been loaded</span>
-              <br><span>- adjusted CSS tags to account for Steam's CSS changes</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.6.1</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- added loading icon when quick selling icons to determine whether or not the item is being listed or has been listed</span>
-              <br><span class="indent">- when an item is being listed a loading icon will appear on top of it</span>
-              <br><span class="indent">- when an item has been listed the loading icon will be replaced with a dark gray background</span>
-              <br><span>- suppressed confirmation alerts when quick selling items</span>
-              <br><span>- fixed font issue on settings page</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.6.0</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- fixed 'sell' button not working on inventory page</span>
-              <br><span>- fixed bug causing interference with inventory item selection</span>
-              <br><span>- added quick sell feature to inventory items</span>
-              <br><span class="indent">- when clicking on an inventory item, a quick sell button appears near the 'Sell' button</span>
-              <br><span>- edited changelog versioning</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.5.1</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- fixed font issues</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.5.0</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- added verified scammers feature</span>
-              <br><span class="indent">- users marked as an impersonator/scammer will appear with a red flair on the invites page</span>
-              <br><span class="indent">- users marked as an impersonator/scammer will appear with a red flair on their profile page</span>
-              <br><span>- added feature to automatically ignore invites from marked impersonators/scammers</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.4.0</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- improved invites page, fixed incorrect sorting</span>
-              <br><span>- added better error handling for loading inventories</span>
-              <br><span>- fixed stickers not appearing when expanding inventory</span>
-              <br><span>- near instant inventory loading times</span>
-              <br><span class="indent">- improved loading times on trade offers pages and inventory pages</span>
-              <br><span class="indent">- inventories are now loaded from window data rather than an making an external request</span>
-              <br><span>- added a default settings button to settings page</span>
-              <br><span>- added multiple price source options on the settings page</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.3.0</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- improved script interaction with the web page (DRY concept)</span>
-              <br><span>- notification sounds now occur for friend/group invites, new comments and new items</span>
-              <br><span>- fixed bug with auto accepting trade offers</span>
-              <br><span class="indent">- cookies are now updated before every offer is accepted</span>
-              <br><span>- fixed bugs with notification urls</span>
-              <br><span>- added notification volume setting</span>
-              <br><span>- added better error handling for retrieving inventories</span>
-              <br><span>- added <a target="_blank" href="https://i7xx.xyz">floatr</a> to market listings</span>
-              <br><span>- added basis for loading more comments on profile page, to be implemented soon</span>
-              <br><span>- made the settings page more responsive</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.2.0</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- added steam id verification for important profiles (bots, high tier traders)</span>
-              <br><span class="indent">- verification appears above the profile picture on profile pages</span>
-              <br><span class="indent">- verification appears near the report button for trade offers (after clicking 'show prices')</span>
-              <br><span>- added various currencies</span>
-              <br><span class="indent">- added currency setting</span>
-              <br><span>- added font size customisation</span>
-              <br><span class="indent">- font size for float/wear/price can now be adjusted</span>
-              <br><span>- faster loading times for inventories inside a trade offer</span>
-              <br><span>- increased number of items shown on market page to 50</span>
-              <br><span>- better error handling (fallback requests) for ajax requests</span>
-              <br><span>- various bug fixes</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.1.0</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- added various visual changes to multiple pages</span>
-              <br><span>- added settings page</span>
-              <br><span class="indent">- implemented real time setting saves</span>
-              <br><span class="indent">- added contributions</span>
-              <br><span>- added settings</span>
-              <br><span class="indent">- added float value setting</span>
-              <br><span class="indent">- added auto accept setting</span>
-              <br><span class="indent">- added in trade background setting</span>
-              <br><span>- added auto accept for empty trades</span>
-              <br><span>- added visual difference for items already in a trade offer</span>
-              <br><span>- added and edited icons</span>
-              <br><span>- added better support for when an inventory is changed</span>
-              <br><span>- fixed bug causing duplicate action links</span>
-            </p>
-          </div>
-        </li>
-        <li>
-          <div class="collapsible-header">v 1.0.0</div>
-          <div class="collapsible-body">
-            <p>
-              <span>- initial release</span>
-            </p>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
 </div>
 
 <script src="main.js"></script>

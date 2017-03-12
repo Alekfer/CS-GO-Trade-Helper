@@ -3,6 +3,7 @@
 $(document).ready(function(){
     $('.scrollspy').scrollSpy();
     $('#toc').pushpin({top: 350});
+    $('.modal').modal();
 })
 
 /* get currency conversion rates */

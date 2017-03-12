@@ -54,7 +54,7 @@ function processQueue(inventoryOnly, index){
 
                 if (settings.autoignore) {
                     injectScript({'%%steamID%%': info.steamID}, function () {
-                        javascript:FriendAccept('%%steamID%%', 'ignore');
+                        FriendAccept('%%steamID%%', 'ignore');
                     })
                 }
             }
