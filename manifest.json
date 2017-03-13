@@ -8,52 +8,52 @@
      "default_title": "CS:GO Trade Helper"
   },
   "background": {
-    "scripts": ["lib/jquery.min.js", "lib/uint64.min.js", "scripts/analytics.js", "scripts/background.js"]
+    "scripts": ["lib/jquery.min.js", "lib/uint64.min.js", "scripts/dist/analytics.min.js", "scripts/dist/background.min.js"]
   },
   "permissions": ["cookies", "tabs", "storage", "notifications", "webRequest", "webRequestBlocking",
                   "*://steamcommunity.com/*", "*://api.steampowered.com/*", "*://steamrep.com/*", "*://steamcdn-a.akamaihd.net/*"],
   "content_scripts": [
     {
       "matches": ["*://steamcommunity.com/*"],
-      "js": ["lib/jquery.min.js", "scripts/patterns.js", "scripts/tools.js"],
+      "js": ["lib/jquery.min.js", "scripts/dist/patterns.min.js", "scripts/dist/tools.min.js"],
       "css": ["lib/main.css"]
     },
     {
       "matches": ["*://steamcommunity.com/id/*/inventory/", "*://steamcommunity.com/profiles/*/inventory/",
                   "*://steamcommunity.com/id/*/inventory",  "*://steamcommunity.com/profiles/*/inventory"],
-      "js": ["scripts/inventory.js"]
+      "js": ["scripts/dist/inventory.min.js"]
     },
     {
       "matches": ["*://steamcommunity.com/tradeoffer/*"],
-      "js": ["scripts/trades.js"]
+      "js": ["scripts/dist/trades.min.js"]
     },
     {
       "matches": ["*://steamcommunity.com/id/*/tradeoffers/*", "*://steamcommunity.com/profiles/*/tradeoffers/*",
                   "*://steamcommunity.com/id/*/tradeoffers*",  "*://steamcommunity.com/profiles/*/tradeoffers*"],
-      "js": ["lib/uint64.min.js", "scripts/tradeoffers.js"]
+      "js": ["lib/uint64.min.js", "scripts/dist/tradeoffers.min.js"]
     },
     {
       "matches": ["*://steamcommunity.com/id/*/home/invites/", "*://steamcommunity.com/profiles/*/home/invites/",
                   "*://steamcommunity.com/id/*/home/invites", "*://steamcommunity.com/profiles/*/home/invites"],
-      "js": ["scripts/invites.js"]
+      "js": ["scripts/dist/invites.min.js"]
     },
     {
       "matches": ["*://steamcommunity.com/id/*/friends/", "*://steamcommunity.com/profiles/*/friends/",
                   "*://steamcommunity.com/id/*/friends", "*://steamcommunity.com/profiles/*/friends"],
-      "js": ["lib/uint64.min.js", "scripts/friends.js"]
+      "js": ["lib/uint64.min.js", "scripts/dist/friends.min.js"]
     },
     {
       "matches": ["*://steamcommunity.com/market/listings/730/*"],
-      "js": ["scripts/market.js"]
+      "js": ["scripts/dist/market.min.js"]
     },
     {
       "matches": ["*://steamcommunity.com/id/*/", "*://steamcommunity.com/profiles/*/",
                   "*://steamcommunity.com/id/*", "*://steamcommunity.com/profiles/*"],
-      "js": ["scripts/profile.js"]
+      "js": ["scripts/dist/profile.min.js"]
     },
     {
       "matches": ["*://steamcommunity.com/id/*/inventoryhistory*"],
-      "js": ["scripts/history.js"]
+      "js": ["scripts/dist/history.min.js"]
     }
   ],
   "options_page": "settings/index.html",

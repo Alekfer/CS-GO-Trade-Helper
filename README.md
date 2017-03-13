@@ -36,6 +36,8 @@ Screenshots can be seen at [i7xx.xyz/helper](https://i7xx.xyz/helper) and a vide
 
 - improved functionality on profile page (improved aesthetics, verification for important and/or high tier profiles)
 
+- improved functionality on inventory history page (each trade history item is formatted with pricing, items are aligned and easier to read)
+
 - notifications for new profile comments, new friend invites, new trade offers and new items
 
 - verification flairs for high tier trades/profiles
@@ -66,14 +68,11 @@ Screenshots can be seen at [i7xx.xyz/helper](https://i7xx.xyz/helper) and a vide
 
 Refer to [Getting Started: Building a Chrome Extension](https://developer.chrome.com/extensions/getstarted) Guide.
 
-1. Fork the repository and clone it. You can also just clone it if you just want to install it.
+1. Fork the repository and clone it. You can also just clone it if you just want to install it:
+`git clone https://github.com/Rob--/CS-GO-Trade-Helper.git`
 
-```bash
-git clone https://github.com/Rob--/CS-GO-Trade-Helper.git
-```
+2. Load Chrome and open the extensions page: `chrome://extensions/`
 
-2. Go into chrome and [open extension](chrome://extensions/) page.
+3. Enable Developer Mode (tick box at the top of the page)
 
-3. Enable Developer Mode
-
-4. Click on 'Load unpacked extension'. The Chrome Add-on is now loaded and ready to use.
+4. Click on 'Load unpacked extension' and open the folder with the extension. The Chrome Add-on is now loaded and ready to use

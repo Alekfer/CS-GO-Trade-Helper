@@ -1,0 +1,27 @@
+{
+  "name": "cs-go-trade-helper",
+  "version": "1.8.3",
+  "description": "Implements a variety of features to improve both the Steam Community and trading for CS:GO.\r CS:GO Trade Helper improves the appearance of Steam pages and, in various ways, assists trading in CS:GO through the Steam Community website.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gulp": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rob--/CS-GO-Trade-Helper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rob--/CS-GO-Trade-Helper/issues"
+  },
+  "homepage": "https://github.com/Rob--/CS-GO-Trade-Helper#readme",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-optimize-js": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^2.1.0",
+    "pump": "^1.0.2",
+    "uglify-js": "^2.8.12"
+  }
+}
