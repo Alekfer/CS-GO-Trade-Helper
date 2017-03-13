@@ -66,6 +66,8 @@ Screenshots can be seen at [i7xx.xyz/helper](https://i7xx.xyz/helper) and a vide
 
 ## Installation - Developer
 
+### Setting the extension up in Chrome
+
 Refer to [Getting Started: Building a Chrome Extension](https://developer.chrome.com/extensions/getstarted) Guide.
 
 1. Fork the repository and clone it. You can also just clone it if you just want to install it:
@@ -76,3 +78,11 @@ Refer to [Getting Started: Building a Chrome Extension](https://developer.chrome
 3. Enable Developer Mode (tick box at the top of the page)
 
 4. Click on 'Load unpacked extension' and open the folder with the extension. The Chrome Add-on is now loaded and ready to use
+
+### Setting the extension up for development
+
+This project uses gulp to minify code, therefore dependencies need to be installed from NPM.
+
+1. In the root directory, open a terminal and run `npm install` to install the required dependencies
+
+2. To run the gulp tasks to minify code, open a terminal and run `npm run gulp`
